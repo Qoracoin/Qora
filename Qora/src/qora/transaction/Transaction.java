@@ -148,14 +148,14 @@ public abstract class Transaction {
 	
 	public boolean hasMinimumFee()
 	{
-		return this.fee.compareTo(MINIMUM_FEE) >= 0;
+		return this.fee.compareTo(MINIMUM_FEE) >= 1; //min fee = 1 QORA
 	}
 	
 	public boolean hasMinimumFeePerByte()
 	{
 		BigDecimal minFeePerByte = BigDecimal.ONE.divide(BigDecimal.valueOf(Settings.getInstance().getMaxBytePerFee()), MathContext.DECIMAL32);
 		
-		return this.feePerByte().compareTo(minFeePerByte) >= 0;
+		return this.feePerByte().compareTo(minFeePerByte) >= 0.01;  // smart fee = 1 QORA per 100 byte
 	}
 	
 	//PARSE/CONVERT
