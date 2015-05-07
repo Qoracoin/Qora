@@ -36,14 +36,7 @@ public class SendMoneyPanel extends JPanel
 	private JButton sendButton;
 	private AccountsComboBoxModel accountsModel;
 	private JComboBox<Asset> cbxFavorites;
-	private JComboBox<String> cbxPaymentSolution;
-	
-	private final String ORDINARY_PAYMENT = "Ordinary payment";
-	private final String NAME_PAYMENT = "Name payment";
-	
-	
-	
-	
+
 	public SendMoneyPanel()
 	{
 		this.setLayout(new GridBagLayout());
@@ -86,36 +79,9 @@ public class SendMoneyPanel extends JPanel
 		favoritesGBC.gridx = 0;	
 		favoritesGBC.gridy = 0;	
 		
-		//PAYMENT SOLUTION GBC
-		GridBagConstraints paymentGBC = new GridBagConstraints();
-		paymentGBC.insets = new Insets(5, 5, 5, 5);
-		paymentGBC.fill = GridBagConstraints.HORIZONTAL;  
-		paymentGBC.anchor = GridBagConstraints.NORTHWEST;
-		paymentGBC.weightx = 1;
-		paymentGBC.gridwidth = 2;
-		paymentGBC.gridx = 0;	
-		paymentGBC.gridy = 1;	
-		
 		//ASSET FAVORITES
 		cbxFavorites = new JComboBox<Asset>(new AssetsComboBoxModel());
 		this.add(cbxFavorites, favoritesGBC);
-		
-		//PAYMENT SOLUTION
-		cbxPaymentSolution = new JComboBox<String>();
-		cbxPaymentSolution.addItem(ORDINARY_PAYMENT);
-		cbxPaymentSolution.addItem(NAME_PAYMENT);
-		this.add(cbxPaymentSolution, paymentGBC);
-		
-		cbxPaymentSolution.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				refreshReceiverDetails();
-				
-			}
-		});
-		
-		
 		
 		//BUTTON GBC
 		GridBagConstraints buttonGBC = new GridBagConstraints();
@@ -159,7 +125,7 @@ public class SendMoneyPanel extends JPanel
         
         //LABEL TO
       	labelGBC.gridy = 3;
-      	JLabel toLabel = new JLabel("To:");
+      	JLabel toLabel = new JLabel("To: (address or name)");
       	this.add(toLabel, labelGBC);
       		
       	//TXT TO
@@ -252,32 +218,26 @@ public class SendMoneyPanel extends JPanel
 			return;
 		}
 		
-			if(cbxPaymentSolution.getSelectedItem() == NAME_PAYMENT)
+		//CHECK IF RECIPIENT IS VALID ADDRESS
+		if(!Crypto.getInstance().isValidAddress(toValue))
+		{
+			Pair<Account, NameResult> nameToAdress = NameUtils.nameToAdress(toValue);
+					
+			if(nameToAdress.getB() == NameResult.OK)
 			{
-				Pair<Account, NameResult> nameToAdress = NameUtils.nameToAdress(toValue);
-				
-				if(nameToAdress.getB() == NameResult.OK)
-				{
-					Account acct = nameToAdress.getA();
-					txtRecDetails.setText(acct.getBalance(1).toPlainString() + " - " + acct.getAddress());
-					
-				}else
-				{
-					
-					txtRecDetails.setText(nameToAdress.getB().getStatusMessage());
-				}
+				Account acct = nameToAdress.getA();
+				txtRecDetails.setText(acct.getBalance(1).toPlainString() + " - " + acct.getAddress());
 			}else
 			{
-					//CHECK IF RECIPIENT IS VALID ADDRESS
-					if(!Crypto.getInstance().isValidAddress(toValue))
-					{
-						txtRecDetails.setText("Invalid address!");
-					}else
-					{
-						Account account = new Account(toValue);
-						txtRecDetails.setText(account.getBalance(1).toPlainString() + " - " + account.getAddress());
-					}
+				txtRecDetails.setText("Invalid address!");
 			}
+
+		}else
+		{
+			Account account = new Account(toValue);
+			txtRecDetails.setText(account.getBalance(1).toPlainString() + " - " + account.getAddress());
+		}
+			
 	}
 	
 	public void onSendClick()
@@ -324,13 +284,12 @@ public class SendMoneyPanel extends JPanel
 		Account recipient;
 		
 		//ORDINARY PAYMENT
-		if(cbxPaymentSolution.getSelectedItem().equals(ORDINARY_PAYMENT))
+		if(Crypto.getInstance().isValidAddress(recipientAddress))
 		{
 			recipient = new Account(recipientAddress);
 		//NAME PAYMENT
-		}else if(cbxPaymentSolution.getSelectedItem().equals(NAME_PAYMENT))
+		}else
 		{
-			
 			Pair<Account, NameResult> result = NameUtils.nameToAdress(recipientAddress);
 			
 			if(result.getB() == NameResult.OK)
@@ -338,24 +297,13 @@ public class SendMoneyPanel extends JPanel
 				recipient = result.getA();
 			}else
 			{
-				JOptionPane.showMessageDialog(null, result.getB().getStatusMessage() , "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, "Invalid address or name!" , "Error", JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.sendButton.setEnabled(true);
 				
 				return;
 			}
-			
-		}else
-		{
-			
-			//THIS ONLY HAPPENS IF WE MADE A MISTAKE ;)
-			JOptionPane.showMessageDialog(null, "An Internal Error occured! " + cbxPaymentSolution.getSelectedItem() + " is not known!" , "Error", JOptionPane.ERROR_MESSAGE);
-			
-			//ENABLE
-			this.sendButton.setEnabled(true);
-			
-			return;
 		}
 		
 		int parsing = 0;
