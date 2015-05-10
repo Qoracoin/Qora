@@ -48,6 +48,7 @@ import utils.ObserverMessage;
 import utils.Pair;
 import utils.SimpleFileVisitorForRecursiveFolderDeletion;
 import api.ApiService;
+import namewebserver.WebService;
 
 
 import database.DBSet;
@@ -62,6 +63,7 @@ public class Controller extends Observable {
 	private int status;
 	private Network network;
 	private ApiService rpcService;
+	private WebService webService;
 	private BlockChain blockChain;
 	private BlockGenerator blockGenerator;
 	private Wallet wallet;
@@ -92,7 +94,7 @@ public class Controller extends Observable {
 		return this.status;
 	}
 	
-	public void start(boolean disableRpc) throws Exception
+	public void start(boolean disableRpc, boolean disableWeb) throws Exception
 	{
 		//CHECK NETWORK PORT AVAILABLE
 		if(!Network.isPortAvailable(Network.PORT))
@@ -109,6 +111,14 @@ public class Controller extends Observable {
     		}
         }
 		
+		if(!disableWeb)
+        {
+        	if(!Network.isPortAvailable(Settings.getInstance().getWebPort()))
+    		{
+    			throw new Exception("Web port " + Settings.getInstance().getWebPort() + " already in use!");
+    		}
+        }
+				
 		//LOAD NATIVE LIBRARIES
 		if(!Ed25519.load())
 		{
@@ -153,6 +163,13 @@ public class Controller extends Observable {
         	this.rpcService = new ApiService();
         	this.rpcService.start();
         }
+        
+        if(!disableWeb)
+        {
+        	this.webService = new WebService();
+        	this.webService.start();
+        }
+        
         
         //CREATE WALLET
         this.wallet = new Wallet(); 

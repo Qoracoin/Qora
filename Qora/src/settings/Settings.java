@@ -25,6 +25,10 @@ public class Settings {
 	private static final int DEFAULT_RPC_PORT = 9085;
 	private static final String DEFAULT_RPC_ALLOWED = "127.0.0.1";
 	
+	//WEB
+	private static final int DEFAULT_WEB_PORT = 9083;
+	private static final String DEFAULT_WEB_ALLOWED = "127.0.0.1";
+	
 	//DATA
 	private static final String DEFAULT_DATA_DIR = "data";
 	private static final String DEFAULT_WALLET_DIR = "wallet";
@@ -162,7 +166,7 @@ public class Settings {
 		
 		return DEFAULT_RPC_PORT;
 	}
-	
+
 	public String[] getRpcAllowed()
 	{
 		try
@@ -185,6 +189,46 @@ public class Settings {
 			
 			//RETURN
 			return DEFAULT_RPC_ALLOWED.split(";");
+		}
+		catch(Exception e)
+		{
+			//RETURN EMPTY LIST
+			return new String[0];
+		}
+	}
+	
+	public int getWebPort()
+	{
+		if(this.settingsJSON.containsKey("webport"))
+		{
+			return ((Long) this.settingsJSON.get("webport")).intValue();
+		}
+		
+		return DEFAULT_WEB_PORT;
+	}
+	
+	public String[] getWebAllowed()
+	{
+		try
+		{
+			if(this.settingsJSON.containsKey("weballowed"))
+			{
+				//GET PEERS FROM JSON
+				JSONArray allowedArray = (JSONArray) this.settingsJSON.get("weballowed");
+				
+				//CREATE LIST WITH PEERS
+				String[] allowed = new String[allowedArray.size()];
+				for(int i=0; i<allowedArray.size(); i++)
+				{
+					allowed[i] = (String) allowedArray.get(i);
+				}
+				
+				//RETURN
+				return allowed;	
+			}
+			
+			//RETURN
+			return DEFAULT_WEB_ALLOWED.split(";");
 		}
 		catch(Exception e)
 		{

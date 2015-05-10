@@ -1,4 +1,4 @@
-package api;
+package namewebserver;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,26 +12,16 @@ import org.glassfish.jersey.servlet.ServletContainer;
 
 import settings.Settings;
 
-public class ApiService {
+public class WebService {
 
 	public Server server;
 	
-	public ApiService()
+	public WebService()
 	{
 		//CREATE CONFIG
 		Set<Class<?>> s = new HashSet<Class<?>>();
-        s.add(QoraResource.class);     
-        s.add(SeedResource.class);  
-        s.add(PeersResource.class);    
-        s.add(TransactionsResource.class);
-        s.add(BlocksResource.class);
-        s.add(AddressesResource.class);
-        s.add(WalletResource.class);
-        s.add(PaymentResource.class);
-        s.add(NamesResource.class);
-        s.add(NameSalesResource.class);
-        s.add(PollsResource.class);
-        s.add(ArbitraryTransactionsResource.class);
+        s.add(NamesWebResource.class);
+        
         ResourceConfig config = new ResourceConfig(s);
 		
         //CREATE CONTAINER
@@ -44,11 +34,11 @@ public class ApiService {
         
         //CREATE WHITELIST
         IPAccessHandler accessHandler = new IPAccessHandler();
-        accessHandler.setWhite(Settings.getInstance().getRpcAllowed());
+        accessHandler.setWhite(Settings.getInstance().getWebAllowed());
         accessHandler.setHandler(context);
         
-        //CREATE RPC SERVER
-      	this.server = new Server(Settings.getInstance().getRpcPort());
+        //CREATE WEB SERVER
+      	this.server = new Server(Settings.getInstance().getWebPort());
       	this.server.setHandler(accessHandler);
 	}
 	
@@ -56,12 +46,12 @@ public class ApiService {
 	{
 		try
         {
-        	//START RPC 
+        	//START WEB 
 			server.start();
 		} 
         catch (Exception e) 
 		{
-        	//FAILED TO START RPC
+        	//FAILED TO START WEB
 		}
 	}
 	
@@ -74,7 +64,7 @@ public class ApiService {
 		} 
         catch (Exception e) 
 		{
-        	//FAILED TO STOP RPC
+        	//FAILED TO STOP WEB
 		}
 	}
 }
