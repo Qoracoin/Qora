@@ -44,7 +44,7 @@ public class BlockFactory {
 			int version = Ints.fromByteArray(versionBytes);
 			
 			//PARSE NORMAL BLOCK
-			return ( version > 1 ) ? Block.parse(data) : Block.parseOld(data);
+			return Block.parse(data);
 		}
 	}
 

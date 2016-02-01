@@ -40,15 +40,8 @@ public class BlockMessage extends Message{
 		int height = Ints.fromByteArray(heightBytes);
 		
 		//PARSE BLOCK
-		Block block;
-		if ( height > Transaction.AT_BLOCK_HEIGHT_RELEASE )
-		{
-			block = Block.parse(Arrays.copyOfRange(data, HEIGHT_LENGTH, data.length + 1));	
-		}
-		else
-		{
-			block = Block.parseOld(Arrays.copyOfRange(data, HEIGHT_LENGTH, data.length + 1));
-		}
+		Block block = Block.parse(Arrays.copyOfRange(data, HEIGHT_LENGTH, data.length + 1));
+
 		//CREATE MESSAGE
 		BlockMessage message = new BlockMessage(block);
 		message.height = height;

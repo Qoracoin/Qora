@@ -38,7 +38,11 @@ import com.google.common.primitives.Longs;
 
 import database.DBSet;
 
+
 public class Block {
+
+	//RELEASES (more are in Transaction.java)
+	public static final long POWFIX_RELEASE = 1454930000000l; // version 3
 
 	public static final int MAX_BLOCK_BYTES = 1048576;
 	public static final int VERSION_LENGTH = 4;
@@ -72,6 +76,7 @@ public class Block {
 	protected byte[] atBytes;
 	protected Long atFees;
 
+	// VERSION 2 AND 3 BLOCKS, WITH AT AND MESSAGE
 	public Block(int version, byte[] reference, long timestamp, long generatingBalance, PublicKeyAccount generator, byte[] generatorSignature, byte[] atBytes, long atFees)
 	{
 		this.version = version;
@@ -87,19 +92,10 @@ public class Block {
 		this.atFees = atFees;
 	}
 
+	// VERSION 1 BLOCKS
 	public Block(int version, byte[] reference, long timestamp, long generatingBalance, PublicKeyAccount generator, byte[] generatorSignature)
 	{
-		this.version = version;
-		this.reference = reference;
-		this.timestamp = timestamp;
-		this.generatingBalance = generatingBalance;
-		this.generator = generator;
-		this.generatorSignature = generatorSignature;
-
-		this.transactionCount = 0;
-
-		this.atBytes = new byte[0];
-		this.atFees = 0L;
+		this(version, reference, timestamp, generatingBalance, generator, generatorSignature, new byte[0], 0);
 	}
 
 	//GETTERS/SETTERS
@@ -207,7 +203,8 @@ public class Block {
 		this.transactionCount++;
 	}
 
-	public Transaction getTransaction(byte[] signature) {
+	public Transaction getTransaction(byte[] signature)
+	{
 
 		for(Transaction transaction: this.getTransactions())
 		{
@@ -309,83 +306,30 @@ public class Block {
 		//READ GENERATOR SIGNATURE
 		byte[] generatorSignature =  Arrays.copyOfRange(data, position, position + GENERATOR_SIGNATURE_LENGTH);
 		position += GENERATOR_SIGNATURE_LENGTH;
-
-		//ADD ATs BYTES
-		byte[] atBytesCountBytes = Arrays.copyOfRange(data, position, position + AT_BYTES_LENGTH);
-		int atBytesCount = Ints.fromByteArray(atBytesCountBytes);
-		position += AT_BYTES_LENGTH;
-
-		byte[] atBytes = Arrays.copyOfRange( data , position, position + atBytesCount);
-		position += atBytesCount;
-
-		byte[] atFees = Arrays.copyOfRange( data , position , position + 8 );
-		position += 8;
-
-		long atFeesL = Longs.fromByteArray(atFees);
-
+ 
 		//CREATE BLOCK
-		Block block = new Block(version, reference, timestamp, generatingBalance, generator, generatorSignature, atBytes, atFeesL);
-
-		//READ TRANSACTIONS COUNT
-		byte[] transactionCountBytes = Arrays.copyOfRange(data, position, position + TRANSACTIONS_COUNT_LENGTH);
-		int transactionCount = Ints.fromByteArray(transactionCountBytes);
-		position += TRANSACTIONS_COUNT_LENGTH;
-
-		//SET TRANSACTIONDATA
-		byte[] rawTransactions = Arrays.copyOfRange(data, position, data.length);
-		block.setTransactionData(transactionCount, rawTransactions);
-
-		//SET TRANSACTIONS SIGNATURE
-		block.setTransactionsSignature(transactionsSignature);
-
-		return block;
-	}
-
-	public static Block parseOld(byte[] data) throws Exception
-	{
-		//CHECK IF WE HAVE MINIMUM BLOCK LENGTH
-		if(data.length < BASE_LENGTH)
+		Block block;
+		if(version > 1)
 		{
-			throw new Exception("Data is less then minimum block length");
+			//ADD ATs BYTES
+			byte[] atBytesCountBytes = Arrays.copyOfRange(data, position, position + AT_BYTES_LENGTH);
+			int atBytesCount = Ints.fromByteArray(atBytesCountBytes);
+			position += AT_BYTES_LENGTH;
+	
+			byte[] atBytes = Arrays.copyOfRange( data , position, position + atBytesCount);
+			position += atBytesCount;
+	
+			byte[] atFees = Arrays.copyOfRange( data , position , position + 8 );
+			position += 8;
+	
+			long atFeesL = Longs.fromByteArray(atFees);
+
+			block = new Block(version, reference, timestamp, generatingBalance, generator, generatorSignature, atBytes, atFeesL);
 		}
-
-		int position = 0;
-
-		//READ VERSION
-		byte[] versionBytes = Arrays.copyOfRange(data, position, position + VERSION_LENGTH);
-		int version = Ints.fromByteArray(versionBytes);
-		position += VERSION_LENGTH;
-
-		//READ TIMESTAMP
-		byte[] timestampBytes = Arrays.copyOfRange(data, position, position + TIMESTAMP_LENGTH);
-		long timestamp = Longs.fromByteArray(timestampBytes);
-		position += TIMESTAMP_LENGTH;		
-
-		//READ REFERENCE
-		byte[] reference = Arrays.copyOfRange(data, position, position + REFERENCE_LENGTH);
-		position += REFERENCE_LENGTH;
-
-		//READ GENERATING BALANCE
-		byte[] generatingBalanceBytes = Arrays.copyOfRange(data, position, position + GENERATING_BALANCE_LENGTH);
-		long generatingBalance = Longs.fromByteArray(generatingBalanceBytes);
-		position += GENERATING_BALANCE_LENGTH;
-
-		//READ GENERATOR
-		byte[] generatorBytes = Arrays.copyOfRange(data, position, position + GENERATOR_LENGTH);
-		PublicKeyAccount generator = new PublicKeyAccount(generatorBytes);
-		position += GENERATOR_LENGTH;
-
-		//READ TRANSACTION SIGNATURE
-		byte[] transactionsSignature =  Arrays.copyOfRange(data, position, position + TRANSACTIONS_SIGNATURE_LENGTH);
-		position += TRANSACTIONS_SIGNATURE_LENGTH;
-
-
-		//READ GENERATOR SIGNATURE
-		byte[] generatorSignature =  Arrays.copyOfRange(data, position, position + GENERATOR_SIGNATURE_LENGTH);
-		position += GENERATOR_SIGNATURE_LENGTH;
-
-		//CREATE BLOCK
-		Block block = new Block(version, reference, timestamp, generatingBalance, generator, generatorSignature);
+		else
+		{
+			block = new Block(version, reference, timestamp, generatingBalance, generator, generatorSignature);
+		}
 
 		//READ TRANSACTIONS COUNT
 		byte[] transactionCountBytes = Arrays.copyOfRange(data, position, position + TRANSACTIONS_COUNT_LENGTH);
@@ -474,7 +418,7 @@ public class Block {
 		data = Bytes.concat(data, this.generatorSignature);
 
 		//ADD ATs BYTES
-		if ( this.getHeight() > Transaction.AT_BLOCK_HEIGHT_RELEASE )
+		if(this.version >= 2)
 		{
 			if (atBytes!=null)
 			{
@@ -515,11 +459,12 @@ public class Block {
 		return data;
 	}
 
-	public int getDataLength() {
+	public int getDataLength()
+	{
 
 		int length = BASE_LENGTH;
 
-		if ( this.getHeight() > Transaction.AT_BLOCK_HEIGHT_RELEASE )
+		if(this.version >= 2)
 		{
 			length += AT_LENGTH;
 			if (this.atBytes!=null)
@@ -528,13 +473,27 @@ public class Block {
 			}
 		}
 
-
 		for(Transaction transaction: this.getTransactions())
 		{
 			length += 4 + transaction.getDataLength();
 		}
 
 		return length;
+	}
+
+	public byte[] getProofHash()
+	{
+		if(this.version < 3)
+		{
+			return Crypto.getInstance().digest(this.generatorSignature);
+		}
+		else
+		{
+			//newSig = sha256(prevSig || pubKey)
+			byte[] data = Bytes.concat(this.reference, generator.getPublicKey());
+
+			return Crypto.getInstance().digest(data);
+		}
 	}
 
 	//VALIDATE
@@ -583,6 +542,25 @@ public class Block {
 		return true;
 	}
 
+	// canonical definition of block version release schedule
+	public int getNextBlockVersion(DBSet db)
+	{
+		int height = getHeight(db);
+
+		if(height < Transaction.AT_BLOCK_HEIGHT_RELEASE)
+		{
+			return 1;
+		}
+		else if(getTimestamp() < POWFIX_RELEASE)
+		{
+			return 2;
+		}
+		else
+		{
+			return 3;
+		}
+	}
+
 	public boolean isValid()
 	{
 		return this.isValid(DBSet.getInstance());
@@ -614,6 +592,16 @@ public class Block {
 			return false;
 		}
 
+		//CHECK IF VERSION IS CORRECT
+		if(this.version != this.getParent(db).getNextBlockVersion(db))
+		{
+			return false;
+		}
+		if(this.version < 2 && (this.atBytes.length > 0 || this.atFees != 0))
+		{
+			return false;
+		}
+
 		//CREATE TARGET
 		byte[] targetBytes = new byte[32];
 		Arrays.fill(targetBytes, Byte.MAX_VALUE);
@@ -631,11 +619,8 @@ public class Block {
 		BigInteger lowerTarget = target.multiply(BigInteger.valueOf(guesses-1));
 		target = target.multiply(BigInteger.valueOf(guesses));
 
-		//HASH SIGNATURE
-		byte[] hash = Crypto.getInstance().digest(this.generatorSignature);
-
-		//CONVERT HASH TO BIGINT
-		BigInteger hashValue = new BigInteger(1, hash);
+		//CONVERT PROOF HASH TO BIGINT
+		BigInteger hashValue = new BigInteger(1, getProofHash());
 
 		//CHECK IF HASH LOWER THEN TARGET
 		if(hashValue.compareTo(target) >= 0)
@@ -651,11 +636,14 @@ public class Block {
 
 		if ( this.atBytes != null && this.atBytes.length > 0 )
 		{
-			try {
+			try
+			{
 
 				AT_Block atBlock = AT_Controller.validateATs( this.getBlockATs() , db.getBlockMap().getLastBlock().getHeight(db)+1 , db);
 				this.atFees = atBlock.getTotalFees();
-			} catch (NoSuchAlgorithmException | AT_Exception e) {
+			}
+			catch(NoSuchAlgorithmException | AT_Exception e)
+			{
 				e.printStackTrace();
 				return false;
 			}
@@ -729,7 +717,8 @@ public class Block {
 
 		//DELETE CONFIRMED TRANSACTIONS FROM UNCONFIRMED TRANSACTIONS LIST
 		List<Transaction> unconfirmedTransactions = new ArrayList<Transaction>(db.getTransactionMap().getValues());
-		for (Transaction transaction : unconfirmedTransactions) {
+		for(Transaction transaction: unconfirmedTransactions)
+		{
 			if(db.getTransactionParentMap().contains(transaction.getSignature()))
 			{
 				db.getTransactionMap().delete(transaction);
