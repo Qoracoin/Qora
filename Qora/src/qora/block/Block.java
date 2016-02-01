@@ -51,7 +51,7 @@ public class Block {
 	private static final int TRANSACTIONS_COUNT_LENGTH = 4;
 	private static final int TRANSACTION_SIZE_LENGTH = 4;
 	public static final int AT_BYTES_LENGTH = 4;
-	private static final int BASE_LENGTH = VERSION_LENGTH + REFERENCE_LENGTH + TIMESTAMP_LENGTH + GENERATING_BALANCE_LENGTH + GENERATOR_LENGTH + TRANSACTIONS_SIGNATURE_LENGTH + GENERATOR_SIGNATURE_LENGTH + TRANSACTIONS_COUNT_LENGTH;
+	private static final int BASE_LENGTH = VERSION_LENGTH + REFERENCE_LENGTH + TIMESTAMP_LENGTH + GENERATING_BALANCE_LENGTH + GENERATOR_LENGTH + TRANSACTIONS_SIGNATURE_LENGTH + TRANSACTIONS_COUNT_LENGTH;
 	private static final int AT_FEES_LENGTH = 8;
 	private static final int AT_LENGTH = AT_FEES_LENGTH + AT_BYTES_LENGTH;
 	public static final int MAX_TRANSACTION_BYTES = MAX_BLOCK_BYTES - BASE_LENGTH;
@@ -72,21 +72,25 @@ public class Block {
 	protected byte[] atBytes;
 	protected Long atFees;
 
+	// VERSION 3 BLOCKS, WITH HASHED PUBLIC DATA RATHER THAN SIGNATURE
+	public Block(int version, byte[] reference, long timestamp, long generatingBalance, PublicKeyAccount generator, byte[] atBytes, long atFees)
+	{
+		this(version, reference, timestamp, generatingBalance, generator, null, atBytes, atFees);
+	}
+
+	// VERSION 2 BLOCKS, WITH ED25519 SIGNATURE
 	public Block(int version, byte[] reference, long timestamp, long generatingBalance, PublicKeyAccount generator, byte[] generatorSignature, byte[] atBytes, long atFees)
 	{
-		this.version = version;
-		this.reference = reference;
-		this.timestamp = timestamp;
-		this.generatingBalance = generatingBalance;
-		this.generator = generator;
-		this.generatorSignature = generatorSignature;
-
-		this.transactionCount = 0;
+		this(version, reference, timestamp, generatingBalance, generator, generatorSignature);
 
 		this.atBytes = atBytes;
 		this.atFees = atFees;
+
+		if (version >= 3)
+			this.generatorSignature = getTargetHashMaterial();
 	}
 
+	// VERSION 1 BLOCKS, PRIOR TO AT
 	public Block(int version, byte[] reference, long timestamp, long generatingBalance, PublicKeyAccount generator, byte[] generatorSignature)
 	{
 		this.version = version;
@@ -97,9 +101,6 @@ public class Block {
 		this.generatorSignature = generatorSignature;
 
 		this.transactionCount = 0;
-
-		this.atBytes = new byte[0];
-		this.atFees = 0L;
 	}
 
 	//GETTERS/SETTERS
@@ -307,8 +308,16 @@ public class Block {
 
 
 		//READ GENERATOR SIGNATURE
-		byte[] generatorSignature =  Arrays.copyOfRange(data, position, position + GENERATOR_SIGNATURE_LENGTH);
-		position += GENERATOR_SIGNATURE_LENGTH;
+		byte[] generatorSignature;
+		if(version < 3)
+		{
+			generatorSignature = Arrays.copyOfRange(data, position, position + GENERATOR_SIGNATURE_LENGTH);
+			position += GENERATOR_SIGNATURE_LENGTH;
+		}
+		else
+		{
+			generatorSignature = null;
+		}
 
 		//ADD ATs BYTES
 		byte[] atBytesCountBytes = Arrays.copyOfRange(data, position, position + AT_BYTES_LENGTH);
@@ -470,8 +479,11 @@ public class Block {
 		//WRITE TRANSACTIONS SIGNATURE
 		data = Bytes.concat(data, this.transactionsSignature);
 
-		//WRITE GENERATOR SIGNATURE
-		data = Bytes.concat(data, this.generatorSignature);
+		if ( this.version < 3 )
+		{
+			//WRITE GENERATOR SIGNATURE
+			data = Bytes.concat(data, this.generatorSignature);
+		}
 
 		//ADD ATs BYTES
 		if ( this.getHeight() > Transaction.AT_BLOCK_HEIGHT_RELEASE )
@@ -528,6 +540,11 @@ public class Block {
 			}
 		}
 
+		if ( this.version < 3 )
+		{
+			length += GENERATOR_SIGNATURE_LENGTH;
+		}
+
 
 		for(Transaction transaction: this.getTransactions())
 		{
@@ -537,11 +554,8 @@ public class Block {
 		return length;
 	}
 
-	//VALIDATE
-
-	public boolean isSignatureValid()
+	public byte[] getTargetHashMaterial()
 	{
-		//VALIDATE BLOCK SIGNATURE
 		byte[] data = new byte[0];
 
 		//WRITE PARENT GENERATOR SIGNATURE
@@ -555,6 +569,23 @@ public class Block {
 		//WRITE GENERATOR
 		byte[] generatorBytes = Bytes.ensureCapacity(this.generator.getPublicKey(), GENERATOR_LENGTH, 0);
 		data = Bytes.concat(data, generatorBytes);
+
+		return data;
+	}
+
+	//VALIDATE
+
+	public boolean isSignatureValid()
+	{
+		if(this.version >= 3)
+		{
+			// ED25519 SIGNATURES HAVE A NONCE THAT CAN BE FREELY CHANGED TO MINE BLOCKS
+			// VERSION 3 AND ABOVE USES ONLY A HASH
+			return true;
+		}
+
+		//VALIDATE BLOCK SIGNATURE
+		byte[] data = getTargetHashMaterial();
 
 		if(!Crypto.getInstance().verify(this.generator.getPublicKey(), this.generatorSignature, data))
 		{
