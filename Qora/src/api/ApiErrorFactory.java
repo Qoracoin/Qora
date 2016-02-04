@@ -97,6 +97,10 @@ public class ApiErrorFactory
 	public static final int ERROR_BLOG_DISABLED = 902;
 	public static final int ERROR_NAME_NOT_OWNER = 903;
 	public static final int ERROR_TX_AMOUNT = 904;
+	public static final int ERROR_BLOG_ENTRY_NO_EXISTS = 905;
+	public static final int ERROR_BLOG_EMPTY = 906;
+	public static final int ERROR_POSTID_EMPTY = 907;
+	public static final int ERROR_POST_NOT_EXISTING = 908;
 	
 	//Messages
 	public static final int ERROR_MESSAGE_FORMAT_NOT_HEX = 1001;
@@ -201,13 +205,15 @@ public class ApiErrorFactory
 		this.errorMessages.put(ERROR_INVALID_TAGS_LENGTH,"invalid tags length");
 		this.errorMessages.put(ERROR_NULL_PAGES,"invalid pages");
 		
-		
 		//BLOG
 		this.errorMessages.put(ERROR_BODY_EMPTY,"invalid body it must not be empty");
 		this.errorMessages.put(ERROR_BLOG_DISABLED,"this blog is disabled");
 		this.errorMessages.put(ERROR_NAME_NOT_OWNER,"the creator address does not own the author name");
 		this.errorMessages.put(ERROR_TX_AMOUNT,"the data size is too large - currently only "+BATCH_TX_AMOUNT+" arbitrary transactions are allowed at once!");
-		
+		this.errorMessages.put(ERROR_BLOG_ENTRY_NO_EXISTS,"transaction with this signature contains no entries!");
+		this.errorMessages.put(ERROR_BLOG_EMPTY,"this blog is empty");
+		this.errorMessages.put(ERROR_POSTID_EMPTY,"the attribute postid is empty! this is the signature of the post you want to comment");
+		this.errorMessages.put(ERROR_POST_NOT_EXISTING,"for the given postid no blogpost to comment was found");
 		
 		//MESSAGES
 		this.errorMessages.put(ERROR_MESSAGE_FORMAT_NOT_HEX,"the Message format is not hex - correct the text or use isTextMessage = true");
@@ -215,7 +221,6 @@ public class ApiErrorFactory
 		this.errorMessages.put(ERROR_NO_PUBLIC_KEY,"The recipient has not yet performed any action in the blockchain.\nYou can't send an encrypted message to him.");
 		this.errorMessages.put(ERROR_MESSAGESIZE_EXCEEDED,"Message size exceeded!");
 		
-
 	}
 	
 	

@@ -274,13 +274,26 @@ public class BlockGenerator extends Thread implements Observer
 		{
 			return null;
 		}
-		
+
 		//CALCULATE SIGNATURE
 		byte[] signature = this.calculateSignature(db, block, account);
-		
+
+		//DETERMINE BLOCK VERSION
+		int version = block.getNextBlockVersion(db);
+
 		//CALCULATE HASH
-		byte[] hash = Crypto.getInstance().digest(signature);
-			
+		byte[] hash;
+		if (version < 3)
+		{
+			hash = Crypto.getInstance().digest(signature);
+		}
+		else
+		{
+			//newSig = sha256(prevSig || pubKey)
+			byte[] data = Bytes.concat(block.getSignature(), account.getPublicKey());
+			hash = Crypto.getInstance().digest(data);
+		}
+
 		//CONVERT HASH TO BIGINT
 		BigInteger hashValue = new BigInteger(1, hash);
 		
@@ -312,7 +325,6 @@ public class BlockGenerator extends Thread implements Observer
 		
 		//CREATE NEW BLOCK
 		Block newBlock;
-		int version = (block.getHeight(db) + 1 > Transaction.AT_BLOCK_HEIGHT_RELEASE) ? 2 : 1 ;
 		if ( version > 1 )
 		{
 			AT_Block atBlock = AT_Controller.getCurrentBlockATs( AT_Constants.getInstance().MAX_PAYLOAD_FOR_BLOCK( block.getHeight() ) , block.getHeight() + 1 );

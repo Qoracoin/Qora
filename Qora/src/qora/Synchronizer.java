@@ -237,14 +237,17 @@ public class Synchronizer
 		return headers;
 	}
 	
-	private List<byte[]> getBlockSignatures(byte[] header, Peer peer) 
+	private List<byte[]> getBlockSignatures(byte[] header, Peer peer) throws Exception
 	{
 		///CREATE MESSAGE
 		Message message = MessageFactory.getInstance().createGetHeadersMessage(header);
 		
 		//SEND MESSAGE TO PEER
 		SignaturesMessage response = (SignaturesMessage) peer.getResponse(message);
-		
+
+		if (response == null)
+			throw new Exception("Failed to communicate with peer");
+
 		return response.getSignatures();
 	}
 	

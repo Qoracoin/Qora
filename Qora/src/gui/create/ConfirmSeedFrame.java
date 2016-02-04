@@ -188,9 +188,18 @@ public class ConfirmSeedFrame extends JFrame {
 		
 		//CHECK IF SEEDS MATCH
 		byte[] seed = this.parent.getSeed();		
-		byte[] confirm = Base58.decode(this.seedTxt.getText());
 		
-		if(!Arrays.equals(seed, confirm))
+		byte[] confirm;
+		try
+		{
+			confirm = Base58.decode(this.seedTxt.getText());
+		}
+		catch(Exception e)
+		{
+			confirm = null;		
+		}
+		
+		if(!Arrays.equals(seed, confirm) || seed == null || seed.length != 32 )
 		{
 			//INVALID SEED
 			String message = "Invalid or incorrect seed!";

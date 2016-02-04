@@ -3,6 +3,7 @@ package gui;
 import gui.models.AccountsComboBoxModel;
 import gui.models.AssetsComboBoxModel;
 import gui.models.MessagesTableModel;
+import ntp.NTP;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,6 +44,7 @@ import qora.crypto.Crypto;
 import qora.transaction.Transaction;
 import settings.Settings;
 import utils.Converter;
+import utils.DateTimeFormat;
 import utils.MenuPopupUtil;
 import utils.NameUtils;
 import utils.NameUtils.NameResult;
@@ -639,85 +641,82 @@ public class SendMessagePanel extends JPanel
 			
 			//CHECK IF PAYMENT OR ASSET TRANSFER
 			Asset asset = (Asset) this.cbxFavorites.getSelectedItem();
+			long key = asset.getKey(); 
+			
 			Pair<Transaction, Integer> result;
-			if(asset.getKey() == 0l)
+			
+			if(encryptMessage)
 			{
+				//sender
+				PrivateKeyAccount account = Controller.getInstance().getPrivateKeyAccountByAddress(sender.getAddress().toString());
+				byte[] privateKey = account.getPrivateKey();		
 
-				if(encryptMessage)
+				//recipient
+				byte[] publicKey = Controller.getInstance().getPublicKeyByAddress(recipient.getAddress());
+				if(publicKey == null)
 				{
-					//sender
-					PrivateKeyAccount account = Controller.getInstance().getPrivateKeyAccountByAddress(sender.getAddress().toString());
-					byte[] privateKey = account.getPrivateKey();		
+					JOptionPane.showMessageDialog(new JFrame(), "The recipient has not yet performed any action in the blockchain.\nYou can't send an encrypted message to him.", "Error", JOptionPane.ERROR_MESSAGE);
 
-					//recipient
-					byte[] publicKey = Controller.getInstance().getPublicKeyByAddress(recipient.getAddress());
-					if(publicKey == null)
+					//ENABLE
+					this.sendButton.setEnabled(true);
+					
+					return;
+				}
+				
+				messageBytes = AEScrypto.dataEncrypt(messageBytes, privateKey, publicKey);
+			}
+
+			BigDecimal recommendedFee = Controller.getInstance().calcRecommendedFeeForMessage(messageBytes).getA();
+			if(fee.compareTo(recommendedFee) < 0)
+			{
+				int n = -1;
+				if(Settings.getInstance().isAllowFeeLessRequired())
+				{
+					n = JOptionPane.showConfirmDialog(
+						new JFrame(), "Fee less than the recommended values!\nChange to recommended?\n"
+									+ "Press Yes to turn on recommended "+recommendedFee.toPlainString()
+									+ ",\nor No to leave, but then the transaction may be difficult to confirm.",
+		                "Confirmation",
+		                JOptionPane.YES_NO_CANCEL_OPTION);
+				}
+				else
+				{
+					n = JOptionPane.showConfirmDialog(
+							new JFrame(), "Fee less required!\n"
+										+ "Press OK to turn on required "+recommendedFee.toPlainString() + ".",
+			                "Confirmation",
+			                JOptionPane.OK_CANCEL_OPTION);
+				}
+				if (n == JOptionPane.YES_OPTION || n == JOptionPane.OK_OPTION) {
+					
+					if(fee.compareTo(new BigDecimal(1.0)) == 1) //IF MORE THAN ONE
 					{
-						JOptionPane.showMessageDialog(new JFrame(), "The recipient has not yet performed any action in the blockchain.\nYou can't send an encrypted message to him.", "Error", JOptionPane.ERROR_MESSAGE);
-
-						//ENABLE
-						this.sendButton.setEnabled(true);
-						
-						return;
+						this.txtFee.setText("1.00000000"); // Return to the default fee for the next message.
 					}
 					
-					messageBytes = AEScrypto.dataEncrypt(messageBytes, privateKey, publicKey);
+					fee = recommendedFee; // Set recommended fee for this message.
+					
 				}
-
-				BigDecimal recommendedFee = Controller.getInstance().calcRecommendedFeeForMessage(messageBytes).getA();
-				if(fee.compareTo(recommendedFee) < 0)
-				{
-					int n = -1;
-					if(Settings.getInstance().isAllowFeeLessRequired())
-					{
-						n = JOptionPane.showConfirmDialog(
-							new JFrame(), "Fee less than the recommended values!\nChange to recommended?\n"
-										+ "Press Yes to turn on recommended "+recommendedFee.toPlainString()
-										+ ",\nor No to leave, but then the transaction may be difficult to confirm.",
-			                "Confirmation",
-			                JOptionPane.YES_NO_CANCEL_OPTION);
-					}
-					else
-					{
-						n = JOptionPane.showConfirmDialog(
-								new JFrame(), "Fee less required!\n"
-											+ "Press OK to turn on required "+recommendedFee.toPlainString() + ".",
-				                "Confirmation",
-				                JOptionPane.OK_CANCEL_OPTION);
-					}
-					if (n == JOptionPane.YES_OPTION || n == JOptionPane.OK_OPTION) {
-						
-						if(fee.compareTo(new BigDecimal(1.0)) == 1) //IF MORE THAN ONE
-						{
-							this.txtFee.setText("1.00000000"); // Return to the default fee for the next message.
-						}
-						
-						fee = recommendedFee; // Set recommended fee for this message.
-						
-					}
-					else if (n == JOptionPane.NO_OPTION) {
-						
-					}	
-					else {
-						
-						//ENABLE
-						this.sendButton.setEnabled(true);
-						
-						return;
-					}
+				else if (n == JOptionPane.NO_OPTION) {
+					
+				}	
+				else {
+					
+					//ENABLE
+					this.sendButton.setEnabled(true);
+					
+					return;
 				}
-				
-				//CREATE PAYMENT
-				result = Controller.getInstance().sendMessage(Controller.getInstance().getPrivateKeyAccountByAddress(sender.getAddress()), recipient, amount, fee, messageBytes, isTextByte, encrypted);
 			}
-			else
-			{
-				JOptionPane.showMessageDialog(new JFrame(), "Feature not available", "Error", JOptionPane.ERROR_MESSAGE);
-				//ENABLE
-				this.sendButton.setEnabled(true);
-				
+			
+			if(key != 0l && NTP.getTime() < Transaction.POWFIX_RELEASE)
+			{	
+				JOptionPane.showMessageDialog(new JFrame(), "Assets transactions will be enabled at " + DateTimeFormat.timestamptoString(Transaction.POWFIX_RELEASE) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
+			
+			//CREATE PAYMENT
+			result = Controller.getInstance().sendMessage(Controller.getInstance().getPrivateKeyAccountByAddress(sender.getAddress()), recipient, key, amount, fee, messageBytes, isTextByte, encrypted);
 			
 			//CHECK VALIDATE MESSAGE
 			switch(result.getB())

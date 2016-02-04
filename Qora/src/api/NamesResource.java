@@ -39,6 +39,8 @@ public class NamesResource {
 	@SuppressWarnings("unchecked")
 	@GET
 	public String getNames() {
+		APIUtils.askAPICallAllowed("GET names", request);
+
 		// CHECK IF WALLET EXISTS
 		if (!Controller.getInstance().doesWalletExists()) {
 			throw ApiErrorFactory.getInstance().createError(
@@ -59,6 +61,8 @@ public class NamesResource {
 	@GET
 	@Path("/address/{address}")
 	public String getNames(@PathParam("address") String address) {
+		APIUtils.askAPICallAllowed("GET names/address/" + address, request);
+
 		// CHECK IF WALLET EXISTS
 		if (!Controller.getInstance().doesWalletExists()) {
 			throw ApiErrorFactory.getInstance().createError(
@@ -127,6 +131,8 @@ public class NamesResource {
 						ApiErrorFactory.ERROR_INVALID_ADDRESS);
 			}
 
+			APIUtils.askAPICallAllowed("POST names " + x, request);
+
 			// CHECK IF WALLET EXISTS
 			if (!Controller.getInstance().doesWalletExists()) {
 				throw ApiErrorFactory.getInstance().createError(
@@ -138,8 +144,6 @@ public class NamesResource {
 				throw ApiErrorFactory.getInstance().createError(
 						ApiErrorFactory.ERROR_WALLET_LOCKED);
 			}
-
-			APIUtils.askAPICallAllowed("Post names " + x, request);
 
 			// GET ACCOUNT
 			PrivateKeyAccount account = Controller.getInstance()
@@ -227,6 +231,9 @@ public class NamesResource {
 						ApiErrorFactory.ERROR_INVALID_FEE);
 			}
 
+			APIUtils.askAPICallAllowed("DELETE names/key/" + nameName + "\n"
+				                           + x, request);
+
 			// CHECK IF WALLET EXISTS
 			if (!Controller.getInstance().doesWalletExists()) {
 				throw ApiErrorFactory.getInstance().createError(
@@ -255,9 +262,6 @@ public class NamesResource {
 				throw ApiErrorFactory.getInstance().createError(
 						ApiErrorFactory.ERROR_INVALID_NAME_OWNER);
 			}
-			
-			APIUtils.askAPICallAllowed("DELETE names/key/" + nameName + "\n"
-					+ x, request);
 
 			String oldValue = GZIP.webDecompress(name.getValue());
 			JSONObject resultJson = null;
@@ -359,6 +363,9 @@ public class NamesResource {
 						ApiErrorFactory.ERROR_INVALID_FEE);
 			}
 
+			APIUtils.askAPICallAllowed("POST names/key/" + nameName + "\n" + x,
+				request);
+
 			// CHECK IF WALLET EXISTS
 			if (!Controller.getInstance().doesWalletExists()) {
 				throw ApiErrorFactory.getInstance().createError(
@@ -370,9 +377,6 @@ public class NamesResource {
 				throw ApiErrorFactory.getInstance().createError(
 						ApiErrorFactory.ERROR_WALLET_LOCKED);
 			}
-
-			APIUtils.askAPICallAllowed("POST names/key/" + nameName + "\n" + x,
-					request);
 
 			// GET NAME
 			Name name = Controller.getInstance().getName(nameName);
@@ -463,6 +467,9 @@ public class NamesResource {
 						ApiErrorFactory.ERROR_INVALID_ADDRESS);
 			}
 
+			APIUtils.askAPICallAllowed("POST names/" + nameName + "\n" + x,
+				request);
+
 			// CHECK IF WALLET EXISTS
 			if (!Controller.getInstance().doesWalletExists()) {
 				throw ApiErrorFactory.getInstance().createError(
@@ -474,9 +481,6 @@ public class NamesResource {
 				throw ApiErrorFactory.getInstance().createError(
 						ApiErrorFactory.ERROR_WALLET_LOCKED);
 			}
-
-			APIUtils.askAPICallAllowed("POST names/" + nameName + "\n" + x,
-					request);
 
 			// GET NAME
 			Name name = Controller.getInstance().getName(nameName);

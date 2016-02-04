@@ -35,7 +35,7 @@ public class PollsResource
 {
 	@Context
 	HttpServletRequest request;
-	
+
 	@POST
 	@Consumes(MediaType.WILDCARD)
 	public String createPoll(String x)
@@ -82,7 +82,9 @@ public class PollsResource
 			{
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_INVALID_ADDRESS);
 			}
-				
+
+			APIUtils.askAPICallAllowed("POST polls " + x, request);
+
 			//CHECK IF WALLET EXISTS
 			if(!Controller.getInstance().doesWalletExists())
 			{
@@ -94,9 +96,7 @@ public class PollsResource
 			{
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_WALLET_LOCKED);
 			}
-			
-			APIUtils.askAPICallAllowed("Post polls " + x, request);
-				
+
 			//GET ACCOUNT
 			PrivateKeyAccount account = Controller.getInstance().getPrivateKeyAccountByAddress(creator);				
 			if(account == null)
@@ -209,7 +209,9 @@ public class PollsResource
 			{
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_INVALID_ADDRESS);
 			}
-				
+
+			APIUtils.askAPICallAllowed("POST polls/vote/" + name + "\n"+x, request);
+
 			//CHECK IF WALLET EXISTS
 			if(!Controller.getInstance().doesWalletExists())
 			{
@@ -221,9 +223,7 @@ public class PollsResource
 			{
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_WALLET_LOCKED);
 			}
-			
-			APIUtils.askAPICallAllowed("POST polls/vote/" + name + "\n"+x, request);
-				
+
 			//GET ACCOUNT
 			PrivateKeyAccount account = Controller.getInstance().getPrivateKeyAccountByAddress(voter);				
 			if(account == null)
@@ -312,6 +312,8 @@ public class PollsResource
 	@GET
 	public String getPolls()
 	{
+		APIUtils.askAPICallAllowed("GET polls", request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{
@@ -334,6 +336,8 @@ public class PollsResource
 	@Path("/address/{address}")	
 	public String getPolls(@PathParam("address") String address)
 	{
+		APIUtils.askAPICallAllowed("GET polls/address/" + address, request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{

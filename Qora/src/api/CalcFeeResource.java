@@ -48,7 +48,7 @@ public class CalcFeeResource {
 			jsonObject = new JSONObject();
 			
 			//CALC FEE
-			Pair<BigDecimal, Integer> result = Controller.getInstance().calcRecommendedFeeForArbitraryTransaction(dataBytes);
+			Pair<BigDecimal, Integer> result = Controller.getInstance().calcRecommendedFeeForArbitraryTransaction(dataBytes, null);
 			
 			jsonObject.put("fee", result.getA().toPlainString());
 			jsonObject.put("feeRound", result.getA().setScale(0, BigDecimal.ROUND_CEILING).setScale(8).toPlainString());
@@ -128,6 +128,10 @@ public class CalcFeeResource {
 		}
 	}
 
+	
+	
+	
+//	TODO CALC FREE FOR COMMENTPOST ALSO NEEDED
 	@SuppressWarnings("unchecked")
 	@POST
 	@Path("/blogpost")
@@ -163,7 +167,7 @@ public class CalcFeeResource {
 			jsonObject = new JSONObject();
 			
 			//CALC FEE
-			Pair<BigDecimal, Integer> result = Controller.getInstance().calcRecommendedFeeForArbitraryTransaction(dataStructure.toJSONString().getBytes(StandardCharsets.UTF_8));
+			Pair<BigDecimal, Integer> result = Controller.getInstance().calcRecommendedFeeForArbitraryTransaction(dataStructure.toJSONString().getBytes(StandardCharsets.UTF_8), null);
 			
 			jsonObject.put("fee", result.getA().toPlainString());
 			jsonObject.put("feeRound", result.getA().setScale(0, BigDecimal.ROUND_CEILING).setScale(8).toPlainString());

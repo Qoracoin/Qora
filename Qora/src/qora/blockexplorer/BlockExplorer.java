@@ -43,6 +43,7 @@ import qora.transaction.CreateOrderTransaction;
 import qora.transaction.CreatePollTransaction;
 import qora.transaction.DeployATTransaction;
 import qora.transaction.IssueAssetTransaction;
+import qora.transaction.MessageTransactionV3;
 import qora.transaction.MultiPaymentTransaction;
 import qora.transaction.RegisterNameTransaction;
 import qora.transaction.SellNameTransaction;
@@ -1513,6 +1514,11 @@ public class BlockExplorer
 				transactionDataJSON.put("assetName", assetNamesByKey.getNameByKey(((TransferAssetTransaction)unit).getKey()));
 			}
 
+			if(transaction.getType() == Transaction.MESSAGE_TRANSACTION && transaction.getTimestamp()>= Transaction.POWFIX_RELEASE) 
+			{
+				transactionDataJSON.put("assetName", assetNamesByKey.getNameByKey(((MessageTransactionV3)unit).getKey()));
+			}
+			
 			if(transaction.getType() == Transaction.MULTI_PAYMENT_TRANSACTION) 
 			{
 				BigDecimal totalAmount = BigDecimal.ZERO.setScale(8); 
@@ -2518,6 +2524,8 @@ public class BlockExplorer
 		output.put("totalATAmount", totalATAmount.toPlainString());
 		output.put("aTfee", block.getATfee().toPlainString());
 		output.put("totalFee", block.getTotalFee().toPlainString());
+		output.put("version", block.getVersion());
+
 
 		output.put("start", size+1);
 		output.put("end", 1);

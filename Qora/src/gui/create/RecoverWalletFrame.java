@@ -6,31 +6,30 @@ import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
+import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 
-import qora.crypto.Base58;
 import controller.Controller;
+import qora.crypto.Base58;
 
 @SuppressWarnings("serial")
 public class RecoverWalletFrame extends JFrame
@@ -39,7 +38,6 @@ public class RecoverWalletFrame extends JFrame
 	private JTextField seedTxt;
 	private JTextField passwordTxt;
 	private JTextField amountTxt;
-	private JDialog waitDialog;
 	private JTextField confirmPasswordTxt;
 	
 	public RecoverWalletFrame(NoWalletFrame parent)
@@ -201,7 +199,13 @@ public class RecoverWalletFrame extends JFrame
 	private void onConfirmClick() {
 		
 		//CHECK IF SEEDS MATCH
-		byte[] seed = Base58.decode(this.seedTxt.getText());
+		byte[] seed = null;
+		try
+		{
+			seed = Base58.decode(this.seedTxt.getText());
+		} catch(Exception e) {
+			seed = null;		
+		}
 		
 		if(seed == null || seed.length != 32)
 		{
@@ -251,36 +255,8 @@ public class RecoverWalletFrame extends JFrame
 			return;
 		}
 		
-		//CREATE WAIT DIALOG
-		JOptionPane optionPane = new JOptionPane("Scanning blockchain please wait...", JOptionPane.INFORMATION_MESSAGE, JOptionPane.DEFAULT_OPTION, null, new Object[]{}, null);
-		this.waitDialog = new JDialog();
-		List<Image> icons = new ArrayList<Image>();
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon16.png"));
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon32.png"));
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon64.png"));
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon128.png"));
-		this.waitDialog.setIconImages(icons);
-		this.waitDialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);	
-		this.waitDialog.setTitle("Please Wait");
-		this.waitDialog.setContentPane(optionPane);	
-		this.waitDialog.setModal(true);
-		this.waitDialog.pack();
-		this.waitDialog.setLocationRelativeTo(null);	
-		
-		//RUN WAIT DIALOG IN THREAD SO IT DOES NOT BLOCK MAIN THREAD
-		new Thread()
-		{
-			public void run() 
-			{
-				waitDialog.setVisible(true);
-			}
-		}.start();
-		
 		//RECOVER WALLET
 		Controller.getInstance().recoverWallet(seed, password, amount);
-		
-		//CLOSE DIALOG
-		waitDialog.dispose();
 		
 		//CALLBACK
 		this.parent.onWalletCreated();

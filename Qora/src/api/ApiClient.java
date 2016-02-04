@@ -43,8 +43,18 @@ public class ApiClient {
 				"0 - No connections. 1 - Synchronizing 2 - Oke"
 			},
 			{
+				"GET qora/status/forging",
+				"Returns the status of the forging process.",
+				"0 - Forging disabled. 1 - Forging enabled 2 - Forging"
+			},
+			{
 				"GET qora/isuptodate", 
 				"Shows if the application is synchronized with the network.",
+				""
+			},
+			{
+				"GET version",
+				"Returns the version and buildtime of the running client.",
 				""
 			},
 			{
@@ -53,8 +63,13 @@ public class ApiClient {
 				""
 			},
 			{
-				"GET peers", 
+				"GET peers",
 				"Returns an array of all the IP's of the peers to which the application is currently connected.",
+				""
+			},
+			{
+				"GET peers/height",
+				"Returns an array of peer objects containing each peer's IP and height.",
 				""
 			},
 			{
@@ -89,8 +104,23 @@ public class ApiClient {
 			},
 			{
 				"POST transactions/scan {\"start\": \"<startBlockSign>, \"blocklimit\":<amountBlocks>, \"transactionlimit\":<amountTransactions>, \"type\":<type>, \"service\":<service>, \"address\":\"<address>\"}", 
-				"Returns all the transactions that match the filters. All filters are optional but please limit that amount of transactions or blocks to scan to avoid running into issues. Return the last block it scanned, the amount of blocks it scanned and the scanned transactions.",
+				"Returns all the transactions that match the filters. All filters are optional but please limit that amount of transactions or blocks to scan to avoid running into issues. Requests that don't specify a blocklimit <= 360 will be denied to remote users. Return the last block it scanned, the amount of blocks it scanned and the scanned transactions.",
 				"Filters:\nstart - The signature of the starting block. \nblocklimit - The maximum amount of blocks to scan. \ntransactionlimit - The maximum amount of transactions to return.\ntype - Only return transactions with the given type.\nservice - Only return Arbitrary Transactions with the given service.\naddress - Only return transactions where the given address is involved.\nErrors: 1 -Json error. 102 - Invalid address. 101 - Invalid signature. 301 - Block does not exist.",
+			},
+			{
+				"GET transactions/recipient/<address>/limit/<limit>",
+				"Returns an array of the last <limit> transactions with a specific recipient.",
+				""
+			},
+			{
+				"GET transactions/sender/<address>/limit/<limit>",
+				"Returns an array of the last <limit> transactions with a specific sender.",
+				""
+			},
+			{
+				"GET transactions/address/<address>/type/<type>/limit/<limit>",
+				"Returns an array of the last <limit> transactions of a specific address and type.",
+				""
 			},
 			{
 				"GET blocks", 
@@ -258,13 +288,13 @@ public class ApiClient {
 				"Errors: 201 - Wallet does not exist."
 			},
 			{
-				"POST payment {\"amount\":\"<amount>\", \"fee\":\"<fee>, \"sender\":\"<senderAddress>\", \"recipient\":\"<recipient>\"}", 
-				"Send a new payment using the given data. Returns the transaction in JSON when successful.",
+				"POST payment {\"asset\":\"<assetId>\", \"amount\":\"<amount>\", \"fee\":\"<fee>, \"sender\":\"<senderAddress>\", \"recipient\":\"<recipient>\"}", 
+				"Send a new payment using the given data. Returns the transaction in JSON when successful. If \"asset\" is omitted, 0 is provided (default asset: QORA).",
 				"Errors: 1 - Json error. 104 - Invalid amount. 105 - Invalid fee. 106 - Invalid sender. 107 - Invalid recipient. 201 - Wallet does not exist. 203 - Wallet is locked."
 			},
 			{
-				"POST namepayment {\"amount\":\"<amount>\", \"fee\":\"<fee>\", \"sender\":\"<senderAddress>\", \"recipient\":\"<recipientName>\"}", 
-				"Send a new neme-payment using the given data.",
+				"POST namepayment {\"asset\":\"<assetId>\", \"amount\":\"<amount>\", \"fee\":\"<fee>\", \"sender\":\"<senderAddress>\", \"recipient\":\"<recipientName>\"}", 
+				"Send a new neme-payment using the given data. If \"asset\" is omitted, 0 is provided (default asset: QORA).",
 				"Errors: 1 - Json error. 104 - Invalid amount. 105 - Invalid fee. 106 - Invalid sender. 107 - Invalid recipient. 201 - Wallet does not exist. 203 - Wallet is locked. 701 - The name is not registered. 702 -  Names for sale. 703 = Name with trailing or leading spaces."
 			},
 			{
@@ -291,6 +321,16 @@ public class ApiClient {
 				"POST names/<name> {\"newvalue\":\"<newvalue>\", \"newowner\":\"<newownerAddress>\", \"fee\":\"<fee>\"}", 
 				"Updates an existing name. Returns the transaction in JSON when successful.",
 				"Errors: 1 - Json error. 2 - Not enough balance. 102 - Invalid address. 105 - Invalid fee. 108 - Invalid name length. 109 - Invalid value length. 201 - Wallet does not exist. 203 - Wallet is locked. 401 - Name does not exist. 403 - Name already for sale."
+			},
+			{
+				"DELETE names/key/<name> {\"fee\":\"<fee>\", \"key\":\"<key>\"}",
+				"Delete a key from a name.",
+				"Errors: 1 - Json error. 105 - Invalid fee. 201 - Wallet no exists. 203 - Wallet locked. 401 - Name no exists. 110 - Invalid name owner. 119 - Key not exists. 120 - Last key is default key"
+			},
+			{
+				"POST names/key/<name> {\"fee\":\"<fee>\", \"key\":\"<key>\", \"value\":\"<value>\", \"update\":\"<true/false>\"}",
+				"Create or update the value of a key on a name.  \"update\" is optional and defaults to true.",
+				"Errors: 1 - Json error. 117 - Invalid update value. 105 - Invalid fee. 201 - Wallet no exists. 203 - Wallet locked. 401 - Name no exists. 110 - Invalid name owner. 118 - Key already exists."
 			},
 			{
 				"GET namesales", 
@@ -443,7 +483,7 @@ public class ApiClient {
 				""
 			},
 			{
-				"POST message {\"sender\": \"<sender>\", \"recipient\": \"<recipient>\", \"message\": \"<message>\" \"amount\": \"<amount>\", \"istextmessage\": <true/false>, \"encrypt\": <true/false>}", 
+				"POST message {\"sender\": \"<sender>\", \"recipient\": \"<recipient>\", \"message\": \"<message>\", \"amount\": \"<amount>\", \"istextmessage\": <true/false>, \"encrypt\": <true/false>}",
 				"Send a message using the given data. \"istextmessage\" and \"encrypt\" are optional and default true. Sender and recipient can also be a name.",
 				""
 			},
@@ -460,16 +500,51 @@ public class ApiClient {
 			{
 				"GET assets/<key>", 
 				"Returns short information about asset with the given key.",
-				"Errors: 601 - Invalid asset id."
+				"Errors: 601 - Invalid asset ID."
 			},
 			{
 				"GET assets/<key>/full", 
 				"Returns full information about asset with the given key.",
-				"Errors: 601 - Invalid asset id."
+				"Errors: 601 - Invalid asset ID."
+			},
+			{
+				"POST blogpost/<blogname> {\"fee\": \"<fee>\", \"creator\": \"<creator>\", \"author\": \"<author>\", \"title\": \"<title>\", \"body\": \"<body>\", \"share\": \"<share>\", \"delete\": \"<delete>\"}",
+				"Posts to a blog.  <blogname>, \"author\", \"share\", and \"delete\" are optional.",
+				"Errors: 901 - Body empty. 105 - Invalid fee. 201 - Wallet no exists. 203 - wallet locked. 903 - name not owner. 102 - invalid address. 202 - wallet adddress no exists. 902 - blog disabled."
+			},
+			{
+				"GET blog",
+				"Equivalent to blog/posts/QORA",
+				""
+			},
+			{
+				"GET blog/posts/<blogname>",
+				"List posts to a blog by transaction signature. If <blogname> is omitted, QORA is provided.",
+				"Errors: 401 - Name does not exist. 902 - Blog disabled."
+			},
+			{
+				"GET blog/post/<signature>",
+				"Get the content of a blog entry specified by transaction signature.",
+				"Errors: 101- Invalid signature. 311 - Transactions does not exist. 905 - Transaction with this signature contains no entries!"
+			},
+			{
+				"GET blog/entries/<blogname>",
+				"Returns the content of the entries for the blog.  If <blogname> is omitted, QORA is provided.",
+				"Errors: 401 - Name does not exist. 902 - Blog disabled."
+			},
+			{
+				"GET blog/entries/<blogname>/limit/<limit>",
+				"Returns the content of the specified number of blog entries.",
+				"Errors: 401 - Name does not exist. 902 - Blog disabled."
+			},
+			{
+				"GET blog/lastEntry/<blogname>",
+				"Returns the content of the last entry of the blog.  If <blogname> is omitted, QORA is provided.",
+				"Errors: 401 - Name does not exist. 902 - Blog disabled. 906 - This blog is empty."
 			},
 		};
 	
-	
+
 	public String executeCommand(String command)
 	{
 		if(command.toLowerCase().equals("help all"))

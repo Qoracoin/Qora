@@ -26,8 +26,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import qora.crypto.Base58;
 import controller.Controller;
+import qora.crypto.Base58;
 
 @SuppressWarnings("serial")
 public class CreateWalletFrame extends JFrame {
@@ -119,7 +119,7 @@ public class CreateWalletFrame extends JFrame {
       	
       	//LABEL
       	labelGBC.gridy = 4;
-      	JLabel label4 = new JLabel("KEEP THIS SEED PRIVATE AND SECURE!");
+      	JLabel label4 = new JLabel("<html><b>KEEP THIS SEED PRIVATE AND SECURE!</b></html>");
       	this.add(label4, labelGBC);
       	
      	//LABEL
@@ -198,7 +198,7 @@ public class CreateWalletFrame extends JFrame {
 	public void onConfirm(String password) 
 	{
 		//CREATE WALLET
-		Controller.getInstance().createWallet(this.seed, password, 10);
+		Controller.getInstance().recoverWallet(this.seed, password, 10);
 		
 		//LET GUI KNOW
 		parent.onWalletCreated();

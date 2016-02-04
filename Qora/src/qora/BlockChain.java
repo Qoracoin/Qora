@@ -96,12 +96,6 @@ public class BlockChain
 			return false;
 		}
 		
-		//CHECK IF BLOCK IS VALID
-		//if(!block.isValid())
-		//{
-		//	return false;
-		//}
-		
 		return true;
 	}
 	

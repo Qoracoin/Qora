@@ -59,6 +59,8 @@ public class ObserverMessage {
 	public static final int REMOVE_AT_TYPE = 41;
 	public static final int REMOVE_AT_TX = 42;
 	
+	public static final int WALLET_SYNC_STATUS = 43;
+	
 	private int type;
 	private Object value;
 	

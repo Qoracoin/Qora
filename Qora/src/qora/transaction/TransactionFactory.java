@@ -3,6 +3,7 @@ package qora.transaction;
 import java.util.Arrays;
 
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 
 public class TransactionFactory {
 
@@ -28,6 +29,9 @@ public class TransactionFactory {
 		//READ TYPE
 		byte[] typeBytes = Arrays.copyOfRange(data, 0, Transaction.TYPE_LENGTH);
 		int type = Ints.fromByteArray(typeBytes);
+		
+		byte[] timeStampBytes = Arrays.copyOfRange(data, 4, 4 + Transaction.TIMESTAMP_LENGTH);
+		long timeStamp = Longs.fromByteArray(timeStampBytes);
 		
 		switch(type)
 		{
@@ -78,8 +82,17 @@ public class TransactionFactory {
 			
 		case Transaction.ARBITRARY_TRANSACTION:
 			
-			//PARSE ARBITRARY TRANSACTION
-			return ArbitraryTransaction.Parse(Arrays.copyOfRange(data, 4, data.length));			
+			if(timeStamp < Transaction.POWFIX_RELEASE)
+			{
+				//PARSE ARBITRARY TRANSACTION V1
+				return ArbitraryTransaction.Parse(Arrays.copyOfRange(data, 4, data.length));			
+
+			}
+			else
+			{
+				//PARSE ARBITRARY TRANSACTION V3
+				return ArbitraryTransactionV3.Parse(Arrays.copyOfRange(data, 4, data.length));			
+			}
 			
 		case Transaction.ISSUE_ASSET_TRANSACTION:
 			
@@ -110,7 +123,18 @@ public class TransactionFactory {
 			return DeployATTransaction.Parse( Arrays.copyOfRange(data, 4 , data.length));
 
 		case Transaction.MESSAGE_TRANSACTION:
-			return MessageTransaction.Parse(Arrays.copyOfRange(data, 4, data.length));
+
+			if(timeStamp < Transaction.POWFIX_RELEASE)
+			{
+				// PARSE MESSAGE TRANSACTION V1
+				return MessageTransaction.Parse(Arrays.copyOfRange(data, 4, data.length));
+			}
+			else
+			{
+				// PARSE MESSAGE TRANSACTION V3
+				return MessageTransactionV3.Parse(Arrays.copyOfRange(data, 4, data.length));
+			}
+			
 		}
 
 		throw new Exception("Invalid transaction type");

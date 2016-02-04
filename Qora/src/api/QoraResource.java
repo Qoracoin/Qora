@@ -1,20 +1,28 @@
 package api;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import controller.Controller;
+import utils.APIUtils;
 
 @Path("qora")
 @Produces(MediaType.APPLICATION_JSON)
 public class QoraResource 
 {
+	@Context
+	HttpServletRequest request;
+
 	@GET
 	@Path("/stop")
 	public String stop()
 	{
+		APIUtils.askAPICallAllowed("GET qora/stop", request);
+
 		//STOP
 		Controller.getInstance().stopAll();		
 		System.exit(0);
