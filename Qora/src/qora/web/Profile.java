@@ -258,9 +258,26 @@ public class Profile {
 			jsonRepresenation.remove(Qorakeys.BLOGENABLE.toString());
 		}
 	}
+	
+	public void setBlockComments(boolean blockComments)
+	{
+		if (blockComments) {
+			jsonRepresenation.put(Qorakeys.BLOGBLOCKCOMMENTS.toString(), "");
+		} else {
+			jsonRepresenation.remove(Qorakeys.BLOGBLOCKCOMMENTS.toString());
+		}
+	}
 
 	public boolean isBlogEnabled() {
 		return jsonRepresenation.containsKey(Qorakeys.BLOGENABLE.toString());
+	}
+	
+	public boolean isCommentingAllowed(){
+		return !isCommentingDisabled();
+	}
+	
+	public boolean isCommentingDisabled(){
+		return jsonRepresenation.containsKey(Qorakeys.BLOGBLOCKCOMMENTS.toString());
 	}
 
 	public BlogBlackWhiteList getBlogBlackWhiteList() {
@@ -302,7 +319,7 @@ public class Profile {
 				Qorakeys.BLOGENABLE, Qorakeys.PROFILEAVATAR,
 				Qorakeys.BLOGTITLE, Qorakeys.PROFILEENABLE,
 				Qorakeys.PROFILEFOLLOW, Qorakeys.PROFILELIKEPOSTS,
-				Qorakeys.PROFILEMAINGRAPHIC);
+				Qorakeys.PROFILEMAINGRAPHIC, Qorakeys.BLOGBLOCKCOMMENTS);
 
 		for (Qorakeys qorakey : profileKeys) {
 

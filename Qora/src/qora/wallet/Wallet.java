@@ -43,6 +43,7 @@ import qora.transaction.Transaction;
 import qora.transaction.UpdateNameTransaction;
 import qora.transaction.VoteOnPollTransaction;
 import qora.voting.Poll;
+import utils.AssetsFavorites;
 import utils.ObserverMessage;
 import utils.Pair;
 
@@ -56,6 +57,8 @@ public class Wallet extends Observable implements Observer
 	
 	private int secondsToUnlock = -1;
 	private Timer lockTimer = new Timer();
+	
+	AssetsFavorites assetsFavorites; 
 	
 	//CONSTRUCTORS
 	
@@ -74,6 +77,13 @@ public class Wallet extends Observable implements Observer
 	}
 	
 	//GETTERS/SETTERS
+	
+	public void initiateAssetsFavorites()
+	{
+		if(this.assetsFavorites == null){
+			this.assetsFavorites = new AssetsFavorites();
+		}
+	}
 	
 	public void setSecondsToUnlock(int seconds)
 	{
@@ -255,6 +265,18 @@ public class Wallet extends Observable implements Observer
 		this.database.getAssetFavoritesSet().add(asset.getKey());
 	}
 	
+	public void replaseAssetFavorite()
+	{
+		if(!this.exists())
+		{
+			return;
+		}
+		
+		if(this.assetsFavorites != null) {
+			this.database.getAssetFavoritesSet().replace(this.assetsFavorites.getKeys());	
+		}
+	}
+	
 	public void removeAssetFavorite(Asset asset)
 	{
 		if(!this.exists())
@@ -324,6 +346,8 @@ public class Wallet extends Observable implements Observer
 	    //ADD OBSERVER
 	    Controller.getInstance().addObserver(this);
 	    DBSet.getInstance().getCompletedOrderMap().addObserver(this);
+	    
+	    this.initiateAssetsFavorites();
 	    
 	    return true;
 	}

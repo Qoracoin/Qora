@@ -66,9 +66,9 @@ public class TradesTableModel extends QoraTableModel<Tuple2<BigInteger, BigInteg
 		this.trades = Controller.getInstance().getTrades(have, want);
 		this.trades.registerObserver();
 		
-		this.columnNames[2] = "("+String.valueOf(have.getKey())+")"+ have.getName();
+		this.columnNames[2] = have.getShort();
 		
-		this.columnNames[4] = "("+String.valueOf(want.getKey())+")"+ want.getName();
+		this.columnNames[4] = want.getShort();
 		
 		this.columnNames[3] = "Price: " + this.columnNames[4];
 		

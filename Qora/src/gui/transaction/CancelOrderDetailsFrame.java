@@ -17,6 +17,7 @@ import javax.swing.border.EmptyBorder;
 import qora.crypto.Base58;
 import qora.transaction.CancelOrderTransaction;
 import utils.DateTimeFormat;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class CancelOrderDetailsFrame extends JFrame
@@ -78,6 +79,7 @@ public class CancelOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField signature = new JTextField(Base58.encode(orderCreation.getSignature()));
 		signature.setEditable(false);
+		MenuPopupUtil.installContextMenu(signature);
 		this.add(signature, detailGBC);
 		
 		//LABEL REFERENCE
@@ -89,6 +91,7 @@ public class CancelOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField reference = new JTextField(Base58.encode(orderCreation.getReference()));
 		reference.setEditable(false);
+		MenuPopupUtil.installContextMenu(reference);
 		this.add(reference, detailGBC);
 		
 		//LABEL TIMESTAMP
@@ -98,7 +101,8 @@ public class CancelOrderDetailsFrame extends JFrame
 						
 		//TIMESTAMP
 		detailGBC.gridy = 3;
-		JLabel timestamp = new JLabel(DateTimeFormat.timestamptoString(orderCreation.getTimestamp()));
+		JTextField timestamp = new JTextField(DateTimeFormat.timestamptoString(orderCreation.getTimestamp()));
+		MenuPopupUtil.installContextMenu(timestamp);
 		this.add(timestamp, detailGBC);
 		
 		//LABEL CREATOR
@@ -110,6 +114,7 @@ public class CancelOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 4;
 		JTextField creator = new JTextField(orderCreation.getCreator().getAddress());
 		creator.setEditable(false);
+		MenuPopupUtil.installContextMenu(creator);
 		this.add(creator, detailGBC);
 	
 		//LABEL CREATOR
@@ -121,6 +126,7 @@ public class CancelOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 5;
 		JTextField order = new JTextField(Base58.encode(orderCreation.getOrder().toByteArray()));
 		order.setEditable(false);
+		MenuPopupUtil.installContextMenu(order);
 		this.add(order, detailGBC);
 		
 		//LABEL FEE
@@ -132,6 +138,7 @@ public class CancelOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 6;
 		JTextField fee = new JTextField(orderCreation.getFee().toPlainString());
 		fee.setEditable(false);
+		MenuPopupUtil.installContextMenu(fee);
 		this.add(fee, detailGBC);	
 		
 		//LABEL CONFIRMATIONS

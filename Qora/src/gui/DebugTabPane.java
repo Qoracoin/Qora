@@ -1,10 +1,5 @@
 package gui;
 
-import gui.models.BlocksTableModel;
-import gui.models.PeersTableModel;
-import gui.models.TransactionsTableModel;
-import gui.transaction.TransactionDetailsFactory;
-
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Map;
@@ -18,6 +13,10 @@ import javax.swing.JTable;
 
 import database.BlockMap;
 import database.TransactionMap;
+import gui.models.BlocksTableModel;
+import gui.models.PeersTableModel;
+import gui.models.TransactionsTableModel;
+import gui.transaction.TransactionDetailsFactory;
 import qora.transaction.Transaction;
 import settings.Settings;
 
@@ -42,7 +41,7 @@ public class DebugTabPane extends JTabbedPane{
         }
         
         this.peersTableModel = new PeersTableModel();
-		this.addTab("Peers", new JScrollPane(Gui.createSortableTable(this.peersTableModel, 0)));
+		this.addTab("Peers", new JScrollPane(new JTable(this.peersTableModel)));
         
 		//TRANSACTIONS TABLE MODEL
 		this.transactionsTableModel = new TransactionsTableModel();

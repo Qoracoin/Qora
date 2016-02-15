@@ -700,6 +700,8 @@ public class WebResource {
 
 			boolean blogenable = Boolean.valueOf(form
 					.getFirst(Qorakeys.BLOGENABLE.toString()));
+			boolean blockComments = Boolean.valueOf(form
+					.getFirst(Qorakeys.BLOGBLOCKCOMMENTS.toString()));
 			boolean profileenable = Boolean.valueOf(form
 					.getFirst(Qorakeys.PROFILEENABLE.toString()));
 			String titleOpt = form.getFirst(Qorakeys.BLOGTITLE.toString());
@@ -725,6 +727,7 @@ public class WebResource {
 			profile.saveBlogDescription(blogDescrOpt);
 			profile.saveBlogTitle(titleOpt);
 			profile.setBlogEnabled(blogenable);
+			profile.setBlockComments(blockComments);
 			profile.setProfileEnabled(profileenable);
 
 			profile.getBlogBlackWhiteList().clearList();
@@ -898,9 +901,9 @@ public class WebResource {
 			{
 				statustext ="Synchronizing";
 			}
-			if(status == Controller.STATUS_OKE)
+			if(status == Controller.STATUS_OK)
 			{
-				statustext ="Oke";
+				statustext ="OK";
 			}
 			
 			pebbleHelper.getContextMap().put(
@@ -1647,6 +1650,117 @@ public class WebResource {
 		}
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	@POST
+	@Path("index/deletecomment.html")
+	@Consumes("application/x-www-form-urlencoded")
+	public Response deleteComment(@Context HttpServletRequest request,
+			MultivaluedMap<String, String> form) {
+
+		JSONObject jsonanswer = new JSONObject();
+		try {
+
+			String signature = form.getFirst("signature");
+
+			if (signature != null) {
+
+				BlogEntry blogEntryOpt = BlogUtils.getCommentBlogEntryOpt(signature);
+
+				if (blogEntryOpt == null) {
+					// TODO put this snippet in method
+					jsonanswer.put("type", "deleteError");
+					jsonanswer
+							.put("errordetail",
+									"The comment you are trying to delete does not exist!");
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				}
+
+				if (!Controller.getInstance().doesWalletDatabaseExists()) {
+					jsonanswer.put("type", "deleteError");
+					jsonanswer.put("errordetail", "You don't have a wallet!");
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				}
+
+				String creator = BlogUtils.getCreatorOrBlogOwnerOpt(blogEntryOpt);
+				
+				
+//				if(profileOpt != null && )
+				
+				
+
+				if (creator == null) {
+					jsonanswer.put("type", "deleteError");
+					jsonanswer
+							.put("errordetail",
+									"You are not allowed to delete this comment! You need to be the owner of the blog or author of the comment!");
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				}
+
+				try {
+
+					String result = new BlogPostResource().deleteCommentEntry(
+							signature);
+
+					jsonanswer.put("type", "deleteSuccessful");
+					jsonanswer.put("result", result);
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				} catch (WebApplicationException e) {
+
+					jsonanswer.put("type", "deleteError");
+					jsonanswer.put("errordetail", e.getResponse().getEntity());
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+
+				}
+
+			}
+
+			jsonanswer.put("type", "deleteError");
+			jsonanswer.put("errordetail",
+					"the signature parameter must be set!");
+
+			return Response.status(200)
+					.header("Content-Type", "application/json; charset=utf-8")
+					.entity(jsonanswer.toJSONString()).build();
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+
+			jsonanswer.put("type", "deleteError");
+			jsonanswer.put("errordetail", e.getMessage());
+
+			return Response.status(200)
+					.header("Content-Type", "application/json; charset=utf-8")
+					.entity(jsonanswer.toJSONString()).build();
+		}
+
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@POST

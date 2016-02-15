@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOError;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -14,18 +13,14 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import settings.Settings;
-import utils.JSonWriter;
+import utils.StrJSonFine;
 
 public class ApiClient {
 
 	
 	public static final String APICALLKEY = "apicallkey";
-
+	public static final int SELF_CALL = 10;
 
 	private static List<String> allowedcalls = new CopyOnWriteArrayList<>();
 	
@@ -40,7 +35,7 @@ public class ApiClient {
 			{
 				"GET qora/status", 
 				"Returns the status of the application.",
-				"0 - No connections. 1 - Synchronizing 2 - Oke"
+				"0 - No connections. 1 - Synchronizing 2 - OK"
 			},
 			{
 				"GET qora/status/forging",
@@ -53,7 +48,12 @@ public class ApiClient {
 				""
 			},
 			{
-				"GET version",
+				"GET qora/settings", 
+				"Shows settings.",
+				""
+			},
+			{
+				"GET qora/version",
 				"Returns the version and buildtime of the running client.",
 				""
 			},
@@ -68,8 +68,33 @@ public class ApiClient {
 				""
 			},
 			{
-				"GET peers/height",
-				"Returns an array of peer objects containing each peer's IP and height.",
+				"POST peers <address>",
+				"Adds address of peer.",
+				"Errors: 123 - invalid network address."
+			},
+			{
+				"GET peers/detail",
+				"Returns an array of all connected peer objects containing each peer's IP, height, version, ping time, onlineTime, findingTime, PingCounter, lastWhite time connection, lastGray time connection and status.",
+				""
+			},
+			{
+				"GET peers/detail/<ip>",
+				"Returns all available information for peer with given ip.",
+				"Errors: 123 - invalid network address."
+			},
+			{
+				"GET peers/best",
+				"Returns an array of the best known nodes.",
+				""
+			},
+			{
+				"GET peers/known",
+				"Returns an array of all known peers.",
+				""
+			},
+			{
+				"DELETE peers/known",
+				"Forget all known peers with all statistics.",
 				""
 			},
 			{
@@ -288,7 +313,7 @@ public class ApiClient {
 				"Errors: 201 - Wallet does not exist."
 			},
 			{
-				"POST payment {\"asset\":\"<assetId>\", \"amount\":\"<amount>\", \"fee\":\"<fee>, \"sender\":\"<senderAddress>\", \"recipient\":\"<recipient>\"}", 
+				"POST payment {\"asset\":\"<assetId>\", \"amount\":\"<amount>\", \"fee\":\"<fee>\", \"sender\":\"<senderAddress>\", \"recipient\":\"<recipient>\"}", 
 				"Send a new payment using the given data. Returns the transaction in JSON when successful. If \"asset\" is omitted, 0 is provided (default asset: QORA).",
 				"Errors: 1 - Json error. 104 - Invalid amount. 105 - Invalid fee. 106 - Invalid sender. 107 - Invalid recipient. 201 - Wallet does not exist. 203 - Wallet is locked."
 			},
@@ -399,7 +424,7 @@ public class ApiClient {
 			},
 			{
 				"POST arbitrarytransactions {\"creator\":\"<creatorAddress>\", \"data\":\"<dataBase58>\", \"service\": <service>, \"fee\":\"<fee>\"}", 
-				"Used to send an arbitrary transaction. The data of the arbitrary transaction must be base58 encoded and must be between 1-4000 bytes. Returns the transaction in JSON when successful.",
+				"Used to send an arbitrary transaction. The data of the arbitrary transaction must be base58 encoded and must be between 1-4000 bytes. Returns the transaction in JSON when successful. Also supports multipayments.",
 				"Errors: 1 - Json error. 2 - Not enough balance. 3 - Not yet released. 102 - Invalid address. 105 - Invalid fee. 115 - Invalid data. 116 - Invalid data length. 201 - Wallet does not exist. 202 - Address does not exist in wallet. 203 - Wallet is locked."
 			},
 			{
@@ -513,6 +538,16 @@ public class ApiClient {
 				"Errors: 901 - Body empty. 105 - Invalid fee. 201 - Wallet no exists. 203 - wallet locked. 903 - name not owner. 102 - invalid address. 202 - wallet adddress no exists. 902 - blog disabled."
 			},
 			{
+				"POST blogpost/comment {\"fee\": \"<fee>\", \"creator\": \"<creator>\", \"author\": \"<author>\", \"title\": \"<title>\", \"body\": \"<body>\", \"postid\": \"<signature>\"}",
+				"Leave a comment under the post with the given postid.  \"<title>\", \"author\", are optional.",
+				"Errors: 901 - Body empty. 105 - Invalid fee. 201 - Wallet no exists. 203 - wallet locked. 903 - name not owner. 102 - invalid address. 202 - wallet adddress no exists. 909 - commenting disabled."
+			},
+			{
+				"DELETE blogpost/comment/<signature>",
+				"Deletes the comment with given signature.",
+				"910 - comment not existing. 911 - invalid comment owner. 201 - Wallet no exists. 203 - wallet locked."
+			},
+			{
 				"GET blog",
 				"Equivalent to blog/posts/QORA",
 				""
@@ -538,9 +573,14 @@ public class ApiClient {
 				"Errors: 401 - Name does not exist. 902 - Blog disabled."
 			},
 			{
-				"GET blog/lastEntry/<blogname>",
+				"GET blog/lastentry/<blogname>",
 				"Returns the content of the last entry of the blog.  If <blogname> is omitted, QORA is provided.",
 				"Errors: 401 - Name does not exist. 902 - Blog disabled. 906 - This blog is empty."
+			},
+			{
+				"POST multipayment {\"sender\":\"<sender>\", \"asset\":<defaultkey>, \"payments\": [{\"recipient\":\"<recipient 1>\", \"amount\": \"<amount 1>\", \"asset\":<key>},{\"recipient\":\"<recipient 2>\", \"amount\": \"<amount 2>\"}]}",
+				"Send a new multipayment using the given data. Returns the transaction in JSON when successful. If \"asset\" is omitted, 0 is provided (default asset: QORA).",
+				"Errors: 1 - Json error. 104 - Invalid amount. 106 - Invalid sender. 107 - Invalid recipient. 201 - Wallet does not exist. 203 - Wallet is locked."
 			},
 		};
 	
@@ -675,24 +715,10 @@ public class ApiClient {
 			BufferedReader br = new BufferedReader(isReader);
 			String result = br.readLine(); //TODO READ ALL OR HARDCODE HELP
 			
+			
 			try
 			{
-				Writer writer = new JSonWriter();
-				Object jsonResult = JSONValue.parse(result);
-				
-				if(jsonResult instanceof JSONArray)
-				{
-					((JSONArray) jsonResult).writeJSONString(writer);
-					return writer.toString();
-				}
-				if(jsonResult instanceof JSONObject)
-				{
-					((JSONObject) jsonResult).writeJSONString(writer);
-					return writer.toString();
-				}
-				
-				writer.close();
-				return result;
+				return StrJSonFine.convert(result);
 			}
 			catch(Exception e)
 			{

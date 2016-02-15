@@ -158,7 +158,7 @@ public class NamesResource {
 					.registerName(account, account, name, value, bdFee);
 
 			switch (result.getB()) {
-			case Transaction.VALIDATE_OKE:
+			case Transaction.VALIDATE_OK:
 
 				return result.getA().toJson().toJSONString();
 
@@ -517,7 +517,7 @@ public class NamesResource {
 
 	public String checkNameTransaction(Pair<Transaction, Integer> result) {
 		switch (result.getB()) {
-		case Transaction.VALIDATE_OKE:
+		case Transaction.VALIDATE_OK:
 
 			return result.getA().toJson().toJSONString();
 

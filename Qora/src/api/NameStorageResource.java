@@ -136,14 +136,8 @@ public class NameStorageResource {
 						ApiErrorFactory.ERROR_WALLET_NO_EXISTS);
 			}
 
-			// CHECK WALLET UNLOCKED
-			if (!Controller.getInstance().isWalletUnlocked()) {
-				throw ApiErrorFactory.getInstance().createError(
-						ApiErrorFactory.ERROR_WALLET_LOCKED);
-			}
-
 			// CHECK WALLET IN SYNC
-			if (Controller.getInstance().getStatus() != Controller.STATUS_OKE) {
+			if (Controller.getInstance().getStatus() != Controller.STATUS_OK) {
 				throw ApiErrorFactory.getInstance().createError(
 						ApiErrorFactory.ERROR_WALLET_NOT_IN_SYNC);
 			}
@@ -162,12 +156,10 @@ public class NameStorageResource {
 					throw ApiErrorFactory.getInstance().createError(
 							ApiErrorFactory.ERROR_NAME_NOT_REGISTERED);
 				}
+
+				creator = name;
 				
-				
-					creator = name;
-				
-			}else
-			{
+			} else {
 				creator = nameObj.getOwner().getAddress();
 			}
 
@@ -181,14 +173,6 @@ public class NameStorageResource {
 			if (Controller.getInstance().getAccountByAddress(creator) == null) {
 				throw ApiErrorFactory.getInstance().createError(
 						ApiErrorFactory.ERROR_WALLET_ADDRESS_NO_EXISTS);
-			}
-
-			// GET ACCOUNT
-			PrivateKeyAccount account = Controller.getInstance()
-					.getPrivateKeyAccountByAddress(creator);
-			if (account == null) {
-				throw ApiErrorFactory.getInstance().createError(
-						ApiErrorFactory.ERROR_INVALID_ADDRESS);
 			}
 
 			jsonObject.put("name", name);
@@ -272,12 +256,6 @@ public class NameStorageResource {
 								+ "\nfee: " + currentFee.toPlainString());
 						decompressedValue.add(decompressed);
 					}
-
-					if (account.getBalance(1, DBSet.getInstance()).compareTo(
-							completeFee) == -1) {
-						throw ApiErrorFactory.getInstance().createError(
-								ApiErrorFactory.ERROR_NO_BALANCE);
-					}
 					
 					if(allTxPairs.size() > ApiErrorFactory.BATCH_TX_AMOUNT)
 					{
@@ -306,8 +284,6 @@ public class NameStorageResource {
 						oldAmount = newAmount;
 						
 						newCompleteFee= newCompleteFee.add(newAmount);
-						
-						
 					}
 					
 					String apicalls = "";
@@ -328,6 +304,26 @@ public class NameStorageResource {
 
 					APIUtils.askAPICallAllowed(basicInfo, request);
 
+					//CHECK WALLET UNLOCKED
+					if (!Controller.getInstance().isWalletUnlocked()) {
+						throw ApiErrorFactory.getInstance().createError(
+								ApiErrorFactory.ERROR_WALLET_LOCKED);
+					}
+					
+					// GET ACCOUNT
+					PrivateKeyAccount account = Controller.getInstance()
+							.getPrivateKeyAccountByAddress(creator);
+					if (account == null) {
+						throw ApiErrorFactory.getInstance().createError(
+								ApiErrorFactory.ERROR_INVALID_ADDRESS);
+					}
+					
+					if (account.getBalance(1, DBSet.getInstance()).compareTo(
+							completeFee) == -1) {
+						throw ApiErrorFactory.getInstance().createError(
+								ApiErrorFactory.ERROR_NO_BALANCE);
+					}
+					
 					Pair<Transaction, Integer> result;
 					String results = "";
 					for (Pair<byte[], BigDecimal> pair : newPairs) {
@@ -350,6 +346,20 @@ public class NameStorageResource {
 							+ GZIP.webDecompress(jsonString) + "\nfee: "
 							+ fee.toPlainString(), request);
 
+			//CHECK WALLET UNLOCKED
+			if (!Controller.getInstance().isWalletUnlocked()) {
+				throw ApiErrorFactory.getInstance().createError(
+						ApiErrorFactory.ERROR_WALLET_LOCKED);
+			}
+			
+			// GET ACCOUNT
+			PrivateKeyAccount account = Controller.getInstance()
+					.getPrivateKeyAccountByAddress(creator);
+			if (account == null) {
+				throw ApiErrorFactory.getInstance().createError(
+						ApiErrorFactory.ERROR_INVALID_ADDRESS);
+			}
+			
 			// SEND PAYMENT
 			Pair<Transaction, Integer> result = Controller.getInstance()
 					.createArbitraryTransaction(account, null, 10, bytes, fee);

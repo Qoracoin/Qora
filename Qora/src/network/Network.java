@@ -3,6 +3,7 @@ package network;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Observable;
@@ -11,15 +12,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.logging.Logger;
 
-import utils.ObserverMessage;
 import controller.Controller;
+import network.message.FindMyselfMessage;
 import network.message.Message;
 import network.message.MessageFactory;
+import utils.ObserverMessage;
 
 public class Network extends Observable implements ConnectionCallback {
 
-	public static final int PORT = 9084;
-	//public static final int PORT = 4809;
+	public static final int MAINNET_PORT = 9084;
+	public static final int TESTNET_PORT = 4809;
 	
 	private static final int MAX_HANDLED_MESSAGES_SIZE = 10000;
 	
@@ -105,9 +107,9 @@ public class Network extends Observable implements ConnectionCallback {
 	}
 	
 	@Override
-	public void onError(Peer peer) {
+	public void onError(Peer peer, String error) {
 		
-		Logger.getGlobal().warning("Connection error : " + peer.getAddress());
+		Logger.getGlobal().warning("Connection error : " + peer.getAddress() + " : " + error);
 		
 		//REMOVE FROM CONNECTED PEERS
 		synchronized(this.connectedPeers)
@@ -237,11 +239,23 @@ public class Network extends Observable implements ConnectionCallback {
 		case Message.GET_PEERS_TYPE: 
 			
 			//CREATE NEW PEERS MESSAGE WITH PEERS
-			Message answer = MessageFactory.getInstance().createPeersMessage(PeerManager.getInstance().getKnownPeers());
+			Message answer = MessageFactory.getInstance().createPeersMessage(PeerManager.getInstance().getBestPeers());
 			answer.setId(message.getId());
 			
 			//SEND TO SENDER
 			message.getSender().sendMessage(answer);
+			break;
+			
+			
+		case Message.FIND_MYSELF_TYPE:
+
+			FindMyselfMessage findMyselfMessage = (FindMyselfMessage) message;
+			
+			if(Arrays.equals(findMyselfMessage.getFoundMyselfID(),Controller.getInstance().getFoundMyselfID())) {
+				Logger.getGlobal().info("Connected to self. Disconnection.");
+				message.getSender().close();
+			}
+			
 			break;
 			
 		//SEND TO CONTROLLER
@@ -305,5 +319,14 @@ public class Network extends Observable implements ConnectionCallback {
 	{
 		this.run = false;
 		this.onMessage(null);
+		while (this.connectedPeers.size() > 0) {
+			try {
+				this.connectedPeers.get(0).close();
+			} catch (Exception e) {
+
+			}
+		}
+		this.acceptor.halt();
+		this.creator.halt();
 	}
 }

@@ -1,7 +1,5 @@
 package gui;
 
-import gui.create.NoWalletFrame;
-
 import java.awt.Color;
 import java.awt.TrayIcon.MessageType;
 
@@ -12,9 +10,10 @@ import javax.swing.UIManager;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import controller.Controller;
+import gui.create.NoWalletFrame;
 import settings.Settings;
 import utils.SysTray;
-import controller.Controller;
 
 public class Gui extends JFrame{
 
@@ -78,6 +77,14 @@ public class Gui extends JFrame{
 		}
 	}
 
+	public void hideMainFrame()
+	{
+		if(mainframe != null)
+		{
+			mainframe.setVisible(false);
+		}
+	}
+	
 	public void onCancelCreateWallet() 
 	{
 		Controller.getInstance().stopAll();

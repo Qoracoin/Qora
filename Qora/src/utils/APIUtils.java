@@ -12,6 +12,7 @@ import qora.assets.Asset;
 import qora.crypto.Crypto;
 import qora.transaction.Transaction;
 import qora.web.ServletUtils;
+import api.ApiClient;
 import api.ApiErrorFactory;
 import controller.Controller;
 import gui.PasswordPane;
@@ -102,7 +103,7 @@ public class APIUtils {
 		}
 			
 		switch (result.getB()) {
-		case Transaction.VALIDATE_OKE:
+		case Transaction.VALIDATE_OK:
 
 			return result.getA().toJson().toJSONString();
 
@@ -126,6 +127,12 @@ public class APIUtils {
 			throw ApiErrorFactory.getInstance().createError(
 					ApiErrorFactory.ERROR_NAME_ALREADY_EXISTS);
 
+		case Transaction.NEGATIVE_AMOUNT:
+			throw ApiErrorFactory.getInstance().createError(
+					ApiErrorFactory.ERROR_INVALID_AMOUNT);
+		
+		
+			
 		case Transaction.NEGATIVE_FEE:
 
 			throw ApiErrorFactory.getInstance().createError(
@@ -163,15 +170,20 @@ public class APIUtils {
 		try {
 			disallowRemote(request);
 
-			if (Controller.getInstance().checkAPICallAllowed(messageToDisplay,
-					request) != JOptionPane.YES_OPTION) {
+			int answer = Controller.getInstance().checkAPICallAllowed(messageToDisplay,	request); 
+			
+			if(answer == ApiClient.SELF_CALL) {
+				return;
+			}
+			
+			if (answer != JOptionPane.YES_OPTION) {
 				throw ApiErrorFactory
 						.getInstance()
 						.createError(
 								ApiErrorFactory.ERROR_WALLET_API_CALL_FORBIDDEN_BY_USER);
 			}
-			if(!Controller.getInstance().isWalletUnlocked())
-			{
+			
+			if(!Controller.getInstance().isWalletUnlocked()) {
 				String password = PasswordPane.showUnlockWalletDialog(); 
 				if(!password.equals("") && !Controller.getInstance().unlockWallet(password))
 				{

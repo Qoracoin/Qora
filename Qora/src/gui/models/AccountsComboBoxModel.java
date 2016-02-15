@@ -46,8 +46,8 @@ public class AccountsComboBoxModel extends DefaultComboBoxModel<Account> impleme
 	{
 		ObserverMessage message = (ObserverMessage) arg;
 
-		if((message.getType() == ObserverMessage.NETWORK_STATUS && (int) message.getValue() == Controller.STATUS_OKE)
-			||((Controller.getInstance().getStatus() == Controller.STATUS_OKE) && (message.getType() == ObserverMessage.ADD_BALANCE_TYPE || message.getType() == ObserverMessage.REMOVE_BALANCE_TYPE || message.getType() == ObserverMessage.ADD_ACCOUNT_TYPE || message.getType() == ObserverMessage.REMOVE_ACCOUNT_TYPE)))
+		if((message.getType() == ObserverMessage.NETWORK_STATUS && (int) message.getValue() == Controller.STATUS_OK)
+			||((Controller.getInstance().getStatus() == Controller.STATUS_OK) && (message.getType() == ObserverMessage.ADD_BALANCE_TYPE || message.getType() == ObserverMessage.REMOVE_BALANCE_TYPE || message.getType() == ObserverMessage.ADD_ACCOUNT_TYPE || message.getType() == ObserverMessage.REMOVE_ACCOUNT_TYPE)))
 		{
 			//GET SELECTED ITEM
 			Account selected = (Account) this.getSelectedItem();
@@ -56,11 +56,7 @@ public class AccountsComboBoxModel extends DefaultComboBoxModel<Account> impleme
 			this.removeAllElements();
 				
 			//INSERT ALL ACCOUNTS
-			List<Account> accounts = Controller.getInstance().getAccounts();
-			synchronized(accounts)
-			{
-				sortAndAdd();
-			}
+			sortAndAdd();
 				
 			//RESET SELECTED ITEM
 			if(this.getIndexOf(selected) != -1)

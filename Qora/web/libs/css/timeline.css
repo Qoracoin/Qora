@@ -315,18 +315,11 @@ content: " " !important;
 .timeline-badge.primary.highlighted {
   margin-top: 80px;
 }
-.commentList {
-    padding:0;
-    list-style:none;
+.commentEntry {
+    padding:10px;
+    !list-style:none;
     max-height:200px;
     overflow:auto;
-}
-.commentList li {
-    margin:0;
-    margin-top:10px;
-}
-.commentList li > div {
-    display:table-cell;
 }
 .commenterImage {
     margin-right:5px;
@@ -341,7 +334,8 @@ img.media-object.commenterImage {
     width: 35px;
     height: 35px;
 }
-.commentText p {
+
+p.commentText {
     margin:0;
 }
 .sub-text {
@@ -349,16 +343,11 @@ img.media-object.commenterImage {
     font-family:verdana;
     font-size:11px;
 }
-.actionBox {
+.commentList {
     border-top:1px solid #ddd;
     padding:10px;
 }
-.actionBox .form-group:nth-child(2) {
-    width:18%;
-}
-.actionBox .form-group:first-child {
-    width:80%;
-}
+
 h4.media-heading.Commenter {
     margin-top: 0px;
     font-size: medium;

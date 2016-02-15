@@ -165,6 +165,9 @@ public class BlockGenerator extends Thread implements Observer
 	{
 		while(true)
 		{
+			if(DBSet.getInstance().isStoped())
+				continue;
+			
 			//CHECK IF WE ARE UPTODATE
 			if(!Controller.getInstance().isUpToDate())
 			{
@@ -172,7 +175,7 @@ public class BlockGenerator extends Thread implements Observer
 			}
 			
 			//CHECK IF WE HAVE CONNECTIONS
-			if(Controller.getInstance().getStatus() == Controller.STATUS_OKE)
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
 			{
 				//GET LAST BLOCK
 				byte[] lastBlockSignature = DBSet.getInstance().getBlockMap().getLastBlockSignature();
@@ -398,7 +401,7 @@ public class BlockGenerator extends Thread implements Observer
 				{
 					try{
 						//CHECK IF VALID
-						if(transaction.isValid(newBlockDb) == Transaction.VALIDATE_OKE)
+						if(transaction.isValid(newBlockDb) == Transaction.VALIDATE_OK)
 						{
 							//CHECK IF ENOUGH ROOM
 							if(totalBytes + transaction.getDataLength() <= Block.MAX_TRANSACTION_BYTES)
@@ -529,7 +532,7 @@ public class BlockGenerator extends Thread implements Observer
 		if(getKnownAccounts().size() > 0)
 		{
 			//CONNECTIONS OKE? -> FORGING
-			if(Controller.getInstance().getStatus() == Controller.STATUS_OKE)
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
 			{
 				setForgingStatus(ForgingStatus.FORGING);
 			}else

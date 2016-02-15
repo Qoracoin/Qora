@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -13,6 +15,8 @@ import org.json.simple.JSONValue;
 
 import com.google.common.base.Charsets;
 
+import controller.Controller;
+import database.DBSet;
 import qora.account.PublicKeyAccount;
 import qora.naming.Name;
 import qora.transaction.ArbitraryTransaction;
@@ -20,8 +24,6 @@ import qora.transaction.Transaction;
 import qora.web.NameStorageMap;
 import qora.web.OrphanNameStorageHelperMap;
 import qora.web.OrphanNameStorageMap;
-import controller.Controller;
-import database.DBSet;
 
 public class StorageUtils {
 
@@ -261,7 +263,8 @@ public class StorageUtils {
 						nameStorageMap.add(name, key,
 								DiffHelper.patch(oldValueOpt, (String) patchJsonKey.get(key)));
 					} catch (Throwable e) {
-						e.printStackTrace();
+						Logger.getGlobal().info("Invalid patch!");
+						Logger.getGlobal().log(Level.FINE, "Invalid patch!", e);
 					}
 				}
 			}

@@ -17,6 +17,7 @@ import javax.swing.border.EmptyBorder;
 import qora.crypto.Base58;
 import qora.transaction.SellNameTransaction;
 import utils.DateTimeFormat;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class SellNameDetailsFrame extends JFrame
@@ -78,6 +79,7 @@ public class SellNameDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField signature = new JTextField(Base58.encode(nameSale.getSignature()));
 		signature.setEditable(false);
+		MenuPopupUtil.installContextMenu(signature);
 		this.add(signature, detailGBC);
 		
 		//LABEL REFERENCE
@@ -89,6 +91,7 @@ public class SellNameDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField reference = new JTextField(Base58.encode(nameSale.getReference()));
 		reference.setEditable(false);
+		MenuPopupUtil.installContextMenu(reference);
 		this.add(reference, detailGBC);
 		
 		//LABEL TIMESTAMP
@@ -98,7 +101,9 @@ public class SellNameDetailsFrame extends JFrame
 						
 		//TIMESTAMP
 		detailGBC.gridy = 3;
-		JLabel timestamp = new JLabel(DateTimeFormat.timestamptoString(nameSale.getTimestamp()));
+		JTextField timestamp = new JTextField(DateTimeFormat.timestamptoString(nameSale.getTimestamp()));
+		timestamp.setEditable(false);
+		MenuPopupUtil.installContextMenu(timestamp);
 		this.add(timestamp, detailGBC);
 		
 		//LABEL REGISTRANT
@@ -110,6 +115,7 @@ public class SellNameDetailsFrame extends JFrame
 		detailGBC.gridy = 4;
 		JTextField registrant = new JTextField(nameSale.getOwner().getAddress());
 		registrant.setEditable(false);
+		MenuPopupUtil.installContextMenu(registrant);
 		this.add(registrant, detailGBC);
 		
 		//LABEL NAME
@@ -121,6 +127,7 @@ public class SellNameDetailsFrame extends JFrame
 		detailGBC.gridy = 5;
 		JTextField name = new JTextField(nameSale.getNameSale().getKey());
 		name.setEditable(false);
+		MenuPopupUtil.installContextMenu(name);
 		this.add(name, detailGBC);		
 		
 		//LABEL PRICE
@@ -132,6 +139,7 @@ public class SellNameDetailsFrame extends JFrame
 		detailGBC.gridy = 6;
 		JTextField price = new JTextField(nameSale.getNameSale().getAmount().toPlainString());
 		price.setEditable(false);
+		MenuPopupUtil.installContextMenu(price);
 		this.add(price, detailGBC);		
 		
 		//LABEL FEE
@@ -143,6 +151,7 @@ public class SellNameDetailsFrame extends JFrame
 		detailGBC.gridy = 7;
 		JTextField fee = new JTextField(nameSale.getFee().toPlainString());
 		fee.setEditable(false);
+		MenuPopupUtil.installContextMenu(fee);
 		this.add(fee, detailGBC);	
 		
 		//LABEL CONFIRMATIONS

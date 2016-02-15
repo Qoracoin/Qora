@@ -55,31 +55,6 @@
 	<classpathentry kind="lib" path="libs/jersey/ext/jersey-guava-2.19.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-api-1.7.12.jar"/>
 	<classpathentry kind="lib" path="libs/slf4j-nop-1.7.12.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-alpn-client-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-alpn-server-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-annotations-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-cdi-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-client-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-continuation-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-deploy-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-http-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-io-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-jaas-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-jaspi-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-jmx-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-jndi-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-plus-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-proxy-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-quickstart-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-rewrite-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-schemas-3.1.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-security-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-server-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-servlet-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-servlets-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-util-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-webapp-9.2.11.v20150529.jar"/>
-	<classpathentry kind="lib" path="libs/jetty/jetty-xml-9.2.11.v20150529.jar"/>
 	<classpathentry kind="lib" path="libs/jetty/servlet-api-3.1.jar"/>
 	<classpathentry kind="lib" path="libs/mapdb-1.0.7.jar" sourcepath="libs/sourceandjavadoc/mapdb-1.0.7-sources.jar">
 		<attributes>
@@ -100,6 +75,31 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Qora/libs/sourceandjavadoc/pebble-1.6.0-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="libs/bcprov-jdk15on-153.jar"/>
+	<classpathentry kind="lib" path="libs/bcprov-jdk15on-154.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-alpn-client-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-alpn-server-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-annotations-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-cdi-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-client-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-continuation-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-deploy-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-http-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-io-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-jaas-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-jaspi-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-jmx-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-jndi-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-plus-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-proxy-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-quickstart-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-rewrite-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-schemas-3.1.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-security-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-server-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-servlet-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-servlets-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-util-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-webapp-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/jetty/jetty-xml-9.2.15.v20160210.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

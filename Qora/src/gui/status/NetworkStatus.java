@@ -11,10 +11,10 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.ToolTipManager;
 
-import utils.GUIUtils;
-import utils.ObserverMessage;
 import controller.Controller;
 import qora.block.Block;
+import utils.GUIUtils;
+import utils.ObserverMessage;
 
 @SuppressWarnings("serial")
 public class NetworkStatus extends JLabel implements Observer
@@ -39,12 +39,11 @@ public class NetworkStatus extends JLabel implements Observer
 		
 		this.addMouseListener(new MouseAdapter() {
 			public void mouseEntered(MouseEvent mEvt) {
-				if(currentHeight != Controller.getInstance().getHeight())
-				{
+				if(Controller.getInstance().getStatus() == Controller.STATUS_OK || Controller.getInstance().getStatus() == Controller.STATUS_NO_CONNECTIONS) {
+					setToolTipText("Block height: " + Controller.getInstance().getHeight());
+				} else if(currentHeight < Controller.getInstance().getHeight()) {
 					setToolTipText("Block height: " + currentHeight + "/" + Controller.getInstance().getHeight() + "/" + Controller.getInstance().getMaxPeerHeight());
-				}
-				else
-				{
+				} else {
 					setToolTipText("Block height: " + currentHeight + "/" + Controller.getInstance().getMaxPeerHeight());
 				}
 		}});
@@ -102,10 +101,10 @@ public class NetworkStatus extends JLabel implements Observer
 				this.setIcon(synchronizingIcon);
 				this.setText("Synchronizing");
 			}
-			if(status == Controller.STATUS_OKE)
+			if(status == Controller.STATUS_OK)
 			{
 				this.setIcon(okeIcon);
-				this.setText("Oke");
+				this.setText("OK");
 			}
 		}		
 	}

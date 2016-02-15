@@ -11,6 +11,7 @@ import settings.Settings;
 public class ConnectionCreator extends Thread {
 
 	private ConnectionCallback callback;
+	private boolean isRun;
 	
 	public ConnectionCreator(ConnectionCallback callback)
 	{
@@ -19,21 +20,29 @@ public class ConnectionCreator extends Thread {
 	
 	public void run()
 	{
-		try
-		{	
-			while(true)
-			{
+		this.isRun = true;
+
+		while(isRun)
+		{
+			try
+			{	
+				int maxReceivePeers = Settings.getInstance().getMaxReceivePeers();
+				
 				//CHECK IF WE NEED NEW CONNECTIONS
-				if(Settings.getInstance().getMinConnections() >= callback.getActiveConnections().size())
+				if(this.isRun && Settings.getInstance().getMinConnections() >= callback.getActiveConnections().size())
 				{			
 					//GET LIST OF KNOWN PEERS
 					List<Peer> knownPeers = PeerManager.getInstance().getKnownPeers();
 					
+					int knownPeersCounter = 0;
+										
 					//ITERATE knownPeers
 					for(Peer peer: knownPeers)
 					{
+						knownPeersCounter ++;
+	
 						//CHECK IF WE ALREADY HAVE MAX CONNECTIONS
-						if(Settings.getInstance().getMaxConnections() > callback.getActiveConnections().size())
+						if(this.isRun && Settings.getInstance().getMaxConnections() > callback.getActiveConnections().size())
 						{
 							//CHECK IF ALREADY CONNECTED TO PEER
 							if(!callback.isConnectedTo(peer.getAddress()))
@@ -43,7 +52,10 @@ public class ConnectionCreator extends Thread {
 								//if(!peer.getAddress().isSiteLocalAddress() && !peer.getAddress().isLoopbackAddress() && !peer.getAddress().isAnyLocalAddress())
 								{
 									//CONNECT
-									Logger.getGlobal().info("Connecting to peer : " + peer.getAddress());
+									Logger.getGlobal().info(
+											"Connecting to known peer " + peer.getAddress().getHostAddress() 
+											+ " :: " + knownPeersCounter + " / " + knownPeers.size() 
+											+ " :: Connections: " + callback.getActiveConnections().size());
 								
 									peer.connect(callback);
 								}
@@ -53,7 +65,7 @@ public class ConnectionCreator extends Thread {
 				}
 				
 				//CHECK IF WE STILL NEED NEW CONNECTIONS
-				if(Settings.getInstance().getMinConnections() >= callback.getActiveConnections().size())
+				if(this.isRun && Settings.getInstance().getMinConnections() >= callback.getActiveConnections().size())
 				{
 					//OLD SCHOOL ITERATE activeConnections
 					//avoids Exception when adding new elements
@@ -62,19 +74,27 @@ public class ConnectionCreator extends Thread {
 						Peer peer = callback.getActiveConnections().get(i);
 	
 						//CHECK IF WE ALREADY HAVE MAX CONNECTIONS
-						if(Settings.getInstance().getMaxConnections() > callback.getActiveConnections().size())
+						if(this.isRun && Settings.getInstance().getMaxConnections() > callback.getActiveConnections().size())
 						{
 								//ASK PEER FOR PEERS
 								Message getPeersMessage = MessageFactory.getInstance().createGetPeersMessage();
 								PeersMessage peersMessage = (PeersMessage) peer.getResponse(getPeersMessage);
 								if(peersMessage != null)
 								{
+									int foreignPeersCounter = 0;
 									//FOR ALL THE RECEIVED PEERS
+									
 									for(Peer newPeer: peersMessage.getPeers())
 									{		
 										//CHECK IF WE ALREADY HAVE MAX CONNECTIONS
-										if(Settings.getInstance().getMaxConnections() > callback.getActiveConnections().size())
+										if(this.isRun && Settings.getInstance().getMaxConnections() > callback.getActiveConnections().size())
 										{
+											if(foreignPeersCounter >= maxReceivePeers) {
+												break;
+											}
+	
+											foreignPeersCounter ++;
+											
 											//CHECK IF THAT PEER IS NOT BLACKLISTED
 											if(!PeerManager.getInstance().isBlacklisted(newPeer))
 											{
@@ -84,10 +104,18 @@ public class ConnectionCreator extends Thread {
 													//CHECK IF SOCKET IS NOT LOCALHOST
 													if(!newPeer.getAddress().isSiteLocalAddress() && !newPeer.getAddress().isLoopbackAddress() && !newPeer.getAddress().isAnyLocalAddress())
 													{
-														Logger.getGlobal().info("Connecting to peer : " + newPeer.getAddress());
+														if(Settings.getInstance().isTryingConnectToBadPeers() || !newPeer.isBad())
+														{
+															int maxReceivePeersForPrint = (maxReceivePeers > peersMessage.getPeers().size()) ? peersMessage.getPeers().size() : maxReceivePeers;  
+															
+															Logger.getGlobal().info(
+																"Connecting to peer " + newPeer.getAddress().getHostAddress() + " proposed by " + peer.getAddress().getHostAddress() 
+																+ " :: " + foreignPeersCounter + " / " + maxReceivePeersForPrint + " / " + peersMessage.getPeers().size() 
+																+ " :: Connections: " + callback.getActiveConnections().size());
 														
-														//CONNECT
-														newPeer.connect(callback);
+															//CONNECT
+															newPeer.connect(callback);
+														}
 													}
 												}
 											}
@@ -100,15 +128,19 @@ public class ConnectionCreator extends Thread {
 				}			
 				//SLEEP
 				Thread.sleep(60 * 1000);	
+	
 			}
-			
+			catch(Exception e)
+			{
+				e.printStackTrace();
+				
+				Logger.getGlobal().info("Error creating new connection");			
+			}					
 		}
-		catch(Exception e)
-		{
-			e.printStackTrace();
-			
-			Logger.getGlobal().info("Error creating new connection");			
-		}					
 	}
 	
+	public void halt()
+	{
+		this.isRun = false;
+	}
 }

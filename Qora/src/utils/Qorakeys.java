@@ -5,7 +5,7 @@ public enum Qorakeys {
 	DEFAULT("defaultkey", KeyVariation.DEFAULTKEY), WEBSITE("website",KeyVariation.DEFAULTKEY), BLOGWHITELIST("blogwhitelist", KeyVariation.LISTKEY), BLOGBLACKLIST(
 			"blogblacklist",KeyVariation.LISTKEY), BLOGDESCRIPTION("blogdescription",KeyVariation.DEFAULTKEY), BLOGTITLE("blogtitle",KeyVariation.DEFAULTKEY), BLOGENABLE(
 					"blogenable", KeyVariation.EXISTSKEY), PROFILEENABLE("profileenable", KeyVariation.EXISTSKEY), PROFILEAVATAR("profileavatar", KeyVariation.DEFAULTKEY), PROFILEFOLLOW(
-							"profilefollow", KeyVariation.LISTKEY), PROFILEMAINGRAPHIC("profilemaingraphic",KeyVariation.DEFAULTKEY), PROFILELIKEPOSTS("profilelikeposts",KeyVariation.LISTKEY);
+							"profilefollow", KeyVariation.LISTKEY), PROFILEMAINGRAPHIC("profilemaingraphic",KeyVariation.DEFAULTKEY), PROFILELIKEPOSTS("profilelikeposts",KeyVariation.LISTKEY), BLOGBLOCKCOMMENTS("blogblockcomments",KeyVariation.EXISTSKEY);
 	private final String keyname;
 	private KeyVariation variation;
 

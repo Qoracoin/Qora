@@ -240,7 +240,7 @@ public class TransferAssetTransaction extends Transaction {
 	public int isValid(DBSet db) 
 	{
 		//CHECK IF RELEASED
-		if(NTP.getTime() < ASSETS_RELEASE)
+		if(NTP.getTime() < Transaction.getASSETS_RELEASE())
 		{
 			return NOT_YET_RELEASED;
 		}
@@ -278,7 +278,7 @@ public class TransferAssetTransaction extends Transaction {
 			}
 		}
 		
-		//CHECK IF REFERENCE IS OKE
+		//CHECK IF REFERENCE IS OK
 		if(!Arrays.equals(this.sender.getLastReference(db), this.reference))
 		{
 			return INVALID_REFERENCE;
@@ -296,7 +296,7 @@ public class TransferAssetTransaction extends Transaction {
 			return NEGATIVE_FEE;
 		}
 				
-		return VALIDATE_OKE;
+		return VALIDATE_OK;
 	}
 
 	//PROCESS/ORPHAN

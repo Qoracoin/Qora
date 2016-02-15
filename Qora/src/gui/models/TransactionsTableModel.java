@@ -65,30 +65,36 @@ public class TransactionsTableModel extends QoraTableModel<byte[], Transaction> 
 	@Override
 	public Object getValueAt(int row, int column) 
 	{
-		if(this.transactions == null || this.transactions.size() -1 < row)
+		try
 		{
+			if(this.transactions == null || this.transactions.size() -1 < row)
+			{
+				return null;
+			}
+			
+			Transaction transaction = this.transactions.get(row).getB();
+			
+			switch(column)
+			{
+			case COLUMN_TIMESTAMP:
+				
+				return DateTimeFormat.timestamptoString(transaction.getTimestamp());
+				
+			case COLUMN_TYPE:
+				
+				return this.transactionTypes[transaction.getType()];
+				
+			case COLUMN_FEE:
+				
+				return NumberAsString.getInstance().numberAsString(transaction.getFee());		
+			}
+			
+			return null;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
-		
-		Transaction transaction = this.transactions.get(row).getB();
-		
-		switch(column)
-		{
-		case COLUMN_TIMESTAMP:
-			
-			return DateTimeFormat.timestamptoString(transaction.getTimestamp());
-			
-		case COLUMN_TYPE:
-			
-			return this.transactionTypes[transaction.getType()];
-			
-		case COLUMN_FEE:
-			
-			return NumberAsString.getInstance().numberAsString(transaction.getFee());		
-		}
-		
-		return null;
-		
 	}
 
 	@Override

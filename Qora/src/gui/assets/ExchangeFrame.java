@@ -46,6 +46,8 @@ public class ExchangeFrame extends JFrame
 		this.have = have;
 		this.want = want;
 		
+		this.setTitle("Qora - Asset Exchange - " + this.have.toString() + " / " + this.want.toString());
+		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();
 		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon16.png"));
@@ -88,7 +90,7 @@ public class ExchangeFrame extends JFrame
 		tableGBC.gridy = 4;	
 		
 		//CREATE TITLE LABEL
-		JLabel lblTitle = new JLabel(this.have.toString() + "/" + this.want.toString());
+		JLabel lblTitle = new JLabel(this.have.toString() + " / " + this.want.toString());
 				
 		lblTitle.setFont(new Font("Serif", Font.PLAIN, 24));
 		this.add(lblTitle, labelGBC);

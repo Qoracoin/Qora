@@ -274,6 +274,15 @@ public class CreateOrderTransaction extends Transaction
 			return NO_BALANCE;
 		}
 		
+		//ONLY AFTER POWFIX_RELEASE TO SAVE THE OLD NETWORK
+		if(this.timestamp >= Transaction.getPOWFIX_RELEASE()) {
+			//CHECK IF SENDER HAS ENOUGH QORA BALANCE
+			if(this.creator.getConfirmedBalance(fork).compareTo(BigDecimal.ZERO) == -1)
+			{
+				return NO_BALANCE;
+			}	
+		}
+		
 		//CHECK IF HAVE IS NOT DIVISBLE
 		if(!this.order.getHaveAsset(db).isDivisible())
 		{
@@ -303,7 +312,7 @@ public class CreateOrderTransaction extends Transaction
 			}
 		}
 		
-		//CHECK IF REFERENCE IS OKE
+		//CHECK IF REFERENCE IS OK
 		if(!Arrays.equals(this.creator.getLastReference(db), this.reference))
 		{
 			return INVALID_REFERENCE;
@@ -315,7 +324,7 @@ public class CreateOrderTransaction extends Transaction
 			return NEGATIVE_FEE;
 		}
 		
-		return VALIDATE_OKE;
+		return VALIDATE_OK;
 	}
 	
 	//PROCESS/ORPHAN

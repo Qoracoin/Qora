@@ -213,7 +213,7 @@ public class SendMoneyPanel extends JPanel
 			return;
 		}
 		
-		if(Controller.getInstance().getStatus() != Controller.STATUS_OKE)
+		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
 			txtRecDetails.setText("Status must be OK to show receiver details.");
 			return;
@@ -245,10 +245,10 @@ public class SendMoneyPanel extends JPanel
 		//DISABLE
 		this.sendButton.setEnabled(false);
 		
-		//CHECK IF NETWORK OKE
-		if(Controller.getInstance().getStatus() != Controller.STATUS_OKE)
+		//CHECK IF NETWORK OK
+		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
-			//NETWORK NOT OKE
+			//NETWORK NOT OK
 			JOptionPane.showMessageDialog(null, "You are unable to send a transaction while synchronizing or while having no connections!", "Error", JOptionPane.ERROR_MESSAGE);
 			
 			//ENABLE
@@ -367,7 +367,7 @@ public class SendMoneyPanel extends JPanel
 			//CHECK VALIDATE MESSAGE
 			switch(result.getB())
 			{
-			case Transaction.VALIDATE_OKE:
+			case Transaction.VALIDATE_OK:
 				
 				//RESET FIELDS
 				this.txtAmount.setText("");

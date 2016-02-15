@@ -156,9 +156,10 @@ public class IssueAssetFrame extends JFrame
       	JLabel divisibleLabel = new JLabel("Divisible:");
       	this.add(divisibleLabel, labelGBC);
       		
-      	//TXT QUANTITY
+      	//CHECKBOX DIVISIBLE
       	txtGBC.gridy = 4;
       	this.chkDivisible = new JCheckBox();
+      	this.chkDivisible.setSelected(true);
       	this.add(this.chkDivisible, txtGBC);
       	
         //LABEL FEE
@@ -197,10 +198,10 @@ public class IssueAssetFrame extends JFrame
 		//DISABLE
 		this.issueButton.setEnabled(false);
 	
-		//CHECK IF NETWORK OKE
-		if(Controller.getInstance().getStatus() != Controller.STATUS_OKE)
+		//CHECK IF NETWORK OK
+		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
-			//NETWORK NOT OKE
+			//NETWORK NOT OK
 			JOptionPane.showMessageDialog(null, "You are unable to send a transaction while synchronizing or while having no connections!", "Error", JOptionPane.ERROR_MESSAGE);
 			
 			//ENABLE
@@ -321,7 +322,7 @@ public class IssueAssetFrame extends JFrame
 			//CHECK VALIDATE MESSAGE
 			switch(result.getB())
 			{
-			case Transaction.VALIDATE_OKE:
+			case Transaction.VALIDATE_OK:
 				
 				JOptionPane.showMessageDialog(new JFrame(), "Asset issue has been sent!", "Success", JOptionPane.INFORMATION_MESSAGE);
 				this.dispose();
@@ -329,7 +330,7 @@ public class IssueAssetFrame extends JFrame
 				
 			case Transaction.NOT_YET_RELEASED:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Assets will be enabled at " + DateTimeFormat.timestamptoString(Transaction.ASSETS_RELEASE) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(), "Assets will be enabled at " + DateTimeFormat.timestamptoString(Transaction.getASSETS_RELEASE()) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.INVALID_QUANTITY:

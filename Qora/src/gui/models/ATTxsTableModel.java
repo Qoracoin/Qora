@@ -153,7 +153,7 @@ public class ATTxsTableModel extends QoraTableModel<Tuple2<Integer, Integer>, AT
 				this.ats = (SortableList<Tuple2<Integer, Integer>, AT_Transaction >) message.getValue();
 				this.ats.registerObserver();
 			}	
-			if(Controller.getInstance().getStatus() == Controller.STATUS_OKE)
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
 			{
 				this.fireTableDataChanged();
 			}
@@ -162,16 +162,16 @@ public class ATTxsTableModel extends QoraTableModel<Tuple2<Integer, Integer>, AT
 		//CHECK IF LIST UPDATED
 		if(message.getType() == ObserverMessage.ADD_AT_TX_TYPE )
 		{
-			if(Controller.getInstance().getStatus() == Controller.STATUS_OKE)
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
 			{
 				this.fireTableDataChanged();
 			}
 		}
 		
-		//STATUS_OKE
+		//STATUS_OK
 		if(message.getType() == ObserverMessage.NETWORK_STATUS )
 		{
-			if((int)message.getValue() == Controller.STATUS_OKE)
+			if((int)message.getValue() == Controller.STATUS_OK)
 			{
 				this.fireTableDataChanged();
 			}

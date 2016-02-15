@@ -9,7 +9,7 @@ public interface ConnectionCallback {
 
 	void onConnect(Peer peer);
 	void onDisconnect(Peer peer);
-	void onError(Peer peer);
+	void onError(Peer peer, String error);
 	boolean isConnectedTo(InetAddress address);
 	boolean isConnectedTo(Peer peer);
 	List<Peer> getActiveConnections();

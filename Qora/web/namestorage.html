@@ -296,7 +296,14 @@
 				}
 			})
 			.fail( function(xhr, textStatus, errorThrown) {
-				document.getElementById('result').innerHTML = '<div class=\"alert alert-danger\" role=\"alert\">ERROR<br>'+xhr.responseText+'<br></div>';
+				try {
+						var error = JSON.parse(xhr.responseText);
+						message = error.message;
+				} catch (e) {
+						message = xhr.responseText;
+				}
+
+				document.getElementById('result').innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">An error occurred while saving the website.<br>"+message+"<br></div>";
 			});
     };
 

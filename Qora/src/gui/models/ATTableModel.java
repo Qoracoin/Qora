@@ -127,13 +127,28 @@ public class ATTableModel extends QoraTableModel<Long, AT> implements Observer
 				this.ats.registerObserver();
 			}	
 			
-			this.fireTableDataChanged();
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
+			{
+				this.fireTableDataChanged();
+			}
 		}
 		
 		//CHECK IF LIST UPDATED
 		if(message.getType() == ObserverMessage.ADD_AT_TYPE )
 		{
-			this.fireTableDataChanged();
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
+			{
+				this.fireTableDataChanged();
+			}
+		}
+		
+		//STATUS_OK
+		if(message.getType() == ObserverMessage.NETWORK_STATUS )
+		{
+			if((int)message.getValue() == Controller.STATUS_OK)
+			{
+				this.fireTableDataChanged();
+			}
 		}
 	}
 	

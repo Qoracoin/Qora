@@ -36,10 +36,10 @@ public class BuyOrdersTableModel extends QoraTableModel<BigInteger, Order> imple
 		this.orders = Controller.getInstance().getOrders(have, want, true);
 		this.orders.registerObserver();
 		
-		columnNames[COLUMN_BUYING_PRICE] += " " + have.toString();
-		columnNames[COLUMN_BUYING_AMOUNT] += " " + want.toString();
-		columnNames[COLUMN_PRICE] += " " + want.toString();
-		columnNames[COLUMN_AMOUNT] += " " + have.toString();
+		columnNames[COLUMN_BUYING_PRICE] += " " + have.getShort();
+		columnNames[COLUMN_BUYING_AMOUNT] += " " + want.getShort();
+		columnNames[COLUMN_PRICE] += " " + want.getShort();
+		columnNames[COLUMN_AMOUNT] += " " + have.getShort();
 		
 		totalCalc();
 	}

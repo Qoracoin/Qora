@@ -328,7 +328,7 @@ public class ATResource
 
 			switch(result.getB())
 			{
-			case Transaction.VALIDATE_OKE:
+			case Transaction.VALIDATE_OK:
 				return result.getA().toJson().toJSONString();
 			case Transaction.INVALID_CREATION_BYTES:
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_INVALID_CREATION_BYTES);

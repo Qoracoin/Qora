@@ -254,7 +254,7 @@ public class BuyNameTransaction extends Transaction
 			return INVALID_AMOUNT;
 		}
 		
-		//CHECK IF REFERENCE IS OKE
+		//CHECK IF REFERENCE IS OK
 		if(!Arrays.equals(this.buyer.getLastReference(db), this.reference))
 		{
 			return INVALID_REFERENCE;
@@ -266,7 +266,7 @@ public class BuyNameTransaction extends Transaction
 			return NEGATIVE_FEE;
 		}
 
-		return VALIDATE_OKE;
+		return VALIDATE_OK;
 	}
 	
 	//PROCESS/ORPHAN

@@ -246,7 +246,10 @@ public class Block {
 
 	public int getHeight(DBSet db)
 	{
-		return db.getHeightMap().get(this);
+		if(db.getHeightMap().contains(this.getSignature()))
+			return db.getHeightMap().get(this);
+		else
+			return -1;
 	}
 
 	public void setTransactionsSignature(byte[] transactionsSignature) 
@@ -544,11 +547,11 @@ public class Block {
 	{
 		int height = getHeight(db);
 
-		if(height < Transaction.AT_BLOCK_HEIGHT_RELEASE)
+		if(height < Transaction.getAT_BLOCK_HEIGHT_RELEASE())
 		{
 			return 1;
 		}
-		else if(getTimestamp() < Transaction.POWFIX_RELEASE)
+		else if(getTimestamp() < Transaction.getPOWFIX_RELEASE())
 		{
 			return 2;
 		}
@@ -666,12 +669,12 @@ public class Block {
 			if ( transaction instanceof DeployATTransaction)
 			{
 				DeployATTransaction atTx = (DeployATTransaction)transaction;
-				if ( atTx.isValid(fork, min) != Transaction.VALIDATE_OKE )
+				if ( atTx.isValid(fork, min) != Transaction.VALIDATE_OK )
 				{
 					return false;
 				}
 			}
-			else if(transaction.isValid(fork) != Transaction.VALIDATE_OKE)
+			else if(transaction.isValid(fork) != Transaction.VALIDATE_OK)
 			{
 				return false;
 			}

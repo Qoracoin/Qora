@@ -163,13 +163,13 @@ public class BlogResource {
 	}
 
 	@GET
-	@Path("/lastEntry")
+	@Path("/lastentry")
 	public String getLastEntry() {
 		return getLastEntry("QORA");
 	}
 	
 	@GET
-	@Path("/lastEntry/{blogname}")
+	@Path("/lastentry/{blogname}")
 	public String getLastEntry(@PathParam("blogname") String blogname) {
 		if(blogname.equals("QORA"))
 		{

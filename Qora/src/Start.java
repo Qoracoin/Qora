@@ -1,5 +1,3 @@
-import gui.Gui;
-
 import java.util.Scanner;
 
 import javax.swing.JOptionPane;
@@ -7,7 +5,9 @@ import javax.swing.UIManager;
 
 import api.ApiClient;
 import controller.Controller;
+import gui.Gui;
 import settings.Settings;
+import utils.BuildTime;
 import utils.SysTray;
 
 public class Start {
@@ -21,6 +21,15 @@ public class Start {
 			if(arg.equals("-cli"))
 			{
 				cli = true;
+			} if(arg.equals("-testnet")) {
+				Settings.getInstance().setGenesisStamp(System.currentTimeMillis());
+			} else if(arg.startsWith("-testnet=") && arg.length() > 9) {
+				try
+				{
+					Settings.getInstance().setGenesisStamp(Long.parseLong(arg.substring(9)));
+				} catch(Exception e) {
+					Settings.getInstance().setGenesisStamp(Settings.DEFAULT_MAINNET_STAMP);
+				}
 			}
 		}
 		
@@ -33,6 +42,8 @@ public class Start {
 				{
 					throw new Exception("Both gui and rpc cannot be disabled!");
 				}
+				
+				System.out.println("Starting Qora / version: "+ Controller.getInstance().getVersion() + " / buildtime: " + BuildTime.getInstance().getBuildDateTimeString() + " / ...");
 				
 				//STARTING NETWORK/BLOCKCHAIN/RPC
 				Controller.getInstance().start();

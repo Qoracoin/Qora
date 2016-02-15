@@ -314,7 +314,7 @@ public class SendMessagePanel extends JPanel
 		txtAmountGBC.gridx = 1;
 		txtAmountGBC.gridy = 6;
 		
-		txtAmount = new JTextField("1.00000000");
+		txtAmount = new JTextField("0.00000000");
 		txtAmount.setPreferredSize(new Dimension(130,22));
 		this.add(txtAmount, txtAmountGBC);
 		
@@ -437,7 +437,7 @@ public class SendMessagePanel extends JPanel
 			return;
 		}
 		
-		if(Controller.getInstance().getStatus() != Controller.STATUS_OKE)
+		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
 			txtRecDetails.setText("Status must be OK to show receiver details.");
 			return;
@@ -489,10 +489,10 @@ public class SendMessagePanel extends JPanel
 		this.sendButton.setEnabled(false);
 		
 		//TODO TEST
-		//CHECK IF NETWORK OKE
+		//CHECK IF NETWORK OK
 		/*if(Controller.getInstance().getStatus() != Controller.STATUS_OKE)
 		{
-			//NETWORK NOT OKE
+			//NETWORK NOT OK
 			JOptionPane.showMessageDialog(null, "You are unable to send a transaction while synchronizing or while having no connections!", "Error", JOptionPane.ERROR_MESSAGE);
 			
 			//ENABLE
@@ -709,25 +709,25 @@ public class SendMessagePanel extends JPanel
 				}
 			}
 			
-			if(key != 0l && NTP.getTime() < Transaction.POWFIX_RELEASE)
+			if(key != 0l && NTP.getTime() < Transaction.getPOWFIX_RELEASE())
 			{	
-				JOptionPane.showMessageDialog(new JFrame(), "Assets transactions will be enabled at " + DateTimeFormat.timestamptoString(Transaction.POWFIX_RELEASE) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(), "Assets transactions will be enabled at " + DateTimeFormat.timestamptoString(Transaction.getPOWFIX_RELEASE()) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			
-			//CREATE PAYMENT
+			//CREATE TX MESSAGE
 			result = Controller.getInstance().sendMessage(Controller.getInstance().getPrivateKeyAccountByAddress(sender.getAddress()), recipient, key, amount, fee, messageBytes, isTextByte, encrypted);
 			
 			//CHECK VALIDATE MESSAGE
 			switch(result.getB())
 			{
-			case Transaction.VALIDATE_OKE:
+			case Transaction.VALIDATE_OK:
 				
 				//RESET FIELDS
 				
-				if(amount.compareTo(new BigDecimal(1.0)) == 1) //IF MORE THAN ONE
+				if(amount.compareTo(BigDecimal.ZERO) == 1) //IF MORE THAN ZERO
 				{
-					this.txtAmount.setText("1.00000000");
+					this.txtAmount.setText("0.00000000");
 				}
 				
 				if(this.txtTo.getText().startsWith("A"))

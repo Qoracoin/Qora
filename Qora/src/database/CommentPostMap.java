@@ -1,18 +1,18 @@
 package database;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.mapdb.DB;
 
-import utils.ByteArrayUtils;
-
 import com.google.common.primitives.SignedBytes;
 
-public class CommentPostMap extends DBMap<byte[], List<byte[]>> {
-
+/**
+ * Get the parent post for a comment (the blogpost that was commented)
+ * @author Skerberus
+ *
+ */
+public class CommentPostMap extends DBMap<byte[], byte[]> { 
 	
 	private Map<Integer, Integer> observableData = new HashMap<Integer, Integer>();
 
@@ -20,66 +20,36 @@ public class CommentPostMap extends DBMap<byte[], List<byte[]>> {
 		super(databaseSet, database);
 	}
 
-	public CommentPostMap(DBMap<byte[], List<byte[]>> parent) {
+	public CommentPostMap(DBMap<byte[], byte[]> parent) {
 		super(parent);
 	}
 
 	@Override
-	protected Map<byte[], List<byte[]>> getMap(DB database) {
+	protected Map<byte[], byte[]> getMap(DB database) {
 
-		return database.createTreeMap("CommentPostMap")
+		return database.createTreeMap("CommentPostMapTree")
 				.comparator(SignedBytes.lexicographicalComparator())
 				.makeOrGet();
 
 	}
 	
-	public void add(byte[] signatureOfPostToComment, byte[] signatureOfComment) {
-		List<byte[]> list;
-		list = get(signatureOfPostToComment);
-
-		if (list == null) {
-			list = new ArrayList<>();
-		}
-
-		if (!ByteArrayUtils.contains(list, signatureOfComment)) {
-			list.add(signatureOfComment);
-		}
-
-		set(signatureOfPostToComment, list);
-
+	public void add(byte[] signatureOfComment, byte[] signatureOfBlogPost)
+	{
+		set(signatureOfComment, signatureOfBlogPost);
 	}
 	
-	public void remove(byte[] signatureOfRelatedComment, byte[] signatureOfComment) {
-		List<byte[]> list;
-		list = get(signatureOfRelatedComment);
-
-		if (list == null) {
-			return;
-		}
-
-		if (ByteArrayUtils.contains(list, signatureOfComment)) {
-			list.remove(signatureOfComment);
-		}
-		
-		if(list.size() == 0)
-		{
-			delete(signatureOfRelatedComment);
-		}else
-		{
-			set(signatureOfRelatedComment, list);
-		}
-
-
+	public void remove(byte[] signatureOfComment)
+	{
+		delete(signatureOfComment);
 	}
-	
 
 	@Override
-	protected Map<byte[], List<byte[]>> getMemoryMap() {
+	protected Map<byte[], byte[]> getMemoryMap() {
 		return new HashMap<>();
 	}
 
 	@Override
-	protected List<byte[]> getDefaultValue() 
+	protected byte[] getDefaultValue() 
 	{
 		return null;
 	}
@@ -92,5 +62,5 @@ public class CommentPostMap extends DBMap<byte[], List<byte[]>> {
 	@Override
 	protected void createIndexes(DB database) {
 	}
-
 }
+

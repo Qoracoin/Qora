@@ -19,7 +19,7 @@ import com.twitter.Extractor;
 
 import api.BlogPostResource;
 import controller.Controller;
-import database.CommentPostMap;
+import database.PostCommentMap;
 import database.DBSet;
 import qora.crypto.Base58;
 import qora.transaction.ArbitraryTransaction;
@@ -179,7 +179,7 @@ public class BlogUtils {
 			String signatureOfBlogPost, int limit) {
 		List<BlogEntry> results = new ArrayList<>();
 
-		CommentPostMap commentPostMap = DBSet.getInstance().getCommentPostMap();
+		PostCommentMap commentPostMap = DBSet.getInstance().getPostCommentMap();
 
 		List<byte[]> list = commentPostMap.get(Base58
 				.decode(signatureOfBlogPost));
@@ -283,23 +283,45 @@ public class BlogUtils {
 
 	public static void addCommentsToBlogEntry(ArbitraryTransaction transaction,
 			BlogEntry blogEntry) {
-		CommentPostMap commentPostMap = DBSet.getInstance().getCommentPostMap();
-		List<byte[]> comments = commentPostMap.get(transaction.getSignature());
-		if(comments != null)
+		
+		if(blogEntry.getBlognameOpt() == null || Profile.getProfileOpt(blogEntry.getBlognameOpt()) != null && Profile.getProfileOpt(blogEntry.getBlognameOpt()).isCommentingAllowed())
 		{
-			for (byte[] commentByteArray : comments) {
-				Transaction commentTa = Controller.getInstance()
-						.getTransaction(commentByteArray);
-				if (commentTa != null) {
-					BlogEntry commentBlogEntryOpt = getCommentBlogEntryOpt((ArbitraryTransaction) commentTa);
-					if(commentBlogEntryOpt != null)
-					{
-						blogEntry.addComment(commentBlogEntryOpt);
+			PostCommentMap commentPostMap = DBSet.getInstance().getPostCommentMap();
+			List<byte[]> comments = commentPostMap.get(transaction.getSignature());
+			if(comments != null)
+			{
+				for (byte[] commentByteArray : comments) {
+					Transaction commentTa = Controller.getInstance()
+							.getTransaction(commentByteArray);
+					if (commentTa != null) {
+						BlogEntry commentBlogEntryOpt = getCommentBlogEntryOpt((ArbitraryTransaction) commentTa);
+						if(commentBlogEntryOpt != null)
+						{
+							blogEntry.addComment(commentBlogEntryOpt);
+						}
 					}
 				}
 			}
 		}
 	}
+	
+	
+	public static BlogEntry getCommentBlogEntryOpt(String signatureOfComment)
+	{
+		BlogEntry result = null;
+		Transaction commentTa = Controller.getInstance()
+				.getTransaction(Base58
+						.decode(signatureOfComment));
+		
+		if (commentTa != null) {
+			result = getCommentBlogEntryOpt((ArbitraryTransaction) commentTa);
+		}
+		
+		return result;
+		
+		
+	}
+	
 
 	public static BlogEntry getBlogEntryOpt(String signature) {
 		return getBlogEntryOpt(Base58.decode(signature));
@@ -412,5 +434,31 @@ public class BlogUtils {
 
 		return null;
 	}
+	
+	public static String getCreatorOrBlogOwnerOpt(BlogEntry blogEntryOpt) {
+		String creator = blogEntryOpt.getCreator();
+		
+		//WE don't have creator account
+		if(Controller.getInstance().getAccountByAddress(creator) == null)
+		{
+			creator = null;
+			String blognameOpt = blogEntryOpt.getBlognameOpt();
+			Profile profileOpt = Profile.getProfileOpt(blognameOpt);
+			
+			if(profileOpt != null)
+			{
+				String blogowner = profileOpt.getName().getOwner().getAddress();
+				//are we the owner of the blog?
+				if(Controller.getInstance().getAccountByAddress(blogowner) != null)
+				{
+					creator = blogowner;
+				}
+				
+			}
+			
+		}
+		return creator;
+	}
+
 
 }

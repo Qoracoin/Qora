@@ -1,27 +1,42 @@
 package settings;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
+import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.InetAddress;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
+import org.apache.commons.io.IOUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
 import controller.Controller;
 import network.Peer;
+import ntp.NTP;
 
 public class Settings {
 
 	//NETWORK
-	private static final int DEFAULT_MIN_CONNECTIONS = 5;
-	private static final int DEFAULT_MAX_CONNECTIONS = 20;
-	private static final int DEFAULT_CONNECTION_TIMEOUT = 60000;
+	private static final int DEFAULT_MIN_CONNECTIONS = 10;
+	private static final int DEFAULT_MAX_CONNECTIONS = 50;
+	private static final int DEFAULT_MAX_RECEIVE_PEERS = 20;
+	private static final int DEFAULT_MAX_SENT_PEERS = 20;
+	private static final int DEFAULT_CONNECTION_TIMEOUT = 10000;
 	private static final int DEFAULT_PING_INTERVAL = 30000;
+	private static final boolean DEFAULT_TRYING_CONNECT_TO_BAD_PEERS = true;
+	private static final String[] DEFAULT_PEERS = { };
+
+	//TESTNET 
+	public static final long DEFAULT_MAINNET_STAMP = 1400247274336L; // QORA RELEASE
+	private long genesisStamp = -1;
 	
 	//RPC
 	private static final int DEFAULT_RPC_PORT = 9085;
@@ -68,8 +83,12 @@ public class Settings {
 	private static Settings instance;
 	
 	private JSONObject settingsJSON;
-	
+	private JSONObject peersJSON;
+
 	private String currentSettingsPath;
+	
+	List<Peer> cacheInternetPeers;
+	long timeLoadInternetPeers;
 	
 	public static Settings getInstance()
 	{
@@ -91,7 +110,6 @@ public class Settings {
 	
 	private Settings()
 	{
-		BufferedReader reader;
 		int alreadyPassed = 0;
 		String settingsFilePath = "settings.json";
 		
@@ -109,20 +127,13 @@ public class Settings {
 					file.createNewFile();
 				}
 				
-				//READ SETTINGS FILE
-				reader = new BufferedReader(new FileReader(file));
+				//READ SETTINS JSON FILE
+				List<String> lines = Files.readLines(file, Charsets.UTF_8);
 				
-				String line;
 				String jsonString = "";
-				
-				//READ LINE
-				while ((line = reader.readLine()) != null)
-				{
+				for(String line : lines){
 					jsonString += line;
-			    }
-				
-				//CLOSE
-				reader.close();
+				}
 				
 				//CREATE JSON OBJECT
 				this.settingsJSON = (JSONObject) JSONValue.parse(jsonString);
@@ -145,6 +156,37 @@ public class Settings {
 			System.out.println("ERROR reading settings.json. closing");
 			System.exit(0);
 		}
+		
+		//TRY READ PEERS.JSON
+		try
+		{
+			//OPEN FILE
+			File file = new File(this.getCurrentPeersPath());
+			
+			//CREATE FILE IF IT DOESNT EXIST
+			if(file.exists())
+			{
+				//READ PEERS FILE
+				List<String> lines = Files.readLines(file, Charsets.UTF_8);
+				
+				String jsonString = "";
+				for(String line : lines){
+					jsonString += line;
+				}
+				
+				//CREATE JSON OBJECT
+				this.peersJSON = (JSONObject) JSONValue.parse(jsonString);
+			} else {
+				this.peersJSON = new JSONObject();
+			}
+			
+		}
+		catch(Exception e)
+		{
+			//STOP
+			System.out.println("ERROR reading peers.json.");
+			System.exit(0);
+		}
 	}
 	
 	public JSONObject Dump()
@@ -157,28 +199,141 @@ public class Settings {
 		return currentSettingsPath;
 	}
 	
+	public String getCurrentPeersPath()
+	{
+		if(this.currentSettingsPath == "settings.json" || this.currentSettingsPath == "") {
+			return "peers.json";
+		} else {
+			File file = new File(this.currentSettingsPath);
+		    if(file.exists()){
+		    	return file.getAbsoluteFile().getParent() + "/peers.json";
+		    }		
+		}
+		return currentSettingsPath;
+	}
+	
+	public JSONArray getPeersJson()
+	{
+		return (JSONArray) this.peersJSON.get("knownpeers");
+	}
+		
+	@SuppressWarnings("unchecked")
 	public List<Peer> getKnownPeers()
+	{
+		boolean loadPeersFromInternet =	(
+			Controller.getInstance().getToOfflineTime() != 0L 
+			&& 
+			NTP.getTime() - Controller.getInstance().getToOfflineTime() > 5*60*1000
+			);
+		
+		List<Peer> knownPeers = new ArrayList<Peer>();
+		
+		try {
+			JSONArray peersArray = new JSONArray();
+
+			JSONArray peersArraySettings = (JSONArray) this.settingsJSON.get("knownpeers");
+
+			if(peersArraySettings != null)
+			{
+				for (Object peer : peersArraySettings) {
+					if(!peersArray.contains(peer)) {
+						peersArray.add(peer);
+					}
+				}
+			}
+			
+			JSONArray peersArrayPeers = (JSONArray) this.peersJSON.get("knownpeers");
+			
+			if(peersArrayPeers != null)
+			{
+				for (Object peer : peersArrayPeers) {
+					if(!peersArray.contains(peer)) {
+						peersArray.add(peer);
+					}
+				}
+			}
+			knownPeers = getKnownPeersFromJSONArray(peersArray);
+		} catch (Exception e) {
+			knownPeers = new ArrayList<Peer>();
+		}
+		
+		try {
+			
+			
+		} catch (Exception e) {
+			knownPeers = new ArrayList<Peer>();
+		}
+		
+		if(knownPeers.size() == 0 || loadPeersFromInternet)
+		{
+			knownPeers = getKnownPeersFromInternet();
+		}
+			
+		return knownPeers;
+	}
+	
+	public List<Peer> getKnownPeersFromInternet() 
+	{
+		try {
+			
+			if(this.cacheInternetPeers == null) {
+				
+				this.cacheInternetPeers = new ArrayList<Peer>();
+			}
+				
+			if(this.cacheInternetPeers.size() == 0 || NTP.getTime() - this.timeLoadInternetPeers > 24*60*60*1000 )
+			{
+				this.timeLoadInternetPeers = NTP.getTime();
+				URL u = new URL("https://raw.githubusercontent.com/Qoracoin/Qora/master/Qora/peers.json");
+				InputStream in = u.openStream();
+				String stringInternetSettings = IOUtils.toString( in );
+				JSONObject internetSettingsJSON = (JSONObject) JSONValue.parse(stringInternetSettings);
+				JSONArray peersArray = (JSONArray) internetSettingsJSON.get("knownpeers");
+				if(peersArray != null) {
+					this.cacheInternetPeers = getKnownPeersFromJSONArray(peersArray);
+				}
+			}
+			
+			return this.cacheInternetPeers;
+			
+		} catch (Exception e) {
+			//RETURN EMPTY LIST
+						
+			return this.cacheInternetPeers;
+		}
+	}
+	
+	@SuppressWarnings("unchecked")
+	public List<Peer> getKnownPeersFromJSONArray(JSONArray peersArray)
 	{
 		try
 		{
 			//GET PEERS FROM JSON
-			JSONArray peersArray = (JSONArray) this.settingsJSON.get("knownpeers");
 			
+			if(peersArray.isEmpty())
+				peersArray.addAll(Arrays.asList(DEFAULT_PEERS));
+				
 			//CREATE LIST WITH PEERS
 			List<Peer> peers = new ArrayList<Peer>();
 			
 			for(int i=0; i<peersArray.size(); i++)
 			{
-				InetAddress address = InetAddress.getByName((String) peersArray.get(i));
-				
-				//CHECK IF SOCKET IS NOT LOCALHOST
-				if(!address.equals(InetAddress.getLocalHost()))
+				try
 				{
-					//CREATE PEER
-					Peer peer = new Peer(address);
-								
-					//ADD TO LIST
-					peers.add(peer);
+					InetAddress address = InetAddress.getByName((String) peersArray.get(i));
+					
+					//CHECK IF SOCKET IS NOT LOCALHOST
+					if(!address.equals(InetAddress.getLocalHost()))
+					{
+						//CREATE PEER
+						Peer peer = new Peer(address);
+									
+						//ADD TO LIST
+						peers.add(peer);
+					}
+				}catch(Exception e)
+				{
+					Logger.getGlobal().info((String) peersArray.get(i) + " - invalid peer address!");
 				}
 			}
 			
@@ -192,6 +347,32 @@ public class Settings {
 		}
 	}
 	
+	public void setGenesisStamp(long testNetStamp) {
+		this.genesisStamp = testNetStamp;
+	}
+	
+	public boolean isTestnet () {
+		return this.getGenesisStamp() != DEFAULT_MAINNET_STAMP;
+	}
+	
+	public long getGenesisStamp() {
+		if(this.genesisStamp == -1) {
+			if(this.settingsJSON.containsKey("testnetstamp"))
+			{
+				if(this.settingsJSON.get("testnetstamp").toString().equals("now") ||
+						((Long) this.settingsJSON.get("testnetstamp")).longValue() == 0) {
+					this.genesisStamp = System.currentTimeMillis();				
+				} else {
+					this.genesisStamp = ((Long) this.settingsJSON.get("testnetstamp")).longValue();
+				}
+			} else {
+				this.genesisStamp = DEFAULT_MAINNET_STAMP;
+			}
+		}
+		
+		return this.genesisStamp;
+	}
+	
 	public int getMaxConnections()
 	{
 		if(this.settingsJSON.containsKey("maxconnections"))
@@ -200,6 +381,26 @@ public class Settings {
 		}
 		
 		return DEFAULT_MAX_CONNECTIONS;
+	}
+	
+	public int getMaxReceivePeers()
+	{
+		if(this.settingsJSON.containsKey("maxreceivepeers"))
+		{
+			return ((Long) this.settingsJSON.get("maxreceivepeers")).intValue();
+		}
+		
+		return DEFAULT_MAX_RECEIVE_PEERS;
+	}
+	
+	public int getMaxSentPeers()
+	{
+		if(this.settingsJSON.containsKey("maxsentpeers"))
+		{
+			return ((Long) this.settingsJSON.get("maxsentpeers")).intValue();
+		}
+		
+		return DEFAULT_MAX_SENT_PEERS;
 	}
 	
 	public int getMinConnections()
@@ -222,6 +423,16 @@ public class Settings {
 		return DEFAULT_CONNECTION_TIMEOUT;
 	}
 	
+	public boolean isTryingConnectToBadPeers()
+	{
+		if(this.settingsJSON.containsKey("tryingconnecttobadpeers"))
+		{
+			return ((Boolean) this.settingsJSON.get("tryingconnecttobadpeers")).booleanValue();
+		}
+		
+		return DEFAULT_TRYING_CONNECT_TO_BAD_PEERS;
+	}
+		
 	public int getRpcPort()
 	{
 		if(this.settingsJSON.containsKey("rpcport"))

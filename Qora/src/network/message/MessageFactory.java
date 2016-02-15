@@ -3,6 +3,7 @@ package network.message;
 import java.io.DataInputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 import qora.block.Block;
 import qora.crypto.Crypto;
@@ -43,9 +44,19 @@ public class MessageFactory {
 		return new PeersMessage(peers);
 	}
 	
-	public Message createVersionMessage(int height)
+	public Message createHeightMessage(int height)
 	{
-		return new VersionMessage(height);
+		return new HeightMessage(height);
+	}
+	
+	public Message createVersionMessage(String strVersion, long buildDateTime)
+	{
+		return new VersionMessage(strVersion, buildDateTime);
+	}
+	
+	public Message createFindMyselfMessage(byte[] foundMyselfID)
+	{
+		return new FindMyselfMessage(foundMyselfID);
 	}
 	
 	public Message createGetHeadersMessage(byte[] parent)
@@ -162,11 +173,11 @@ public class MessageFactory {
 			message = PeersMessage.parse(data);
 			break;
 				
-		//VERSION
-		case Message.VERSION_TYPE:
+		//HEIGHT
+		case Message.HEIGHT_TYPE:
 							
-			//CREATE MESSAGE FROM DATA
-			message = VersionMessage.parse(data);
+			//CREATE HEIGHT FROM DATA
+			message = HeightMessage.parse(data);
 			break;
 			
 		//GETSIGNATURES
@@ -203,8 +214,29 @@ public class MessageFactory {
 			//CREATE MESSAGE FRO MDATA
 			message = TransactionMessage.parse(data);
 			break;
-		}
 			
+		//VERSION
+		case Message.VERSION_TYPE:
+								
+			//CREATE MESSAGE FROM DATA
+			message = VersionMessage.parse(data);
+			break;
+			
+		//FIND_MYSELF
+		case Message.FIND_MYSELF_TYPE:
+									
+			//CREATE MESSAGE FROM DATA
+			message = FindMyselfMessage.parse(data);
+			break;			
+			
+		default:
+			
+			//UNKNOWN MESSAGE
+			Logger.getGlobal().info("Received unknown type message!");
+			return new Message(type);
+			
+		}
+		
 		//SET SENDER
 		message.setSender(sender);	
 			
