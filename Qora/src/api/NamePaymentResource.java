@@ -33,6 +33,7 @@ public class NamePaymentResource {
 		{				
 			//READ JSON
 			JSONObject jsonObject = (JSONObject) JSONValue.parse(x);
+			String assetKey = (String) jsonObject.get("asset");
 			String amount = (String) jsonObject.get("amount");
 			String fee = (String) jsonObject.get("fee");
 			String sender = (String) jsonObject.get("sender");
@@ -42,10 +43,10 @@ public class NamePaymentResource {
 			if(nameToAdress.getB() == NameResult.OK)
 			{
 				String recipient = nameToAdress.getA().getAddress();
-				return APIUtils.processPayment(amount, fee, sender, recipient, x, request);
+				return APIUtils.processPayment(assetKey, amount, fee, sender, recipient, x, request);
 			}else
 			{
-				return APIUtils.processPayment(amount, fee, sender, nameName, x, request);
+				return APIUtils.processPayment(assetKey, amount, fee, sender, nameName, x, request);
 			}
 		}
 		catch(NullPointerException e)

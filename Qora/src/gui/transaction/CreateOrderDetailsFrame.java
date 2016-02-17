@@ -17,6 +17,7 @@ import javax.swing.border.EmptyBorder;
 import qora.crypto.Base58;
 import qora.transaction.CreateOrderTransaction;
 import utils.DateTimeFormat;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class CreateOrderDetailsFrame extends JFrame
@@ -78,6 +79,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField signature = new JTextField(Base58.encode(orderCreation.getSignature()));
 		signature.setEditable(false);
+		MenuPopupUtil.installContextMenu(signature);
 		this.add(signature, detailGBC);
 		
 		//LABEL REFERENCE
@@ -89,6 +91,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField reference = new JTextField(Base58.encode(orderCreation.getReference()));
 		reference.setEditable(false);
+		MenuPopupUtil.installContextMenu(reference);
 		this.add(reference, detailGBC);
 		
 		//LABEL TIMESTAMP
@@ -98,7 +101,9 @@ public class CreateOrderDetailsFrame extends JFrame
 						
 		//TIMESTAMP
 		detailGBC.gridy = 3;
-		JLabel timestamp = new JLabel(DateTimeFormat.timestamptoString(orderCreation.getTimestamp()));
+		JTextField timestamp = new JTextField(DateTimeFormat.timestamptoString(orderCreation.getTimestamp()));
+		timestamp.setEditable(false);
+		MenuPopupUtil.installContextMenu(timestamp);
 		this.add(timestamp, detailGBC);
 		
 		//LABEL CREATOR
@@ -110,6 +115,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 4;
 		JTextField creator = new JTextField(orderCreation.getCreator().getAddress());
 		creator.setEditable(false);
+		MenuPopupUtil.installContextMenu(creator);
 		this.add(creator, detailGBC);
 		
 		//LABEL HAVE
@@ -121,6 +127,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 5;
 		JTextField have = new JTextField(String.valueOf(orderCreation.getOrder().getHave()));
 		have.setEditable(false);
+		MenuPopupUtil.installContextMenu(have);
 		this.add(have, detailGBC);
 		
 		//LABEL WANT
@@ -132,6 +139,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 6;
 		JTextField want = new JTextField(String.valueOf(orderCreation.getOrder().getWant()));
 		want.setEditable(false);
+		MenuPopupUtil.installContextMenu(want);
 		this.add(want, detailGBC);
 		
 		//LABEL AMOUNT
@@ -143,6 +151,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 7;
 		JTextField amount = new JTextField(orderCreation.getOrder().getAmount().toPlainString());
 		amount.setEditable(false);
+		MenuPopupUtil.installContextMenu(amount);
 		this.add(amount, detailGBC);	
 		
 		//LABEL PRICE
@@ -154,6 +163,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 8;
 		JTextField price = new JTextField(orderCreation.getOrder().getPrice().toPlainString());
 		price.setEditable(false);
+		MenuPopupUtil.installContextMenu(price);
 		this.add(price, detailGBC);	
 		
 		//LABEL FEE
@@ -165,6 +175,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		detailGBC.gridy = 9;
 		JTextField fee = new JTextField(orderCreation.getFee().toPlainString());
 		fee.setEditable(false);
+		MenuPopupUtil.installContextMenu(fee);
 		this.add(fee, detailGBC);	
 		
 		//LABEL CONFIRMATIONS

@@ -87,7 +87,7 @@ public class OrderTests
 		//CHECK VALID
 		long timeStamp = System.currentTimeMillis();
 		CreateOrderTransaction orderCreation = new CreateOrderTransaction(account, 1l, 0l, BigDecimal.valueOf(100).setScale(8), BigDecimal.valueOf(1).setScale(8), BigDecimal.valueOf(1).setScale(8), timeStamp, account.getLastReference(dbSet), new byte[64]);		
-		assertEquals(Transaction.VALIDATE_OKE, orderCreation.isValid(dbSet));
+		assertEquals(Transaction.VALIDATE_OK, orderCreation.isValid(dbSet));
 		
 		//CREATE INVALID ORDER CREATION HAVE EQUALS WANT
 		orderCreation = new CreateOrderTransaction(account, 1l, 1l, BigDecimal.valueOf(100).setScale(8), BigDecimal.valueOf(1).setScale(8), BigDecimal.valueOf(1).setScale(8), timeStamp, account.getLastReference(dbSet), new byte[64]);		
@@ -202,7 +202,7 @@ public class OrderTests
 		}
 		catch (Exception e) 
 		{
-			//EXCEPTION IS THROWN OKE
+			//EXCEPTION IS THROWN OK
 		}	
 	}
 	

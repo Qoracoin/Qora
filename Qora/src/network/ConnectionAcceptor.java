@@ -4,6 +4,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Logger;
 
+import controller.Controller;
+import ntp.NTP;
+import qora.transaction.Transaction;
 import settings.Settings;
 
 public class ConnectionAcceptor extends Thread{
@@ -12,6 +15,8 @@ public class ConnectionAcceptor extends Thread{
 	
 	private ServerSocket socket;
 	
+	private boolean isRun;
+	
 	public ConnectionAcceptor(ConnectionCallback callback)
 	{
 		this.callback = callback;
@@ -19,14 +24,15 @@ public class ConnectionAcceptor extends Thread{
 	
 	public void run()
 	{
-		while(true)
+		this.isRun = true;
+		while(isRun)
 		{
 			try
 			{	
 				if(socket == null)
 				{
 					//START LISTENING
-					socket = new ServerSocket(Network.PORT); 
+					socket = new ServerSocket(Controller.getInstance().getNetworkPort()); 
 				}
 				
 				
@@ -46,14 +52,25 @@ public class ConnectionAcceptor extends Thread{
 					//REOPEN SOCKET
 					if(socket.isClosed())
 					{
-						socket = new ServerSocket(Network.PORT); 
+						socket = new ServerSocket(Controller.getInstance().getNetworkPort()); 
 					}
 					
 					//ACCEPT CONNECTION
 					Socket connectionSocket = socket.accept();
 					
 					//CHECK IF SOCKET IS NOT LOCALHOST || WE ARE ALREADY CONNECTED TO THAT SOCKET || BLACKLISTED
-					if(/*connectionSocket.getInetAddress().isSiteLocalAddress() || connectionSocket.getInetAddress().isAnyLocalAddress() || connectionSocket.getInetAddress().isLoopbackAddress() ||*/ callback.isConnectedTo(connectionSocket.getInetAddress()) || PeerManager.getInstance().isBlacklisted(connectionSocket.getInetAddress()))
+					if(
+							/*connectionSocket.getInetAddress().isSiteLocalAddress() 
+							 * || connectionSocket.getInetAddress().isAnyLocalAddress() 
+							 * || connectionSocket.getInetAddress().isLoopbackAddress() 
+							 *  */
+							(
+									(NTP.getTime() < Transaction.getPOWFIX_RELEASE() ) 
+									&& 
+									callback.isConnectedTo(connectionSocket.getInetAddress())
+							)
+							||
+							PeerManager.getInstance().isBlacklisted(connectionSocket.getInetAddress()))
 					{
 						//DO NOT CONNECT TO OURSELF/EXISTING CONNECTION
 						connectionSocket.close();
@@ -71,5 +88,10 @@ public class ConnectionAcceptor extends Thread{
 				Logger.getGlobal().warning("Error accepting new connection");			
 			}
 		}
+	}
+	
+	public void halt()
+	{
+		this.isRun = false;
 	}
 }

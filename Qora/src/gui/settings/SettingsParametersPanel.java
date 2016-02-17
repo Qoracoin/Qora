@@ -17,14 +17,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
-import gui.models.KnownPeersTableModel;
 import settings.Settings;
 
 
 @SuppressWarnings("serial")
 public class SettingsParametersPanel extends JPanel 
 {
-	private KnownPeersTableModel knownPeersTableModel;
 	public JTextField txtRpcPort;
 	public JTextField txtWebport;
 	public JTextField textDataFolder;
@@ -46,7 +44,6 @@ public class SettingsParametersPanel extends JPanel
 		//PADDING
 		this.setBorder(new EmptyBorder(10, 5, 5, 10));
         
-		this.knownPeersTableModel = new KnownPeersTableModel();
         GridBagLayout gridBagLayout = new GridBagLayout();
         gridBagLayout.rowHeights = new int[] {30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30};
         gridBagLayout.columnWidths = new int[] {40, 70, 92, 88, 92, 30, 0};
@@ -372,10 +369,4 @@ public class SettingsParametersPanel extends JPanel
       	this.add(new JPanel(), gbc_bottom);
         
  	}
-	public void close() 
-	{
-		//REMOVE OBSERVERS/HANLDERS
-		this.knownPeersTableModel.removeObservers();
-	}
-	
 }

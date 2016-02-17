@@ -3,15 +3,18 @@ package qora;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
+import controller.Controller;
+import database.DBSet;
 import qora.account.Account;
 import qora.assets.Asset;
 import qora.block.Block;
 import qora.block.GenesisBlock;
 import qora.transaction.ArbitraryTransaction;
 import qora.transaction.Transaction;
+import settings.Settings;
 import utils.Pair;
-import database.DBSet;
 
 public class BlockChain
 {
@@ -20,9 +23,27 @@ public class BlockChain
 	public BlockChain()
 	{	
 		//CREATE GENESIS BLOCK
-    	Block genesisBlock = new GenesisBlock();	
-        if(!DBSet.getInstance().getBlockMap().contains(genesisBlock.getSignature()))
-        {
+		Block genesisBlock = new GenesisBlock();
+
+		if(Settings.getInstance().isTestnet()) {
+			Logger.getGlobal().info( ((GenesisBlock)genesisBlock).getTestNetInfo() );
+		}
+		
+		if(	!DBSet.getInstance().getBlockMap().contains(genesisBlock.getSignature())
+			||
+			DBSet.getInstance().getBlockMap().get(genesisBlock.getSignature()).getTimestamp() != genesisBlock.getTimestamp()) 
+		{
+			if(DBSet.getInstance().getBlockMap().getLastBlockSignature() != null)
+			{
+				Logger.getGlobal().info("reCreate Database...");	
+		
+	        	try {
+	        		DBSet.getInstance().close();
+					Controller.getInstance().reCreateDB(false);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
         	//PROCESS
         	genesisBlock.process();
         	
@@ -95,12 +116,6 @@ public class BlockChain
 		{
 			return false;
 		}
-		
-		//CHECK IF BLOCK IS VALID
-		//if(!block.isValid())
-		//{
-		//	return false;
-		//}
 		
 		return true;
 	}

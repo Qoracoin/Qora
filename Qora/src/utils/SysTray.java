@@ -1,18 +1,5 @@
 package utils;
 
-import gui.ConsolePanel;
-import gui.Gui;
-import gui.PasswordPane;
-import gui.QoraRowSorter;
-import gui.SendMessagePanel;
-import gui.SendMoneyPanel;
-import gui.assets.AssetsPanel;
-import gui.models.WalletTransactionsTableModel;
-import gui.naming.NamingServicePanel;
-import gui.settings.SettingsFrame;
-import gui.transaction.TransactionDetailsFactory;
-import gui.voting.VotingPanel;
-
 import java.awt.AWTException;
 import java.awt.HeadlessException;
 import java.awt.Image;
@@ -29,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.TreeMap;
 
 import javax.swing.ImageIcon;
@@ -37,17 +26,35 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import qora.transaction.Transaction;
-import settings.Settings;
 import controller.Controller;
 import database.wallet.TransactionMap;
+import gui.ClosingDialog;
+import gui.ConsolePanel;
+import gui.Gui;
+import gui.PasswordPane;
+import gui.QoraRowSorter;
+import gui.SendMessagePanel;
+import gui.SendMoneyPanel;
+import gui.assets.AssetsPanel;
+import gui.models.WalletTransactionsTableModel;
+import gui.naming.NamingServicePanel;
+import gui.settings.SettingsFrame;
+import gui.transaction.TransactionDetailsFactory;
+import gui.voting.VotingPanel;
+import qora.block.Block;
+import qora.transaction.Transaction;
+import settings.Settings;
 
-public class SysTray {
+public class SysTray implements Observer{
 
 	private static SysTray systray = null;
 	private TrayIcon icon = null;
 	private PopupMenu createPopupMenu;
-
+	private int currentHeight;
+	private String networkStatus;
+	private String syncProcent;
+	private String toolTipText;
+	
 	public static SysTray getInstance() {
 		if (systray == null) {
 			systray = new SysTray();
@@ -55,23 +62,33 @@ public class SysTray {
 
 		return systray;
 	}
-
+	
+	public SysTray()
+	{
+		this.networkStatus = "";
+		this.syncProcent = "";
+		Controller.getInstance().addObserver(this);	
+	}
+	
 	public void createTrayIcon() throws HeadlessException,
 			MalformedURLException, AWTException, FileNotFoundException {
 		if (icon == null) {
 			if (!SystemTray.isSupported()) {
 				System.out.println("SystemTray is not supported");
 			} else {
+				
+				this.toolTipText = "Qora "	+ Controller.getInstance().getVersion();
 				createPopupMenu = createPopupMenu();
 				TrayIcon icon = new TrayIcon(createImage(
-						"images/icons/icon16.png", "tray icon"), "Qora "
+						"images/icons/icon32.png", "tray icon"), "Qora "
 						+ Controller.getInstance().getVersion(),
 						createPopupMenu);
 				
+				icon.setImageAutoSize(true);
 				
 				SystemTray.getSystemTray().add(icon);
 				this.icon = icon;
-				
+			
 				icon.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						try {
@@ -81,10 +98,11 @@ public class SysTray {
 						}
 					}
 				});
+				
+				this.update(new Observable(), new ObserverMessage(ObserverMessage.NETWORK_STATUS, Controller.getInstance().getStatus()));
 			}
 		}
 	}
-	
 	
 	public void sendMessage(String caption, String text, TrayIcon.MessageType messagetype  )
 	{
@@ -222,7 +240,6 @@ public class SysTray {
 					});			
 					
 					frame.getContentPane().add(new JScrollPane(transactionsTable)  );
-					
 			}
 		});
 		menu.add(transactions);
@@ -305,12 +322,82 @@ public class SysTray {
 		MenuItem exit = new MenuItem("Exit");
 		exit.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				 Controller.getInstance().stopAll();
-	              System.exit(0);
+				new ClosingDialog();
 			}
 		});
 		menu.add(exit);
 		
 		return menu;
 	}
+	
+	public void setToolTipText(String text)
+	{
+		this.icon.setToolTip(text);
+	}
+
+	@Override
+	public void update(Observable arg0, Object arg1) {
+		
+		if(this.icon == null) {
+			return;
+		}
+		
+		ObserverMessage message = (ObserverMessage) arg1;
+			
+		this.toolTipText = "Qora " + Controller.getInstance().getVersion() + "\n";
+		
+		if(Controller.getInstance().getStatus() == Controller.STATUS_NO_CONNECTIONS)
+		{
+			this.networkStatus = "No connections";
+			this.syncProcent = "";
+		}
+		if(Controller.getInstance().getStatus() == Controller.STATUS_SYNCHRONIZING)
+		{
+			this.networkStatus = "Synchronizing";
+		}
+		if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
+		{
+			this.networkStatus = "OK";
+			this.syncProcent = "";
+		}	
+
+		if(message.getType() == ObserverMessage.WALLET_SYNC_STATUS)
+		{
+			this.currentHeight = (int)message.getValue();
+			if(this.currentHeight == -1)
+			{
+				this.update(null, new ObserverMessage(
+						ObserverMessage.NETWORK_STATUS, Controller.getInstance().getStatus()));
+				this.currentHeight = Controller.getInstance().getHeight();
+				return;
+			}
+			this.networkStatus = "Wallet Synchronizing";
+			
+			this.syncProcent = 100 * this.currentHeight/Controller.getInstance().getHeight() + "%";
+		}
+
+		if(message.getType() == ObserverMessage.ADD_BLOCK_TYPE)
+		{
+			this.currentHeight = ((Block)message.getValue()).getHeight(); 
+
+			if(Controller.getInstance().getStatus() == Controller.STATUS_SYNCHRONIZING)
+			{
+				this.syncProcent = 100 * this.currentHeight/Controller.getInstance().getMaxPeerHeight() + "%";	
+			}	
+		}
+		
+		this.toolTipText += this.networkStatus + " " + this.syncProcent;
+
+		if(Controller.getInstance().getStatus() == Controller.STATUS_OK || Controller.getInstance().getStatus() == Controller.STATUS_NO_CONNECTIONS) {
+			this.toolTipText += "\nHeight: " + Controller.getInstance().getHeight();
+		} else if(this.currentHeight == Controller.getInstance().getHeight()) {
+			this.toolTipText += "\nHeight: " + this.currentHeight;
+		} else if(this.currentHeight < Controller.getInstance().getHeight()) {
+			this.toolTipText += "\nHeight: " + this.currentHeight + "/" + Controller.getInstance().getHeight() + "/" + Controller.getInstance().getMaxPeerHeight();
+		} 
+		
+		setToolTipText(toolTipText);
+	}
+	
+	
 }

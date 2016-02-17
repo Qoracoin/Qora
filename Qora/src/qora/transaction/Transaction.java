@@ -7,17 +7,18 @@ import java.util.List;
 
 import org.json.simple.JSONObject;
 
+import controller.Controller;
+import database.DBSet;
 import qora.account.Account;
 import qora.account.PublicKeyAccount;
 import qora.block.Block;
 import qora.crypto.Base58;
 import settings.Settings;
-import database.DBSet;
 
 public abstract class Transaction {
 	
 	//VALIDATION CODE
-	public static final int VALIDATE_OKE = 1;
+	public static final int VALIDATE_OK = 1;
 	public static final int INVALID_ADDRESS = 2;
 	public static final int NEGATIVE_AMOUNT = 3;
 	public static final int NEGATIVE_FEE = 4;
@@ -95,12 +96,55 @@ public abstract class Transaction {
 	public static final BigDecimal MINIMUM_FEE = BigDecimal.ONE;
 	
 	//RELEASES
-	public static final long VOTING_RELEASE = 1403715600000l;
-	public static final long ARBITRARY_TRANSACTIONS_RELEASE = 1405702800000l;
-	public static final int AT_BLOCK_HEIGHT_RELEASE = 99000;
-	public static final int MESSAGE_BLOCK_HEIGHT_RELEASE = 99000;
+	private static final long VOTING_RELEASE = 1403715600000l;
+	private static final long ARBITRARY_TRANSACTIONS_RELEASE = 1405702800000l;
+	private static final int AT_BLOCK_HEIGHT_RELEASE = 99000;
+	private static final int MESSAGE_BLOCK_HEIGHT_RELEASE = 99000;
 	//public static final long ASSETS_RELEASE = 1411308000000l;
-	public static final long ASSETS_RELEASE = 0l;
+	private static final long ASSETS_RELEASE = 0l;
+	private static final long POWFIX_RELEASE = 1456426800000L; // Block Version 3 // 2016-02-25T19:00:00+00:00
+											   
+	public static long getVOTING_RELEASE() {
+		if(Settings.getInstance().isTestnet()) {
+			return Settings.getInstance().getGenesisStamp();
+		}
+		return VOTING_RELEASE;
+	}
+
+	public static long getARBITRARY_TRANSACTIONS_RELEASE() {
+		if(Settings.getInstance().isTestnet()) {
+			return Settings.getInstance().getGenesisStamp();
+		}
+		return ARBITRARY_TRANSACTIONS_RELEASE;
+	}
+
+	public static int getAT_BLOCK_HEIGHT_RELEASE() {
+		if(Settings.getInstance().isTestnet()) {
+			return 1;
+		}
+		return AT_BLOCK_HEIGHT_RELEASE;
+	}
+	
+	public static int getMESSAGE_BLOCK_HEIGHT_RELEASE() {
+		if(Settings.getInstance().isTestnet()) {
+			return 1;
+		}
+		return MESSAGE_BLOCK_HEIGHT_RELEASE;
+	}
+	
+	public static long getASSETS_RELEASE() {
+		if(Settings.getInstance().isTestnet()) {
+			return Settings.getInstance().getGenesisStamp();
+		}
+		return ASSETS_RELEASE;
+	}
+	
+	public static long getPOWFIX_RELEASE() {
+		if(Settings.getInstance().isTestnet()) {
+			return Settings.getInstance().getGenesisStamp();
+		}
+		return POWFIX_RELEASE;
+	}
 	
 	//PROPERTIES LENGTH
 	protected static final int TYPE_LENGTH = 4;
@@ -308,4 +352,15 @@ public abstract class Transaction {
 		}
 	}
 
+	public int getBlockVersion()
+	{
+		// IF ALREADY IN THE BLOCK. CONFIRMED 
+		if(this.isConfirmed())
+		{
+			return DBSet.getInstance().getTransactionParentMap().getParent(this.getSignature()).getVersion();
+		}
+		
+		// IF UNCONFIRMED
+		return Controller.getInstance().getLastBlock().getNextBlockVersion(DBSet.getInstance());	
+	}
 }

@@ -49,7 +49,7 @@ public class LinkUtils {
 	}
 	
 	public static String transformURLIntoLinks(String text) {
-		String urlValidationRegex = "(https?|ftp)://(www\\d?|[a-zA-Z0-9]+)?.[a-zA-Z0-9-]+(\\:|.)([a-zA-Z0-9.]+|(\\d+)?)([/?:].*)?";
+		String urlValidationRegex = "(https?|ftp)://(www\\d?|[a-zA-Z0-9]+)?.[a-zA-Z0-9-]+(\\:|.)([a-zA-Z0-9.-]+|(\\d+)?)([/?:].*)?";
 		Pattern p = Pattern.compile(urlValidationRegex);
 		Matcher m = p.matcher(text);
 		StringBuffer sb = new StringBuffer();

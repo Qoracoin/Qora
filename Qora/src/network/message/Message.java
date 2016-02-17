@@ -7,11 +7,12 @@ import qora.crypto.Crypto;
 import com.google.common.primitives.Bytes;
 import com.google.common.primitives.Ints;
 
+import controller.Controller;
 import network.Peer;
 
 public class Message {
 
-	public static final byte[] MAGIC = {0x12, 0x34, 0x56, 0x78};
+	public static final byte[] MAINNET_MAGIC = {0x12, 0x34, 0x56, 0x78};
 	
 	public static final int MAGIC_LENGTH = 4;
 	
@@ -22,14 +23,16 @@ public class Message {
 	
 	public static final int GET_PEERS_TYPE = 1;
 	public static final int PEERS_TYPE = 2;
-	public static final int VERSION_TYPE = 3;
+	public static final int HEIGHT_TYPE = 3;
 	public static final int GET_SIGNATURES_TYPE = 4;
 	public static final int SIGNATURES_TYPE = 5;
 	public static final int GET_BLOCK_TYPE = 6;
 	public static final int BLOCK_TYPE = 7;
 	public static final int TRANSACTION_TYPE = 8;
 	public static final int PING_TYPE = 9;
-	
+	public static final int VERSION_TYPE = 10;
+	public static final int FIND_MYSELF_TYPE = 11;
+
 	private int type;
 	private Peer sender;
 	private int id;
@@ -80,7 +83,7 @@ public class Message {
 		byte[] data = new byte[0];
 		
 		//WRITE MAGIC
-		data = Bytes.concat(data, MAGIC);
+		data = Bytes.concat(data, Controller.getInstance().getMessageMagic());
 		
 		//WRITE MESSAGE TYPE
 		byte[] typeBytes = Ints.toByteArray(this.type);

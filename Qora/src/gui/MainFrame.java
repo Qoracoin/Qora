@@ -1,7 +1,5 @@
 package gui;
 
-import gui.status.StatusPanel;
-
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -12,7 +10,8 @@ import java.util.List;
 
 import javax.swing.JFrame;
 
-import controller.Controller;
+import gui.status.StatusPanel;
+import settings.Settings;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame{
@@ -21,7 +20,11 @@ public class MainFrame extends JFrame{
 	{
 		//CREATE FRAME
 		super("Qora");
-		       
+		
+		if(Settings.getInstance().isTestnet()) {
+			setTitle("Qora TestNet " + Settings.getInstance().getGenesisStamp());
+		}
+		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();
 		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon16.png"));
@@ -50,9 +53,7 @@ public class MainFrame extends JFrame{
         {
             public void windowClosing(WindowEvent e)
             {
-            	setVisible(false);
-            	Controller.getInstance().stopAll();
-            	System.exit(0);
+            	new ClosingDialog();
             }
         });
         
@@ -62,5 +63,4 @@ public class MainFrame extends JFrame{
         this.setVisible(true);
         
 	}
-	
 }

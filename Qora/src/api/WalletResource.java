@@ -27,6 +27,8 @@ public class WalletResource {
 	@GET
 	public String getWallet()
 	{
+		APIUtils.askAPICallAllowed("GET wallet", request);
+
 		JSONObject jsonObject = new JSONObject();
 		
 		jsonObject.put("exists", Controller.getInstance().doesWalletExists());
@@ -39,7 +41,9 @@ public class WalletResource {
 	@Path("/seed")
 	public String getSeed()
 	{
-		
+
+		APIUtils.askAPICallAllowed("GET wallet/seed", request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{
@@ -51,9 +55,7 @@ public class WalletResource {
 		{
 			throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_WALLET_LOCKED);
 		}
-		
-		APIUtils.askAPICallAllowed("GET wallet/seed", request);
-				
+
 		byte[] seed = Controller.getInstance().exportSeed();
 		return Base58.encode(seed);
 	}
@@ -62,20 +64,30 @@ public class WalletResource {
 	@Path("/synchronize")
 	public String synchronize()
 	{
+		APIUtils.askAPICallAllowed("GET wallet/synchronize", request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{
 			throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_WALLET_NO_EXISTS);
 		}
 				
-		Controller.getInstance().synchronizeWallet();
-		return String.valueOf(true);
+		if(!Controller.getInstance().isProcessingWalletSynchronize()) {
+			
+			Controller.getInstance().synchronizeWallet();
+			
+			return String.valueOf(true);
+		} else {
+			return String.valueOf(false);
+		}
 	}
 	
 	@GET
 	@Path("/lock")
 	public String lock()
 	{
+		APIUtils.askAPICallAllowed("GET wallet/lock", request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{
@@ -91,6 +103,8 @@ public class WalletResource {
 	{
 		try
 		{
+			APIUtils.askAPICallAllowed("POST wallet " + x, request);
+
 			//READ JSON
 			JSONObject jsonObject = (JSONObject) JSONValue.parse(x);
 			boolean recover = (boolean) jsonObject.get("recover");
@@ -156,6 +170,8 @@ public class WalletResource {
 	@Consumes(MediaType.WILDCARD)	
 	public String unlock(String x)
 	{
+		APIUtils.askAPICallAllowed("POST wallet/unlock " + x, request);
+
 		String password = x;
 		
 		//CHECK IF WALLET EXISTS

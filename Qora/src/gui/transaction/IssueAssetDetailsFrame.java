@@ -19,6 +19,7 @@ import javax.swing.border.EmptyBorder;
 import qora.crypto.Base58;
 import qora.transaction.IssueAssetTransaction;
 import utils.DateTimeFormat;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class IssueAssetDetailsFrame extends JFrame
@@ -80,6 +81,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField signature = new JTextField(Base58.encode(assetIssue.getSignature()));
 		signature.setEditable(false);
+		MenuPopupUtil.installContextMenu(signature);
 		this.add(signature, detailGBC);
 		
 		//LABEL REFERENCE
@@ -91,6 +93,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField reference = new JTextField(Base58.encode(assetIssue.getReference()));
 		reference.setEditable(false);
+		MenuPopupUtil.installContextMenu(reference);
 		this.add(reference, detailGBC);
 		
 		//LABEL TIMESTAMP
@@ -100,7 +103,9 @@ public class IssueAssetDetailsFrame extends JFrame
 						
 		//TIMESTAMP
 		detailGBC.gridy = 3;
-		JLabel timestamp = new JLabel(DateTimeFormat.timestamptoString(assetIssue.getTimestamp()));
+		JTextField timestamp = new JTextField(DateTimeFormat.timestamptoString(assetIssue.getTimestamp()));
+		timestamp.setEditable(false);
+		MenuPopupUtil.installContextMenu(timestamp);
 		this.add(timestamp, detailGBC);
 		
 		//LABEL CREATOR
@@ -112,6 +117,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 4;
 		JTextField creator = new JTextField(assetIssue.getCreator().getAddress());
 		creator.setEditable(false);
+		MenuPopupUtil.installContextMenu(creator);
 		this.add(creator, detailGBC);
 		
 		//LABEL OWNER
@@ -123,6 +129,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 5;
 		JTextField owner = new JTextField(assetIssue.getAsset().getOwner().getAddress());
 		owner.setEditable(false);
+		MenuPopupUtil.installContextMenu(owner);
 		this.add(owner, detailGBC);
 		
 		//LABEL NAME
@@ -134,6 +141,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 6;
 		JTextField name = new JTextField(assetIssue.getAsset().getName());
 		name.setEditable(false);
+		MenuPopupUtil.installContextMenu(name);
 		this.add(name, detailGBC);		
 		
 		//LABEL DESCRIPTION
@@ -147,6 +155,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		txtAreaDescription.setRows(4);
 		txtAreaDescription.setBorder(name.getBorder());
 		txtAreaDescription.setEditable(false);
+		MenuPopupUtil.installContextMenu(txtAreaDescription);
 		this.add(txtAreaDescription, detailGBC);		
 		
 		//LABEL QUANTITY
@@ -158,6 +167,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 8;
 		JTextField quantity = new JTextField(assetIssue.getAsset().getQuantity().toString());
 		quantity.setEditable(false);
+		MenuPopupUtil.installContextMenu(quantity);
 		this.add(quantity, detailGBC);	
 		
 		//LABEL DIVISIBLE
@@ -181,6 +191,7 @@ public class IssueAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 10;
 		JTextField fee = new JTextField(assetIssue.getFee().toPlainString());
 		fee.setEditable(false);
+		MenuPopupUtil.installContextMenu(fee);
 		this.add(fee, detailGBC);	
 		
 		//LABEL CONFIRMATIONS

@@ -85,11 +85,16 @@ public class PollOption {
 	
 	public BigDecimal getVotes()
 	{
+		return getVotes(0);
+	}
+
+	public BigDecimal getVotes(long assetKey)
+	{
 		BigDecimal votes = BigDecimal.ZERO.setScale(8);
 		
 		for(Account voter: this.voters)
 		{
-			votes = votes.add(voter.getConfirmedBalance());
+			votes = votes.add(voter.getConfirmedBalance(assetKey));
 		}
 		
 		return votes;
@@ -192,5 +197,10 @@ public class PollOption {
 	public String toString()
 	{
 		return this.name + " - " + this.getVotes().toPlainString();
+	}
+	
+	public String toString(long assetKey)
+	{
+		return this.name + " - " + this.getVotes(assetKey).toPlainString();
 	}
 }

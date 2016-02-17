@@ -42,6 +42,13 @@ public class BlogEntry {
 	private List<String> imagelinks = new ArrayList<String>();
 	private String signature;
 	private String shareSignatureOpt;
+	private List<BlogEntry> comments = new ArrayList<>();
+	
+	/**
+	 * This should only be set if this is a comment! The id is the signature of the post that gets commented
+	 */
+	private String commentPostidOpt;
+	
 	private boolean isLiking = false;
 	private List<String> likingUser = new ArrayList<>();
 	private List<String> sharingUser = new ArrayList<>();
@@ -84,11 +91,8 @@ public class BlogEntry {
 				processedHashtags.add(hashtag);
 			}
 		}
-		
-		
-		
-		
 	}
+	
 	private void handleBlogTags() {
 		hashTags = BlogUtils.getBlogTags(description);
 		List<String> processedBlogtags = new ArrayList<>();
@@ -102,9 +106,6 @@ public class BlogEntry {
 				processedBlogtags.add(blogTag);
 			}
 		}
-		
-		
-		
 	}
 
 	private void addAvatar() {
@@ -129,9 +130,7 @@ public class BlogEntry {
 			imagelinks.add(url);
 			description = description.replace(matcher.group(), getImgHtml(url));
 		}
-
 	}
-	
 	
 	private String getImgHtml(String url)
 	{
@@ -217,10 +216,21 @@ public class BlogEntry {
 		json.put("titleOpt", this.getTitleOpt());
 		json.put("description", this.getDescription());
 		json.put("avatar", this.getAvatar());
+
+		if(this.getShareSignatureOpt() != null)
+			json.put("shareSignatureOpt", this.getShareSignatureOpt());
+
+		if(this.getShareAuthorOpt() != null)
+			json.put("shareAuthorOpt", this.getShareAuthorOpt());
+		
+		json.put("timestamp", this.getTime());
+		json.put("likes", this.getLikes());
+		json.put("shares", this.getShares());
+		json.put("signature", this.getSignature());
 		
 		return json;	
 	}
-
+	
 	public Profile getProfileOpt() {
 		return profileOpt;
 	}
@@ -291,6 +301,24 @@ public class BlogEntry {
 		return Collections.unmodifiableList(hashTags);
 	}
 
+	public String getCommentPostidOpt() {
+		return commentPostidOpt;
+	}
+
+	public void setCommentPostidOpt(String commentPostidOpt) {
+		this.commentPostidOpt = commentPostidOpt;
+	}
+
+	public List<BlogEntry> getComments() {
+		return comments;
+	}
 	
+	public void addComment(BlogEntry entry)
+	{
+		if(!comments.contains(entry))
+		{
+			comments.add(entry);
+		}
+	}
 
 }

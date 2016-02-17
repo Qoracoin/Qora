@@ -1,10 +1,6 @@
 package qora.block;
 
-import java.util.Arrays;
-
 import qora.account.PublicKeyAccount;
-
-import com.google.common.primitives.Ints;
 
 public class BlockFactory {
 
@@ -27,25 +23,8 @@ public class BlockFactory {
 	
 	public Block parse(byte[] data) throws Exception
 	{
-		//GET HASH
-		int position = Block.VERSION_LENGTH + Block.REFERENCE_LENGTH + Block.TIMESTAMP_LENGTH + Block.GENERATING_BALANCE_LENGTH + Block.GENERATOR_LENGTH;
-		byte[] signature =  Arrays.copyOfRange(data, position, position + Block.GENERATOR_SIGNATURE_LENGTH);
-		
-		//CHECK IF GENESISBLOCK
-		if(Arrays.equals(GenesisBlock.generateHash(), signature))
-		{
-			//PARSE GENESISBLOCK
-			return new GenesisBlock();
-		}
-		else
-		{
-			//PARSE HEIGHT
-			byte[] versionBytes =  Arrays.copyOfRange(data, 0, 4);
-			int version = Ints.fromByteArray(versionBytes);
-			
-			//PARSE NORMAL BLOCK
-			return ( version > 1 ) ? Block.parse(data) : Block.parseOld(data);
-		}
+		//PARSE BLOCK
+		return Block.parse(data);
 	}
 
 	public Block create(int version, byte[] reference, long timestamp, long baseTarget, PublicKeyAccount generator, byte[] signature, byte[] atBytes, long atFees) 

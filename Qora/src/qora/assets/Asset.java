@@ -205,7 +205,7 @@ public class Asset {
 		{
 		*/	
 		
-		return "(" + this.getKey() + ")" + this.getName();
+		return "(" + this.getKey() + ") " + this.getName();
 	}
 	
 	public String getShort()

@@ -235,7 +235,7 @@ public class MultiPaymentTransaction extends Transaction {
 	public int isValid(DBSet db) 
 	{
 		//CHECK IF RELEASED
-		if(NTP.getTime() < ASSETS_RELEASE)
+		if(NTP.getTime() < Transaction.getASSETS_RELEASE())
 		{
 			return NOT_YET_RELEASED;
 		}
@@ -249,6 +249,15 @@ public class MultiPaymentTransaction extends Transaction {
 		//REMOVE FEE
 		DBSet fork = db.fork();
 		this.sender.setConfirmedBalance(this.sender.getConfirmedBalance(fork).subtract(this.fee), fork);
+		
+		//ONLY AFTER POWFIX_RELEASE TO SAVE THE OLD NETWORK
+		if(this.timestamp >= Transaction.getPOWFIX_RELEASE()) {
+			//CHECK IF SENDER HAS ENOUGH QORA BALANCE
+			if(this.sender.getConfirmedBalance(fork).compareTo(BigDecimal.ZERO) == -1)
+			{
+				return NO_BALANCE;
+			}	
+		}
 		
 		//CHECK PAYMENTS
 		for(Payment payment: this.payments)
@@ -286,7 +295,7 @@ public class MultiPaymentTransaction extends Transaction {
 			payment.process(this.sender, fork);
 		}
 		
-		//CHECK IF REFERENCE IS OKE
+		//CHECK IF REFERENCE IS OK
 		if(!Arrays.equals(this.sender.getLastReference(db), this.reference))
 		{
 			return INVALID_REFERENCE;
@@ -298,7 +307,7 @@ public class MultiPaymentTransaction extends Transaction {
 			return NEGATIVE_FEE;
 		}
 		
-		return VALIDATE_OKE;
+		return VALIDATE_OK;
 	}
 
 	//PROCESS/ORPHAN

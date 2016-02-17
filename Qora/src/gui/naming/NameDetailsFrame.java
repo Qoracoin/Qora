@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
 import qora.naming.Name;
+import utils.GZIP;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class NameDetailsFrame extends JFrame
@@ -63,6 +65,7 @@ public class NameDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField registrant = new JTextField(name.getOwner().getAddress());
 		registrant.setEditable(false);
+		MenuPopupUtil.installContextMenu(registrant);
 		this.add(registrant, detailGBC);
 		
 		//LABEL NAME
@@ -74,6 +77,7 @@ public class NameDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField txtName = new JTextField(name.getName());
 		txtName.setEditable(false);
+		MenuPopupUtil.installContextMenu(txtName);
 		this.add(txtName, detailGBC);		
 		
 		//LABEL VALUE
@@ -83,10 +87,11 @@ public class NameDetailsFrame extends JFrame
 		           
 		//VALUE
 		detailGBC.gridy = 3;
-		JTextArea txtAreaValue = new JTextArea(name.getValue());
+		JTextArea txtAreaValue = new JTextArea(GZIP.webDecompress(name.getValue()));
 		txtAreaValue.setRows(4);
 		txtAreaValue.setBorder(txtName.getBorder());
 		txtAreaValue.setEditable(false);
+		MenuPopupUtil.installContextMenu(txtAreaValue);
 		this.add(txtAreaValue, detailGBC);	
 		
         //PACK

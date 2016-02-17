@@ -61,39 +61,44 @@ public class WalletBlocksTableModel extends QoraTableModel<Tuple2<String, String
 	@Override
 	public Object getValueAt(int row, int column)
 	{
-		if(blocks == null || blocks.size() - 1 < row)
+		try 
 		{
-			return null;
-		}
-		
-		Block block = this.blocks.get(row).getB();
-		
-		switch(column)
-		{
-		case COLUMN_HEIGHT:
+			if(blocks == null || blocks.size() - 1 < row)
+			{
+				return null;
+			}
 			
-			return block.getHeight();
+			Block block = this.blocks.get(row).getB();
 			
-		case COLUMN_TIMESTAMP:
-			
-			return DateTimeFormat.timestamptoString(block.getTimestamp());
-			
-		case COLUMN_GENERATOR:
-			
-			return block.getGenerator().getAddress();
-			
-		case COLUMN_BASETARGET:
-			
-			return block.getGeneratingBalance();
-			
-		case COLUMN_TRANSACTIONS:
-			
-			return block.getTransactionCount();
-			
-		case COLUMN_FEE:	
-			
-			return block.getTotalFee().toPlainString();
-			
+			switch(column)
+			{
+			case COLUMN_HEIGHT:
+				
+				return block.getHeight();
+				
+			case COLUMN_TIMESTAMP:
+				
+				return DateTimeFormat.timestamptoString(block.getTimestamp());
+				
+			case COLUMN_GENERATOR:
+				
+				return block.getGenerator().getAddress();
+				
+			case COLUMN_BASETARGET:
+				
+				return block.getGeneratingBalance();
+				
+			case COLUMN_TRANSACTIONS:
+				
+				return block.getTransactionCount();
+				
+			case COLUMN_FEE:	
+				
+				return block.getTotalFee().toPlainString();
+				
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		return null;

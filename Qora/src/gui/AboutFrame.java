@@ -1,6 +1,12 @@
 package gui;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -10,22 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
-
-import java.awt.Dimension;
-import java.awt.GridBagLayout;
-
 import javax.swing.JLabel;
-
-import java.awt.GridBagConstraints;
-import java.awt.Font;
-
 import javax.swing.SwingConstants;
 
-import utils.BuildTime;
 import controller.Controller;
-
-import java.awt.Insets;
-import java.awt.Color;
 
 @SuppressWarnings("serial")
 public class AboutFrame extends JFrame{
@@ -86,7 +80,7 @@ public class AboutFrame extends JFrame{
         gbc_lbllversionLabel.gridy = 1;
         aboutPanel.add(lblversionLabel, gbc_lbllversionLabel);
         
-        JLabel label = new JLabel("Build date: " + BuildTime.getBuildDate());
+        JLabel label = new JLabel("Build date: " + Controller.getInstance().getBuildDateString());
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setForeground(Color.WHITE);
         label.setFont(new Font("Tahoma", Font.PLAIN, 13));

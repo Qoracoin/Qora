@@ -246,6 +246,13 @@
         </div>
       </div>
     </div>
+	<div id="commentModal" class="modal fade">
+	  <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <iframe id=commentIframe width="100%" height="100%" frameborder="0" src="#"></iframe>
+        </div>
+      </div>
+    </div>
     {{navbar}}
     <div class="container">
       <div class="row">
@@ -303,9 +310,9 @@
                     </div>
                     <div class="media-right">
                       <div class="btn-group post-actions">
-                        <button class="btn btn-default" onmouseover="changeTextarea{{blogpost.getSignature()}}(location.protocol + '//' + window.location.host + '/index/showpost.html?msg={{blogpost.getSignature()}}')" id="copybutton{{blogpost.getSignature()}}" data-toggle="tooltip" data-placement="bottom" title="Copy to clipboard" data-clipboard-target="clipboard_textarea">
+                        <a class="btn btn-default" href="/index/showpost.html?msg={{blogpost.getSignature()}}">
                           <i class="glyphicon glyphicon-link"></i>
-                        </button>
+                        </a>
                         {% if blogpost.getShareSignatureOpt() is not null%}
                           <button class ="btn btn-default" onclick="javascript:processDelete('{{blogpost.getShareSignatureOpt()}}')" >
                             <i class="glyphicon glyphicon-trash" style=""></i>
@@ -330,7 +337,53 @@
                 <div class="timeline-footer">
                   <a><span onclick="javascript:processLike('{{blogpost.getSignature()}}', {{blogpost.isLiking()}})" ><i class="glyphicon glyphicon-heart" style=""><font color=white>.</font>{{blogpost.getLikes()}}</i></a>
                   <a class="pull-right"><span onclick="javascript:processShare('{{blogpost.getSignature()}}' , '{{blogpost.getBlognameOpt()}}')" ><i class="glyphicon glyphicon-share"><font color=white>.</font>{{blogpost.getShares()}}</i></a>
+                   
+				   <div class="commentList">
+                   {% for comment in blogpost.getComments() %}
+                    <div class="commentEntry">
+                    
+					<div class="media-left">
+					{% if comment.getNameOpt() is not null %}
+                      <a href="/index/blog.html?blogname={{comment.nameOrCreator}}">
+                      {%else%}
+                      <a href="#">
+                  	{%endif%}
+                     {%if comment.getAvatar() is empty%}
+                        <img class="media-object commenterImage" src="/index/img/qora-user.png" alt="user image">
+          			{%else%}
+                        <img class="media-object commenterImage" src="{{comment.getAvatar()}}" alt="user image">
+          			{%endif%}
+                      </a>
+					
+					</div>
+					  
+					<div class="media-body">
+                      {% if comment.getNameOpt() is not null %}
+						<h4 class="media-heading Commenter"><a href="/index/blog.html?blogname={{comment.nameOrCreator}}">{{comment.nameOrCreator}}</a></h4>
+          			{%else%}
+						<h4 class="media-heading Commenter">{{comment.nameOrCreator}}</h4>
+          			{%endif%}
+                        <p class="commentText">{{comment.description}}</p>
+                        <span class="date sub-text">{{comment.creationTime}}</span>
+					</div>
+                    
+					<div class="media-right">
+						<button class ="btn btn-default" onclick="javascript:processCommentDelete('{{comment.getSignature()}}')" >
+							<i class="glyphicon glyphicon-trash" style=""></i>
+						</button>
+					</div>
+					
+					</div>
+                {% endfor %}
+                {%if blogprofile is empty or blogprofile.isCommentingAllowed() %}
+                    <form class="form-inline" role="form">
+                      <div class="form-group">
+                        <a style="cursor: pointer;" onclick="javascript:showCommentForm('{{blogpost.getSignature()}}');">Comment</a>
+                      </div>
+                    </form>
+                {%endif%}
                 </div>
+              </div>
               </div>
             </li>			{% endfor %}
             {%else%}
@@ -363,6 +416,16 @@
             return decodeURIComponent(name[1]);
     	}
 
+		function parseError(error) {
+			try {
+				var error = JSON.parse(error);
+				message = error.message;
+			} catch (e) {
+				message = error;
+			}
+			return message;
+		}
+					
     	function processfollow() {
 			var  blogname;
 			var follow = !profileisFollowing;
@@ -403,28 +466,15 @@
 					$("#apimessage").html("<div class=\"alert alert-dismissible alert-success\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>You follow this blog now<br>"
 										+ "</div>");
 				} else if (data.type == 'BlogFollowNotSuccessful'){
-					try {
-						var error = JSON.parse(data.result);
-						message = error.message;
-					} catch (e) {
-						message = data.result;
-					}
-
 					$("#apimessage").html("<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Blog follow not successful<br>"
-										+ message
+										+ parseError(data.result)
 										+ "</div></center>");
 				} else if (data.type == 'unfollowSuccessful'){
 					$("#apimessage").html("<div class=\"alert alert-dismissible alert-success\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Unfollow successful<br>"
 										+ "</div>");
 				} else if (data.type == 'blogUnfollowNotSuccessful'){
-					try {
-						var error = JSON.parse(data.result);
-						message = error.message;
-					} catch (e) {
-						message = data.result;
-					}
 					$("#apimessage").html("<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Blog unfollow not successful<br>"
-										+ message
+										+ parseError(data.result)
 										+ "</div></center>");
 				}
 
@@ -491,13 +541,41 @@
 				} else if (data.type == 'deleteSuccessful'){
 					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-success\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Delete successful<br>'
 										+ '</div></center>');
+					setTimeout(function() { window.location.reload(); }, 1500);
 				}
 
 
 			}).fail( function(xhr, textStatus, errorThrown) {
+			
 				$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Delete Error<br>'
 										+ 'Connection Error<br>'
-										+ xhr.responseText + '</div></center>');
+										+ parseError(xhr.responseText) + '</div></center>');
+			});
+
+			return 0;
+   		 }
+		function processCommentDelete(signature) {
+
+			$.post(
+			"/index/deletecomment.html",
+			{
+				signature: signature,
+			}).done( function(data) {
+				if(data.type == 'deleteError'){
+					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Delete Error<br>'
+										+ parseError(data.errordetail) + '</div></center>');
+				} else if (data.type == 'deleteSuccessful'){
+					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-success\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Delete successful<br>'
+										+ '</div></center>');
+					setTimeout(function() { window.location.reload(); }, 1500);
+				}
+
+
+			}).fail( function(xhr, textStatus, errorThrown) {
+				
+				$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Delete Error<br>'
+										+ 'Connection Error<br>'
+										+ parseError(xhr.responseText) + '</div></center>');
 			});
 
 			return 0;
@@ -530,15 +608,8 @@
 					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-success\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Share successful<br>'
 										+ '</div></center>');
 				} else if (data.type == 'ShareNotSuccessful'){
-					try {
-						var error = JSON.parse(data.result);
-						message = error.message;
-					} catch (e) {
-						message = data.result;
-					}
-
 					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Share not successful<br>'
-										+ message + '</div></center>');
+										+ parseError(data.result) + '</div></center>');
 				} else if (data.type == 'error'){
 					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Share Error<br>'
 										+ data.error + '</div></center>');
@@ -552,7 +623,7 @@
 			}).fail( function(xhr, textStatus, errorThrown) {
 				$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Share Error<br>'
 										+ 'Connection Error<br>'
-										+ xhr.responseText + '</div></center>');
+										+ parseError(xhr.responseText) + '</div></center>');
 			});
 
 			return 0;
@@ -603,21 +674,14 @@
 					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-success\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Like removed successful<br>'
 										+ '</div></center>');
 				} else if (data.type == 'LikeRemovedNotSuccessful'){
-					try {
-						var error = JSON.parse(data.result);
-						message = error.message;
-					} catch (e) {
-						message = data.result;
-					}
-
 					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>'
 										+ 'Like remove not successful<br>'
-										+ message
+										+ parseError(data.result)
 										+ '</div></center>');
 					$("#profLikes").html(data.newlikes);
 				} else if (data.type == 'error'){
 					$("#apimessage").html('<center><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>Like Error<br>'
-										+ data.error + '</div></center>');
+										+ parseError(data.error) + '</div></center>');
 				}
 
 				if(data.hasOwnProperty('likes'))
@@ -641,6 +705,12 @@
 
 			return 0;
    		 }
+		 
+		 function showCommentForm(signature) {
+			$("#commentIframe").attr("src", "postblog.html?postid="+signature);
+			$("#commentModal").modal('show'); 
+		 }
+		 
 </script>
 <script type="text/javascript">
     $('ul.nav-tabs > li').removeClass('active');
@@ -789,24 +859,6 @@
         });
 {% endfor %}
     </script>
-<script type="text/javascript">
-    {% for blogpost in blogposts %}
-    var client = new ZeroClipboard( document.getElementById("copybutton{{blogpost.getSignature()}}") );
-    {% endfor %}
-
-    // client.on( "ready", function( readyEvent ) {
-      // alert( "ZeroClipboard SWF is ready!" );
-
-      // client.on( "aftercopy", function( event ) {
-        // `this` === `client`
-        // `event.target` === the element that was clicked
-    //     event.target.style.display = "none";
-    //     alert("Copied text to clipboard: " + event.data["text/plain"] );
-    //   } );
-    // } );
-
-
-</script>
 <script>
 
 </script>

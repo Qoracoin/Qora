@@ -47,9 +47,12 @@ public class DebugFrame extends JFrame{
 		 //ADD GENERAL TABPANE TO FRAME
         this.add(this.debugTabPane);
         
-        //SHOW FRAME
-        this.pack();
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+        //PACK
+		this.pack();
+		this.setSize(800, this.getHeight());
+		this.setResizable(true);
+		this.setLocationRelativeTo(null);
+		this.setVisible(true);
+		
 	}	
 }

@@ -176,12 +176,13 @@
           </div>
             <div class="form-group">
             <label for="website" class="col-lg-2 control-label"><br>Data</label>
-            <div class="col-lg-10"><br>
+			<div class="col-lg-10">
+			  <div style="text-align: right;"><input name="WYSIWYG" id="WYSIWYG" type="checkbox"><label for="WYSIWYG">Visual editor</label></div>
               <pre><textarea id="website" rows="10" class="form-control">{{website}}</textarea></pre>
             </div>
           </div>
 
-<div class="form-group">
+<div class="form-group" id="divfile">
   <label for="file" class="col-lg-2 control-label">File</label>
 <form action="/index/encodefile.html" method="post" enctype="multipart/form-data" id="form">
   <input type="file" name="file" class="file">
@@ -218,6 +219,7 @@
     <script src="/index/libs/third-party/jquery.form.min.js"></script>
     <script src="/index/libs/bootstrap/3/js/bootstrap.min.js"></script>
     <script src="/index/libs/angular/angular.1.4.js"></script>
+	<script src="/index/libs/ckeditor/ckeditor.js"></script>
     <script src="/index/libs/js/sidebar.js"></script>
     <script type="text/javascript">
     var transformToAssocArray;
@@ -249,11 +251,19 @@
 
 		document.getElementById('result').innerHTML = '<div class=\"alert alert-info\" role=\"alert\">Saving...please confirm the security call and then wait until you get a success message! If the transaction amount is high this may take some time...<br></div>';
 
+		var websitebuf;
+		
+		if(typeof CKEDITOR.instances.website != 'undefined') {
+			websitebuf = CKEDITOR.instances.website.getData();
+		} else {
+			websitebuf = document.getElementById('website').value;
+		}
+		
 		$.post(
 			"/index/websitesave.html",
 			{
 				name: document.getElementById('select-name').value,
-				website: document.getElementById('website').value,
+				website: websitebuf,
 				key: document.getElementById('key').value
 			})
 			.done( function(data) {
@@ -286,14 +296,27 @@
 				}
 			})
 			.fail( function(xhr, textStatus, errorThrown) {
-				document.getElementById('result').innerHTML = '<div class=\"alert alert-danger\" role=\"alert\">ERROR<br>'+xhr.responseText+'<br></div>';
+				try {
+						var error = JSON.parse(xhr.responseText);
+						message = error.message;
+				} catch (e) {
+						message = xhr.responseText;
+				}
+
+				document.getElementById('result').innerHTML = "<div class=\"alert alert-danger\" role=\"alert\">An error occurred while saving the website.<br>"+message+"<br></div>";
 			});
     };
 
      var previewValue;
     previewValue = function() {
 		var website;
-    	website = document.getElementById('website').value;
+		
+		if(typeof CKEDITOR.instances.website != 'undefined') {
+			website = CKEDITOR.instances.website.getData();
+		} else {
+			website = document.getElementById('website').value;
+		}
+		
 		open('POST', '/index/websitepreview.html', {website:website}, '_blank');
     };
 
@@ -412,6 +435,8 @@
         });
 		 $('ul.nav-tabs > li:nth-child(1) > a').attr('href', '/index/main.html?search=' + $('#name').val());
         	$('ul.nav-tabs > li:nth-child(2) > a').attr('href', '/index/blogsearch.html?search=' + $('#name').val());
+		
+		$("#WYSIWYG").attr("checked",false);			
     });
     {% endautoescape %}
 
@@ -434,6 +459,34 @@
 $(document).on('change', '.file', function(){
   $(this).parent().find('.form-control').val($(this).val().replace(/C:\\fakepath\\/i, ''));
 });
+$(document).on('change', '#WYSIWYG', function(){
+  
+  if($("#WYSIWYG").prop("checked"))
+  {
+
+	CKEDITOR.replace( 'website', {
+		removeButtons: 'Form,Checkbox,Radio,TextField,Textarea,Select,Button,ImageButton,HiddenField'
+	});
+	$("pre").css("padding","0px");
+	$("#divfile").hide();
+  }
+  else
+  {
+	//var rawdata = CKEDITOR.instances.website.getData();
+	
+	if(typeof CKEDITOR.instances.website != 'undefined') {
+		CKEDITOR.instances.website.updateElement();
+		CKEDITOR.instances.website.destroy();
+	}
+	
+	//$("#website").val(rawdata);
+	//$(".website").show();
+	$("pre").css("padding","11px");
+	$("#divfile").show();
+  }
+  
+});
+
     </script>
 
     <!-- External Libs  -->

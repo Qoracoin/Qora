@@ -27,9 +27,9 @@ public class KnownPeersTableModel extends AbstractTableModel implements Observer
 	
 	private String[] columnNames = {"IP", "Connected now"};
 	
-	public ArrayList<String> getPeers()
+	public List<String> getPeers()
 	{
-		ArrayList<String> peersstr= new ArrayList<String>(); 
+		List<String> peersstr= new ArrayList<String>(); 
 		for(Peer peer: peers)
 		{
 			peersstr.add(peer.getAddress().getHostAddress().toString());

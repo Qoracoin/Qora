@@ -31,6 +31,9 @@ public class MenuPopupUtil {
 			public void showMenu(final MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					component.requestFocus();
+					if(!component.isEditable() && component.getSelectedText() == null){
+						component.selectAll();
+					}
 					final JPopupMenu menu = new JPopupMenu();
 					JMenuItem item;
 					item = new JMenuItem(new DefaultEditorKit.CopyAction());
@@ -71,6 +74,9 @@ public class MenuPopupUtil {
 			public void showMenu(final MouseEvent e) {
 				if (e.isPopupTrigger()) {
 					component.requestFocus();
+					if(!component.isEditable() && component.getSelectedText() == null){
+						component.selectAll();
+					}
 					final JPopupMenu menu = new JPopupMenu();
 					JMenuItem item;
 					item = new JMenuItem(new DefaultEditorKit.CopyAction());

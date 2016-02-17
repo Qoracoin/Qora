@@ -21,10 +21,12 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableRowSorter;
 
+import controller.Controller;
 import qora.crypto.Base58;
 import qora.transaction.CreatePollTransaction;
 import utils.BigDecimalStringComparator;
 import utils.DateTimeFormat;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class CreatePollDetailsFrame extends JFrame
@@ -87,6 +89,7 @@ public class CreatePollDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField signature = new JTextField(Base58.encode(pollCreation.getSignature()));
 		signature.setEditable(false);
+		MenuPopupUtil.installContextMenu(signature);
 		this.add(signature, detailGBC);
 		
 		//LABEL REFERENCE
@@ -98,6 +101,7 @@ public class CreatePollDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField reference = new JTextField(Base58.encode(pollCreation.getReference()));
 		reference.setEditable(false);
+		MenuPopupUtil.installContextMenu(reference);
 		this.add(reference, detailGBC);
 		
 		//LABEL TIMESTAMP
@@ -107,7 +111,9 @@ public class CreatePollDetailsFrame extends JFrame
 						
 		//TIMESTAMP
 		detailGBC.gridy = 3;
-		JLabel timestamp = new JLabel(DateTimeFormat.timestamptoString(pollCreation.getTimestamp()));
+		JTextField timestamp = new JTextField(DateTimeFormat.timestamptoString(pollCreation.getTimestamp()));
+		timestamp.setEditable(false);
+		MenuPopupUtil.installContextMenu(timestamp);
 		this.add(timestamp, detailGBC);
 		
 		//LABEL CREATOR
@@ -119,6 +125,7 @@ public class CreatePollDetailsFrame extends JFrame
 		detailGBC.gridy = 4;
 		JTextField creator = new JTextField(pollCreation.getCreator().getAddress());
 		creator.setEditable(false);
+		MenuPopupUtil.installContextMenu(creator);
 		this.add(creator, detailGBC);
 		
 		//LABEL NAME
@@ -130,6 +137,7 @@ public class CreatePollDetailsFrame extends JFrame
 		detailGBC.gridy = 5;
 		JTextField name = new JTextField(pollCreation.getPoll().getName());
 		name.setEditable(false);
+		MenuPopupUtil.installContextMenu(name);
 		this.add(name, detailGBC);		
 		
 		//LABEL DESCRIPTION
@@ -143,6 +151,7 @@ public class CreatePollDetailsFrame extends JFrame
 		txtAreaDescription.setRows(4);
 		txtAreaDescription.setBorder(name.getBorder());
 		txtAreaDescription.setEditable(false);
+		MenuPopupUtil.installContextMenu(txtAreaDescription);
 		this.add(txtAreaDescription, detailGBC);		
 		
 		//LABEL OPTIONS
@@ -152,7 +161,7 @@ public class CreatePollDetailsFrame extends JFrame
 		
 		//OPTIONS
 		detailGBC.gridy = 7;
-		PollOptionsTableModel pollOptionsTableModel = new PollOptionsTableModel(pollCreation.getPoll());
+		PollOptionsTableModel pollOptionsTableModel = new PollOptionsTableModel(pollCreation.getPoll(), Controller.getInstance().getAsset(0l));
 		JTable table = Gui.createSortableTable(pollOptionsTableModel, 0);
 		
 		TableRowSorter<PollOptionsTableModel> sorter =  (TableRowSorter<PollOptionsTableModel>) table.getRowSorter();
@@ -169,6 +178,7 @@ public class CreatePollDetailsFrame extends JFrame
 		detailGBC.gridy = 8;
 		JTextField fee = new JTextField(pollCreation.getFee().toPlainString());
 		fee.setEditable(false);
+		MenuPopupUtil.installContextMenu(fee);
 		this.add(fee, detailGBC);	
 		
 		//LABEL CONFIRMATIONS

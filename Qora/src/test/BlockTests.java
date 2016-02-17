@@ -120,7 +120,7 @@ public class BlockTests
 		}
 		catch (Exception e) 
 		{
-			//EXCEPTION IS THROWN OKE
+			//EXCEPTION IS THROWN OK
 		}	
 	}
 	
@@ -363,7 +363,7 @@ public class BlockTests
 		}
 		catch (Exception e) 
 		{
-			//EXCEPTION IS THROWN OKE
+			//EXCEPTION IS THROWN OK
 		}			
 	}
 	

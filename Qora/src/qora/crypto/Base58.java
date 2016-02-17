@@ -102,14 +102,14 @@ public class Base58 {
      *
      * @param       string                  Encoded string
      * @return                              Decoded bytes
-     * @throws      AddressFormatException  Invalid Base-58 encoded string
+     * @throws      NumberFormatException  Invalid Base-58 encoded string
      */
     public static byte[] decode(String string) {
         //
         // Nothing to do if we have an empty string
         //
         if (string.length() == 0)
-            return new byte[0];
+            return null;
         //
         // Convert the input string to a byte sequence
         //
@@ -120,7 +120,9 @@ public class Base58 {
             if (codePoint>=0 && codePoint<INDEXES.length)
                 digit = INDEXES[codePoint];
             if (digit < 0)
-            	return null;
+            	throw new NumberFormatException(
+            			String.format("Illegal character %c at index %d",
+                        string.charAt(i), i));
             input[i] = (byte)digit;
         }
         //
@@ -160,7 +162,7 @@ public class Base58 {
      *
      * @param       string                  Base-58 encoded checksummed string
      * @return                              Decoded value
-     * @throws      AddressFormatException  The string is not valid or the checksum is incorrect
+     * @throws      NumberFormatException  The string is not valid or the checksum is incorrect
      */
     public static byte[] decodeChecked(String string) {
         //
@@ -168,7 +170,7 @@ public class Base58 {
         //
         byte[] decoded = decode(string);
         if (decoded.length < 4)
-            return null;
+            throw new NumberFormatException("Decoded string is too short");
         //
         // Verify the checksum contained in the last 4 bytes
         //
@@ -176,7 +178,7 @@ public class Base58 {
         byte[] checksum = Arrays.copyOfRange(decoded, decoded.length-4, decoded.length);
         byte[] hash = Arrays.copyOfRange(Crypto.getInstance().doubleDigest(bytes), 0, 4);
         if (!Arrays.equals(hash, checksum))
-        	return null;
+            throw new NumberFormatException("Decoded string is too short");
         //
         // Return the result without the checksum bytes
         //

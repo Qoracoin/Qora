@@ -7,8 +7,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import ntp.NTP;
 import controller.Controller;
+import database.DBSet;
+import ntp.NTP;
 import qora.account.Account;
 import qora.account.PrivateKeyAccount;
 import qora.account.PublicKeyAccount;
@@ -18,8 +19,8 @@ import qora.block.Block;
 import qora.naming.Name;
 import qora.naming.NameSale;
 import qora.payment.Payment;
-import qora.transaction.ArbitraryTransaction;
-import qora.transaction.MessageTransaction;
+import qora.transaction.ArbitraryTransactionV1;
+import qora.transaction.ArbitraryTransactionV3;
 import qora.transaction.BuyNameTransaction;
 import qora.transaction.CancelOrderTransaction;
 import qora.transaction.CancelSellNameTransaction;
@@ -27,6 +28,8 @@ import qora.transaction.CreateOrderTransaction;
 import qora.transaction.CreatePollTransaction;
 import qora.transaction.DeployATTransaction;
 import qora.transaction.IssueAssetTransaction;
+import qora.transaction.MessageTransactionV1;
+import qora.transaction.MessageTransactionV3;
 import qora.transaction.MultiPaymentTransaction;
 import qora.transaction.PaymentTransaction;
 import qora.transaction.RegisterNameTransaction;
@@ -39,7 +42,6 @@ import qora.voting.Poll;
 import settings.Settings;
 import utils.Pair;
 import utils.TransactionTimestampComparator;
-import database.DBSet;
 
 public class TransactionCreator
 {
@@ -89,7 +91,7 @@ public class TransactionCreator
 		//VALIDATE AND PROCESS THOSE TRANSACTIONS IN FORK
 		for(Transaction transaction: accountTransactions)
 		{
-			if(transaction.isValid(this.fork) == Transaction.VALIDATE_OKE && transaction.isSignatureValid())
+			if(transaction.isValid(this.fork) == Transaction.VALIDATE_OK && transaction.isSignatureValid())
 			{
 				transaction.process(this.fork);
 			}
@@ -389,26 +391,39 @@ public class TransactionCreator
 		return new Pair(pollVote.calcRecommendedFee(), pollVote.getDataLength());
 	}
 	
-	public Pair<Transaction, Integer> createArbitraryTransaction(PrivateKeyAccount creator, int service, byte[] data, BigDecimal fee) 
+	public Pair<Transaction, Integer> createArbitraryTransaction(PrivateKeyAccount creator, List<Payment> payments, int service, byte[] data, BigDecimal fee) 
 	{
 		//CHECK FOR UPDATES
 		this.checkUpdate();
-								
+			
+		Transaction arbitraryTransaction;
+		
 		//TIME
 		long time = NTP.getTime();
-								
-		//CREATE SIGNATURE
-		byte[] signature = ArbitraryTransaction.generateSignature(this.fork, creator, service, data, fee, time);
+		
+		if(time < Transaction.getPOWFIX_RELEASE())
+		{
+			//CREATE SIGNATURE
+			byte[] signature = ArbitraryTransactionV1.generateSignature(this.fork, creator, service, data, fee, time);
 							
-		//CREATE ARBITRARY TRANSACTION
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(creator, service, data, fee, time, creator.getLastReference(this.fork), signature);
-								
+			//CREATE ARBITRARY TRANSACTION V1
+			arbitraryTransaction = new ArbitraryTransactionV1(creator, service, data, fee, time, creator.getLastReference(this.fork), signature);
+		}
+		else
+		{
+			//CREATE SIGNATURE
+			byte[] signature = ArbitraryTransactionV3.generateSignature(this.fork, creator, payments, service, data, fee, time);
+							
+			//CREATE ARBITRARY TRANSACTION V3
+			arbitraryTransaction = new ArbitraryTransactionV3(creator, payments, service, data, fee, time, creator.getLastReference(this.fork), signature);
+		}
+		
 		//VALIDATE AND PROCESS
 		return this.afterCreate(arbitraryTransaction);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public Pair<BigDecimal, Integer> calcRecommendedFeeForArbitraryTransaction(byte[] data) 
+	public Pair<BigDecimal, Integer> calcRecommendedFeeForArbitraryTransaction(byte[] data, List<Payment> payments) 
 	{	
 		//TIME
 		long time = NTP.getTime();
@@ -419,8 +434,18 @@ public class TransactionCreator
 		//GENESIS ACCOUNT
 		PublicKeyAccount creator = new PublicKeyAccount(new byte[]{1,1,1,1,1,1,1,1});
 		
-		//CREATE ARBITRARY TRANSACTION
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(creator, 0, data, Transaction.MINIMUM_FEE, time, signature, signature);
+		Transaction arbitraryTransaction;
+		
+		if(time < Transaction.getPOWFIX_RELEASE())
+		{
+			//CREATE ARBITRARY TRANSACTION V1
+			arbitraryTransaction = new ArbitraryTransactionV1(creator, 0, data, Transaction.MINIMUM_FEE, time, signature, signature);
+		}
+		else
+		{
+			//CREATE ARBITRARY TRANSACTION V3
+			arbitraryTransaction = new ArbitraryTransactionV3(creator, payments, 0, data, Transaction.MINIMUM_FEE, time, signature, signature);			
+		}
 		
 		return new Pair(arbitraryTransaction.calcRecommendedFee(), arbitraryTransaction.getDataLength());
 	}
@@ -646,17 +671,28 @@ public class TransactionCreator
 	}
 	
 	public Pair<Transaction, Integer> createMessage(PrivateKeyAccount sender,
-			Account recipient, BigDecimal amount, BigDecimal fee, byte[] isText,
+			Account recipient, long key, BigDecimal amount, BigDecimal fee, byte[] isText,
 			byte[] message, byte[] encryptMessage) {
 		
 		this.checkUpdate();
 		
+		Transaction messageTx;
+
 		long timestamp = NTP.getTime();
 		
-		byte[] signature = MessageTransaction.generateSignature(this.fork, sender, recipient, amount, fee, message, isText, encryptMessage, timestamp);
-		
-		MessageTransaction messageTx = new MessageTransaction(sender, recipient, amount, fee, message, isText, encryptMessage, timestamp, sender.getLastReference(this.fork), signature );
-		
+		if(timestamp < Transaction.getPOWFIX_RELEASE())
+		{
+			//CREATE MESSAGE TRANSACTION V1
+			byte[] signature = MessageTransactionV1.generateSignature(this.fork, sender, recipient, amount, fee, message, isText, encryptMessage, timestamp);
+			messageTx = new MessageTransactionV1(sender, recipient, amount, fee, message, isText, encryptMessage, timestamp, sender.getLastReference(this.fork), signature );
+		}
+		else
+		{
+			//CREATE MESSAGE TRANSACTION V3
+			byte[] signature = MessageTransactionV3.generateSignature(this.fork, sender, recipient, key, amount, fee, message, isText, encryptMessage, timestamp);
+			messageTx = new MessageTransactionV3(sender, recipient, key, amount, fee, message, isText, encryptMessage, timestamp, sender.getLastReference(this.fork), signature );
+		}
+			
 		return afterCreate(messageTx);
 	}
 
@@ -672,9 +708,21 @@ public class TransactionCreator
 		//GENESIS ACCOUNT
 		PublicKeyAccount sender = new PublicKeyAccount(new byte[]{1,1,1,1,1,1,1,1});
 		
-		//CREATE MESSAGE TRANSACTION
-		MessageTransaction messageTx = new MessageTransaction(sender, sender, Transaction.MINIMUM_FEE, Transaction.MINIMUM_FEE, message, new byte[1], new byte[1], time, signature, signature );
+		Transaction messageTx;
 		
+		long timestamp = NTP.getTime();
+		
+		if(timestamp < Transaction.getPOWFIX_RELEASE())
+		{
+			//CREATE MESSAGE TRANSACTION V1
+			messageTx = new MessageTransactionV1(sender, sender, Transaction.MINIMUM_FEE, Transaction.MINIMUM_FEE, message, new byte[1], new byte[1], time, signature, signature );
+		}
+		else
+		{
+			//CREATE MESSAGE TRANSACTION V3
+			messageTx = new MessageTransactionV3(sender, sender, 0l, Transaction.MINIMUM_FEE, Transaction.MINIMUM_FEE, message, new byte[1], new byte[1], time, signature, signature );
+		}
+			
 		return new Pair(messageTx.calcRecommendedFee(), messageTx.getDataLength());
 	}
 	
@@ -683,7 +731,7 @@ public class TransactionCreator
 		//CHECK IF PAYMENT VALID
 		int valid = transaction.isValid(this.fork);
 		
-		if(valid == Transaction.VALIDATE_OKE)
+		if(valid == Transaction.VALIDATE_OK)
 		{
 			//CHECK IF FEE BELOW MINIMUM
 			if(!Settings.getInstance().isAllowFeeLessRequired() && !transaction.hasMinimumFeePerByte())

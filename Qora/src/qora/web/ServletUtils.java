@@ -9,11 +9,7 @@ public class ServletUtils {
 	{
 		if(servletRequestOpt != null)
 		{
-			String ipAdress = servletRequestOpt.getHeader("X-FORWARDED-FOR");
-			
-			if (ipAdress == null) {
-				ipAdress = servletRequestOpt.getRemoteAddr();
-			}
+			String ipAdress = getRemoteAddress(servletRequestOpt);
 			
 			if (!ipAdress.equals("127.0.0.1")) {
 				return true;
@@ -21,6 +17,16 @@ public class ServletUtils {
 		}
 		
 		return false;
+	}
+
+	public static String getRemoteAddress(
+			HttpServletRequest servletRequest) {
+		String ipAdress = servletRequest.getHeader("X-FORWARDED-FOR");
+		
+		if (ipAdress == null) {
+			ipAdress = servletRequest.getRemoteAddr();
+		}
+		return ipAdress;
 	}
 	
 }

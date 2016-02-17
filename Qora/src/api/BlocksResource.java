@@ -2,10 +2,12 @@ package api;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.json.simple.JSONArray;
@@ -16,6 +18,7 @@ import qora.block.Block;
 import qora.block.GenesisBlock;
 import qora.crypto.Base58;
 import qora.crypto.Crypto;
+import utils.APIUtils;
 import utils.Pair;
 import controller.Controller;
 import database.DBSet;
@@ -24,10 +27,15 @@ import database.DBSet;
 @Produces(MediaType.APPLICATION_JSON)
 public class BlocksResource 
 {
+	@Context
+	HttpServletRequest request;
+
 	@SuppressWarnings("unchecked")
 	@GET
 	public String getBlocks()
 	{
+		APIUtils.askAPICallAllowed("GET blocks", request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{
@@ -50,18 +58,21 @@ public class BlocksResource
 	@Path("/address/{address}")	
 	public String getBlocks(@PathParam("address") String address)
 	{
-		//CHECK IF WALLET EXISTS
-		if(!Controller.getInstance().doesWalletExists())
-		{
-			throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_WALLET_NO_EXISTS);
-		}
-				
+
 		//CHECK ADDRESS
 		if(!Crypto.getInstance().isValidAddress(address))
 		{
 			throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_INVALID_ADDRESS);
 		}
-				
+
+		APIUtils.askAPICallAllowed("GET blocks/address/" + address, request);
+
+		//CHECK IF WALLET EXISTS
+		if(!Controller.getInstance().doesWalletExists())
+		{
+			throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_WALLET_NO_EXISTS);
+		}
+
 		//CHECK ACCOUNT IN WALLET
 		Account account = Controller.getInstance().getAccountByAddress(address);	
 		if(account == null)

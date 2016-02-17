@@ -35,7 +35,6 @@ public class SettingsTabPane extends JTabbedPane{
 	{
 		//REMOVE OBSERVERS/HANLDERS
 		this.settingsKnownPeersPanel.close();
-		this.settingsParametersPanel.close();
 		this.settingsAllowedPanel.close();
 	}
 }

@@ -45,21 +45,20 @@ public class Profile {
 		Profile result = null;
 		if (name != null) {
 			Name nameObj = DBSet.getInstance().getNameMap().get(name);
-				result = Profile.getProfileOpt(nameObj);
+			result = Profile.getProfileOpt(nameObj);
 		}
 
 		return result;
 	}
 
 	public static Profile getProfileOpt(Name name) {
-		
-		if (name== null || !isAllowedProfileName(name.getName())) {
+
+		if (name == null || !isAllowedProfileName(name.getName())) {
 			return null;
 		}
 		Name nameReloaded = DBSet.getInstance().getNameMap()
 				.get(name.getName());
-		if(nameReloaded == null)
-		{
+		if (nameReloaded == null) {
 			return null;
 		}
 		return new Profile(nameReloaded);
@@ -94,7 +93,6 @@ public class Profile {
 		followerCache = results;
 		return results;
 	}
-
 
 	public static List<Profile> getEnabledProfiles() {
 		List<Name> namesAsList = Controller.getInstance().getNamesAsList();
@@ -148,9 +146,9 @@ public class Profile {
 	}
 
 	public String getProfileGraphicOpt() {
-		String graphiccontent = (String) jsonRepresenation.get(Qorakeys.PROFILEMAINGRAPHIC
-				.toString());
-		
+		String graphiccontent = (String) jsonRepresenation
+				.get(Qorakeys.PROFILEMAINGRAPHIC.toString());
+
 		return graphiccontent;
 	}
 
@@ -260,9 +258,26 @@ public class Profile {
 			jsonRepresenation.remove(Qorakeys.BLOGENABLE.toString());
 		}
 	}
+	
+	public void setBlockComments(boolean blockComments)
+	{
+		if (blockComments) {
+			jsonRepresenation.put(Qorakeys.BLOGBLOCKCOMMENTS.toString(), "");
+		} else {
+			jsonRepresenation.remove(Qorakeys.BLOGBLOCKCOMMENTS.toString());
+		}
+	}
 
 	public boolean isBlogEnabled() {
 		return jsonRepresenation.containsKey(Qorakeys.BLOGENABLE.toString());
+	}
+	
+	public boolean isCommentingAllowed(){
+		return !isCommentingDisabled();
+	}
+	
+	public boolean isCommentingDisabled(){
+		return jsonRepresenation.containsKey(Qorakeys.BLOGBLOCKCOMMENTS.toString());
 	}
 
 	public BlogBlackWhiteList getBlogBlackWhiteList() {
@@ -281,28 +296,30 @@ public class Profile {
 			oldProfileJson.put(key, oldBWListJson.get(key));
 		}
 
+		List<Pair<String, String>> addCompleteKeys = new ArrayList<>();
+		List<String> removeCompleteKeys = new ArrayList<>();
+		List<Pair<String, String>> addListKeys = new ArrayList<>();
+		List<Pair<String, String>> removeListKeys = new ArrayList<>();
+
 		// Combining actual values
 		Pair<String, String> jsonKeyPairRepresentation = blogBlackWhiteList
 				.getJsonKeyPairRepresentation();
 		jsonRepresenation.put(jsonKeyPairRepresentation.getA(),
 				jsonKeyPairRepresentation.getB());
-		if (blogBlackWhiteList.isWhitelist()) {
-			jsonRepresenation.remove(Qorakeys.BLOGBLACKLIST.toString());
-		} else {
-			jsonRepresenation.remove(Qorakeys.BLOGWHITELIST.toString());
-		}
+		
+		
 
-		List<Pair<String, String>> addCompleteKeys = new ArrayList<>();
-		List<String> removeCompleteKeys = new ArrayList<>();
-		List<Pair<String, String>> addListKeys = new ArrayList<>();
-		List<Pair<String, String>> removeListKeys = new ArrayList<>();
+		if (blogBlackWhiteList.getBlackwhiteList().isEmpty()) {
+			StringUtils.isBlank((CharSequence) oldBWListJson
+					.get(Qorakeys.BLOGWHITELIST.toString()));
+		}
 
 		List<Qorakeys> profileKeys = Arrays.asList(Qorakeys.BLOGBLACKLIST,
 				Qorakeys.BLOGWHITELIST, Qorakeys.BLOGDESCRIPTION,
 				Qorakeys.BLOGENABLE, Qorakeys.PROFILEAVATAR,
 				Qorakeys.BLOGTITLE, Qorakeys.PROFILEENABLE,
 				Qorakeys.PROFILEFOLLOW, Qorakeys.PROFILELIKEPOSTS,
-				Qorakeys.PROFILEMAINGRAPHIC);
+				Qorakeys.PROFILEMAINGRAPHIC, Qorakeys.BLOGBLOCKCOMMENTS);
 
 		for (Qorakeys qorakey : profileKeys) {
 
@@ -362,7 +379,7 @@ public class Profile {
 							newValueOpt));
 				} else if (StringUtils.isNotBlank(oldValueOpt)
 						&& StringUtils.isBlank(newValueOpt)) {
-					removeCompleteKeys.add(key);
+						removeCompleteKeys.add(key);
 				} else {
 
 					// value was there but is it equal?
@@ -393,6 +410,44 @@ public class Profile {
 				continue;
 			}
 
+		}
+		
+		
+		
+		BlogBlackWhiteList oldBlackWhiteList = Profile.getProfileOpt(name
+				.getName()).getBlogBlackWhiteList();
+
+		
+		//BECAUSE THE BLACK AND WHITELIST EXCLUDE THEMSELVES WE HAVE TO PROCESS THESE EXTRA RULES TO MAKE SURE THE CONCEPT FITS.
+		if (blogBlackWhiteList.isWhitelist()) {
+			jsonRepresenation.remove(Qorakeys.BLOGBLACKLIST.toString());
+			
+			//switching kind of list from empty to empty!
+			if(blogBlackWhiteList.getBlackwhiteList().isEmpty() && oldBlackWhiteList.isBlacklist() && oldBlackWhiteList.getBlackwhiteList().isEmpty())
+			{
+				removeCompleteKeys.add(
+						Qorakeys.BLOGBLACKLIST.toString());
+				addCompleteKeys.add(new Pair<String, String>(
+						Qorakeys.BLOGWHITELIST.toString(), ""));
+			}
+		} else {
+			jsonRepresenation.remove(Qorakeys.BLOGWHITELIST.toString());
+			//switching kind of list from empty to empty!
+			if (blogBlackWhiteList.getBlackwhiteList().isEmpty()
+					&& oldBlackWhiteList.isWhitelist() && oldBlackWhiteList.getBlackwhiteList().isEmpty()) {
+				addCompleteKeys.add(new Pair<String, String>(
+						Qorakeys.BLOGBLACKLIST.toString(), ""));
+				removeCompleteKeys.add(
+						Qorakeys.BLOGWHITELIST.toString());
+			}else if(blogBlackWhiteList.getBlackwhiteList().isEmpty() && oldBlackWhiteList.isBlacklist() && !oldBlackWhiteList.getBlackwhiteList().isEmpty())
+			{
+				addCompleteKeys.add(new Pair<String, String>(
+						Qorakeys.BLOGBLACKLIST.toString(), ""));
+				removeCompleteKeys.add(
+						Qorakeys.BLOGWHITELIST.toString());
+				
+				removeCompleteKeys.remove(Qorakeys.BLOGBLACKLIST.toString());
+			}
 		}
 
 		JSONObject jsonResult = StorageUtils.getStorageJsonObject(

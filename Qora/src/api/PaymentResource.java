@@ -29,12 +29,13 @@ public class PaymentResource
 		{
 			//READ JSON
 			JSONObject jsonObject = (JSONObject) JSONValue.parse(x);
+			String assetKey = (String) jsonObject.get("asset");
 			String amount = (String) jsonObject.get("amount");
 			String fee = (String) jsonObject.get("fee");
 			String sender = (String) jsonObject.get("sender");
 			String recipient = (String) jsonObject.get("recipient");
 			
-			return APIUtils.processPayment(amount, fee, sender, recipient,x, request );
+			return APIUtils.processPayment(assetKey, amount, fee, sender, recipient,x, request );
 		}
 		catch(NullPointerException e)
 		{

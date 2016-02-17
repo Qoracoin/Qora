@@ -77,39 +77,46 @@ public class WalletTransactionsTableModel extends QoraTableModel<Tuple2<String, 
 	@Override
 	public Object getValueAt(int row, int column) 
 	{
-		if(this.transactions == null || this.transactions.size() -1 < row)
+		try 
 		{
+			if(this.transactions == null || this.transactions.size() -1 < row)
+			{
+				return null;
+			}
+			
+			Pair<Tuple2<String, String>, Transaction> data = this.transactions.get(row);
+			Account account = new Account(data.getA().a);
+			Transaction transaction = data.getB();
+			
+			switch(column)
+			{
+			case COLUMN_CONFIRMATIONS:
+				
+				return transaction.getConfirmations();
+				
+			case COLUMN_TIMESTAMP:
+				
+				return DateTimeFormat.timestamptoString(transaction.getTimestamp());
+				
+			case COLUMN_TYPE:
+				
+				return this.transactionTypes[transaction.getType()];
+				
+			case COLUMN_ADDRESS:
+				
+				return account.getAddress();
+				
+			case COLUMN_AMOUNT:
+				
+				return NumberAsString.getInstance().numberAsString(transaction.getAmount(account));			
+			}
+			
+			return null;
+			
+		} catch (Exception e) {
+			e.printStackTrace();
 			return null;
 		}
-		
-		Pair<Tuple2<String, String>, Transaction> data = this.transactions.get(row);
-		Account account = new Account(data.getA().a);
-		Transaction transaction = data.getB();
-		
-		switch(column)
-		{
-		case COLUMN_CONFIRMATIONS:
-			
-			return transaction.getConfirmations();
-			
-		case COLUMN_TIMESTAMP:
-			
-			return DateTimeFormat.timestamptoString(transaction.getTimestamp());
-			
-		case COLUMN_TYPE:
-			
-			return this.transactionTypes[transaction.getType()];
-			
-		case COLUMN_ADDRESS:
-			
-			return account.getAddress();
-			
-		case COLUMN_AMOUNT:
-			
-			return NumberAsString.getInstance().numberAsString(transaction.getAmount(account));			
-		}
-		
-		return null;
 		
 	}
 
@@ -150,7 +157,7 @@ public class WalletTransactionsTableModel extends QoraTableModel<Tuple2<String, 
 			this.fireTableDataChanged();
 		}	
 		
-		if(Controller.getInstance().getStatus() == Controller.STATUS_OKE && message.getType() == ObserverMessage.ADD_TRANSACTION_TYPE)
+		if(Controller.getInstance().getStatus() == Controller.STATUS_OK && message.getType() == ObserverMessage.ADD_TRANSACTION_TYPE)
 		{		
 			if(DBSet.getInstance().getTransactionMap().contains(((Transaction) message.getValue()).getSignature()))
 			{

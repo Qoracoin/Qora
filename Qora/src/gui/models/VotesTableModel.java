@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.table.AbstractTableModel;
 
 import qora.account.Account;
+import qora.assets.Asset;
 import qora.voting.PollOption;
 import utils.NumberAsString;
 import utils.Pair;
@@ -18,10 +19,12 @@ public class VotesTableModel extends AbstractTableModel
 	
 	private String[] columnNames = {"Address", "Option", "Votes"};
 	private List<Pair<Account, PollOption>> votes;
+	private Asset asset;
 	
-	public VotesTableModel(List<Pair<Account, PollOption>> votes)
+	public VotesTableModel(List<Pair<Account, PollOption>> votes, Asset asset)
 	{
 		this.votes = votes;
+		this.asset = asset;
 	}
 	
 	@Override
@@ -64,10 +67,16 @@ public class VotesTableModel extends AbstractTableModel
 			
 		case COLUMN_VOTES:
 			
-			return NumberAsString.getInstance().numberAsString(vote.getA().getConfirmedBalance());
+			return NumberAsString.getInstance().numberAsString(vote.getA().getConfirmedBalance(asset.getKey()));
 			
 		}
 		
 		return null;
+	}
+	
+	public void setAsset(Asset asset)
+	{
+		this.asset = asset;
+		this.fireTableDataChanged();
 	}
 }

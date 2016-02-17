@@ -1,8 +1,9 @@
 package network;
 
-import settings.Settings;
+import database.DBSet;
 import network.message.Message;
 import network.message.MessageFactory;
+import settings.Settings;
 
 public class Pinger extends Thread
 {
@@ -31,10 +32,16 @@ public class Pinger extends Thread
 			//CREATE PING
 			Message pingMessage = MessageFactory.getInstance().createPingMessage();
 			
+			if(!this.run)
+				break;
+			
 			//GET RESPONSE
 			long start = System.currentTimeMillis();
 			Message response = this.peer.getResponse(pingMessage);
-			
+
+			if(!this.run)
+				break;
+
 			//CHECK IF VALID PING
 			if(response == null || response.getType() != Message.PING_TYPE)
 			{
@@ -48,6 +55,11 @@ public class Pinger extends Thread
 			
 			//UPDATE PING
 			this.ping = System.currentTimeMillis() - start;
+			this.peer.addPingCounter(); 
+			
+			if(!DBSet.getInstance().isStoped()){
+				DBSet.getInstance().getPeerMap().addPeer(this.peer);
+			}
 			
 			//SLEEP
 			try 

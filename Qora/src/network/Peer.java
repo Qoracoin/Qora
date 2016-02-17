@@ -13,9 +13,12 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-import settings.Settings;
+import controller.Controller;
+import database.DBSet;
 import network.message.Message;
 import network.message.MessageFactory;
+import ntp.NTP;
+import settings.Settings;
 
 public class Peer extends Thread{
 
@@ -24,6 +27,9 @@ public class Peer extends Thread{
 	private Socket socket;
 	private OutputStream out;
 	private Pinger pinger;
+	private boolean white;
+	private long pingCounter;
+	private long connectionTime;
 	
 	private Map<Integer, BlockingQueue<Message>> messages;
 	
@@ -41,6 +47,9 @@ public class Peer extends Thread{
 			this.socket = socket;
 			this.address = socket.getInetAddress();
 			this.messages = Collections.synchronizedMap(new HashMap<Integer, BlockingQueue<Message>>());
+			this.white = false;
+			this.pingCounter = 0;
+			this.connectionTime = NTP.getTime();
 			
 			//ENABLE KEEPALIVE
 			//this.socket.setKeepAlive(true);
@@ -72,19 +81,41 @@ public class Peer extends Thread{
 		return address;
 	}
 	
+	public long getPingCounter()
+	{
+		return this.pingCounter;
+	}
+	
+	public void addPingCounter()
+	{
+		this.pingCounter ++;
+	}
+	
 	public long getPing()
 	{
 		return this.pinger.getPing();
 	}
 	
+	public boolean isPinger()
+	{
+		return this.pinger != null;
+	}
+	
 	public void connect(ConnectionCallback callback)
 	{
+		if(DBSet.getInstance().isStoped()){
+			return;
+		}
+		
 		this.callback = callback;
+		this.white = true;
+		this.pingCounter = 0;
+		this.connectionTime = NTP.getTime();
 		
 		try
 		{
 			//OPEN SOCKET
-			this.socket = new Socket(address, Network.PORT);
+			this.socket = new Socket(address, Controller.getInstance().getNetworkPort());
 			
 			//ENABLE KEEPALIVE
 			//this.socket.setKeepAlive(true);
@@ -123,7 +154,7 @@ public class Peer extends Thread{
 				byte[] messageMagic = new byte[Message.MAGIC_LENGTH];
 				in.readFully(messageMagic);
 				
-				if(Arrays.equals(messageMagic, Message.MAGIC))
+				if(Arrays.equals(messageMagic, Controller.getInstance().getMessageMagic()))
 				{
 					//PROCESS NEW MESSAGE
 					Message message = MessageFactory.getInstance().parse(this, in);
@@ -144,10 +175,8 @@ public class Peer extends Thread{
 				}
 				else
 				{
-					Logger.getGlobal().warning("received message with wrong magic");
-					
 					//ERROR
-					callback.onError(this);
+					callback.onError(this, "received message with wrong magic");
 					return;
 				}
 			}
@@ -170,7 +199,7 @@ public class Peer extends Thread{
 			if(!this.socket.isConnected())
 			{
 				//ERROR
-				callback.onError(this);
+				callback.onError(this, "socket not still alive");
 				
 				return false;
 			}
@@ -188,7 +217,7 @@ public class Peer extends Thread{
 		catch (Exception e) 
 		{
 			//ERROR
-			callback.onError(this);
+			callback.onError(this, e.getMessage());
 			
 			//RETURN
 			return false;
@@ -233,6 +262,21 @@ public class Peer extends Thread{
 		this.callback.onDisconnect(this);
 	}
 
+	public boolean isWhite()
+	{
+		return this.white; 
+	}
+	
+	public long getConnectionTime()
+	{
+		return this.connectionTime; 
+	}	
+	
+	public boolean isBad()
+	{
+		return DBSet.getInstance().getPeerMap().isBad(this.getAddress()); 
+	}
+	
 	public void close() 
 	{
 		try

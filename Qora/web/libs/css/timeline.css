@@ -315,3 +315,40 @@ content: " " !important;
 .timeline-badge.primary.highlighted {
   margin-top: 80px;
 }
+.commentEntry {
+    padding:10px;
+    !list-style:none;
+    max-height:200px;
+    overflow:auto;
+}
+.commenterImage {
+    margin-right:5px;
+    height:100%;
+    float:left;
+}
+.commenterImage img {
+    width:100%;
+    border-radius:50%;
+}
+img.media-object.commenterImage {
+    width: 35px;
+    height: 35px;
+}
+
+p.commentText {
+    margin:0;
+}
+.sub-text {
+    color:#aaa;
+    font-family:verdana;
+    font-size:11px;
+}
+.commentList {
+    border-top:1px solid #ddd;
+    padding:10px;
+}
+
+h4.media-heading.Commenter {
+    margin-top: 0px;
+    font-size: medium;
+}

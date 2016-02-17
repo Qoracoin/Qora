@@ -4,6 +4,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import controller.Controller;
+import qora.assets.Asset;
 import qora.voting.Poll;
 import utils.NumberAsString;
 import utils.ObserverMessage;
@@ -16,13 +17,21 @@ public class PollsTableModel extends QoraTableModel<String, Poll> implements Obs
 	public static final int COLUMN_NAME = 0;
 	private static final int COLUMN_CREATOR = 1;
 	public static final int COLUMN_VOTES = 2;
+	private Asset asset;
 	
 	private String[] columnNames = {"Name", "Creator", "Total Votes"};
 	private SortableList<String, Poll> polls;
 	
 	public PollsTableModel()
 	{
+		this.asset = Controller.getInstance().getAsset(0l);
 		Controller.getInstance().addObserver(this);
+	}
+	
+	public void setAsset(Asset asset) 
+	{
+		this.asset = asset;
+		this.fireTableDataChanged();
 	}
 	
 	@Override
@@ -84,7 +93,7 @@ public class PollsTableModel extends QoraTableModel<String, Poll> implements Obs
 			
 		case COLUMN_VOTES:
 			
-			return NumberAsString.getInstance().numberAsString(poll.getTotalVotes());
+			return NumberAsString.getInstance().numberAsString(poll.getTotalVotes(this.asset.getKey()));
 			
 		}
 		

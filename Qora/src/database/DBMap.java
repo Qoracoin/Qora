@@ -146,7 +146,7 @@ public abstract class DBMap<T, U> extends Observable {
 			//COMMIT
 			if(this.databaseSet != null)
 			{
-				if(!(this.databaseSet instanceof WalletDatabase && Controller.getInstance().isProcessSynchronize))
+				if(!(this.databaseSet instanceof WalletDatabase && Controller.getInstance().isProcessingWalletSynchronize()))
 				{
 					this.databaseSet.commit();
 				}

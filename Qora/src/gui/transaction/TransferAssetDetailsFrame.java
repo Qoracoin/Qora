@@ -14,9 +14,11 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import controller.Controller;
 import qora.crypto.Base58;
 import qora.transaction.TransferAssetTransaction;
 import utils.DateTimeFormat;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class TransferAssetDetailsFrame extends JFrame
@@ -78,6 +80,7 @@ public class TransferAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField signature = new JTextField(Base58.encode(assetTransfer.getSignature()));
 		signature.setEditable(false);
+		MenuPopupUtil.installContextMenu(signature);
 		this.add(signature, detailGBC);
 		
 		//LABEL REFERENCE
@@ -89,6 +92,7 @@ public class TransferAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField reference = new JTextField(Base58.encode(assetTransfer.getReference()));
 		reference.setEditable(false);
+		MenuPopupUtil.installContextMenu(reference);
 		this.add(reference, detailGBC);
 		
 		//LABEL TIMESTAMP
@@ -98,7 +102,9 @@ public class TransferAssetDetailsFrame extends JFrame
 						
 		//TIMESTAMP
 		detailGBC.gridy = 3;
-		JLabel timestamp = new JLabel(DateTimeFormat.timestamptoString(assetTransfer.getTimestamp()));
+		JTextField timestamp = new JTextField(DateTimeFormat.timestamptoString(assetTransfer.getTimestamp()));
+		timestamp.setEditable(false);
+		MenuPopupUtil.installContextMenu(timestamp);
 		this.add(timestamp, detailGBC);
 		
 		//LABEL SENDER
@@ -110,6 +116,7 @@ public class TransferAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 4;
 		JTextField sender = new JTextField(assetTransfer.getSender().getAddress());
 		sender.setEditable(false);
+		MenuPopupUtil.installContextMenu(sender);
 		this.add(sender, detailGBC);
 		
 		//LABEL RECIPIENT
@@ -121,6 +128,7 @@ public class TransferAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 5;
 		JTextField recipient = new JTextField(assetTransfer.getRecipient().getAddress());
 		recipient.setEditable(false);
+		MenuPopupUtil.installContextMenu(recipient);
 		this.add(recipient, detailGBC);		
 		
 		//LABEL ASSET
@@ -128,10 +136,11 @@ public class TransferAssetDetailsFrame extends JFrame
 		JLabel assetLabel = new JLabel("Asset:");
 		this.add(assetLabel, labelGBC);
 		
-		//RECIPIENT
+		//ASSET
 		detailGBC.gridy = 6;
-		JTextField asset = new JTextField(String.valueOf(assetTransfer.getKey()));
+		JTextField asset = new JTextField(String.valueOf(Controller.getInstance().getAsset(assetTransfer.getKey()).toString()));
 		asset.setEditable(false);
+		MenuPopupUtil.installContextMenu(asset);
 		this.add(asset, detailGBC);	
 		
 		//LABEL AMOUNT
@@ -143,6 +152,7 @@ public class TransferAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 7;
 		JTextField amount = new JTextField(assetTransfer.getAmount().toPlainString());
 		amount.setEditable(false);
+		MenuPopupUtil.installContextMenu(amount);
 		this.add(amount, detailGBC);	
 		
 		//LABEL FEE
@@ -154,6 +164,7 @@ public class TransferAssetDetailsFrame extends JFrame
 		detailGBC.gridy = 8;
 		JTextField fee = new JTextField(assetTransfer.getFee().toPlainString());
 		fee.setEditable(false);
+		MenuPopupUtil.installContextMenu(fee);
 		this.add(fee, detailGBC);	
 		
 		//LABEL CONFIRMATIONS

@@ -43,6 +43,7 @@ import qora.transaction.Transaction;
 import qora.transaction.UpdateNameTransaction;
 import qora.transaction.VoteOnPollTransaction;
 import qora.voting.Poll;
+import utils.AssetsFavorites;
 import utils.ObserverMessage;
 import utils.Pair;
 
@@ -57,10 +58,15 @@ public class Wallet extends Observable implements Observer
 	private int secondsToUnlock = -1;
 	private Timer lockTimer = new Timer();
 	
+	private int syncHeight;
+	
+	AssetsFavorites assetsFavorites; 
+	
 	//CONSTRUCTORS
 	
 	public Wallet()
 	{
+		this.syncHeight = -1;
 		//CHECK IF EXISTS
 		if(this.exists())
 		{
@@ -74,6 +80,18 @@ public class Wallet extends Observable implements Observer
 	}
 	
 	//GETTERS/SETTERS
+	
+	public int getSyncHeight()
+	{
+		return this.syncHeight;
+	}
+	
+	public void initiateAssetsFavorites()
+	{
+		if(this.assetsFavorites == null){
+			this.assetsFavorites = new AssetsFavorites();
+		}
+	}
 	
 	public void setSecondsToUnlock(int seconds)
 	{
@@ -255,6 +273,18 @@ public class Wallet extends Observable implements Observer
 		this.database.getAssetFavoritesSet().add(asset.getKey());
 	}
 	
+	public void replaseAssetFavorite()
+	{
+		if(!this.exists())
+		{
+			return;
+		}
+		
+		if(this.assetsFavorites != null) {
+			this.database.getAssetFavoritesSet().replace(this.assetsFavorites.getKeys());	
+		}
+	}
+	
 	public void removeAssetFavorite(Asset asset)
 	{
 		if(!this.exists())
@@ -324,6 +354,8 @@ public class Wallet extends Observable implements Observer
 	    //ADD OBSERVER
 	    Controller.getInstance().addObserver(this);
 	    DBSet.getInstance().getCompletedOrderMap().addObserver(this);
+	    
+	    this.initiateAssetsFavorites();
 	    
 	    return true;
 	}
@@ -398,6 +430,10 @@ public class Wallet extends Observable implements Observer
 	
 	public void synchronize()
 	{
+		if(Controller.getInstance().isProcessingWalletSynchronize()) {
+			return;
+		}
+		
 		List<Account> accounts = this.getAccounts();
 		
 		//RESET MAPS
@@ -415,8 +451,9 @@ public class Wallet extends Observable implements Observer
 		this.database.setLastBlockSignature(new byte[]{1,1,1,1,1,1,1,1});
 		
 		try{
-			Controller.getInstance().isProcessSynchronize = true;
-		
+			Controller.getInstance().setNeedSync(false);
+			Controller.getInstance().setProcessingWalletSynchronize(true);
+			this.syncHeight = 1;
 			do
 			{
 				//UPDATE
@@ -424,7 +461,12 @@ public class Wallet extends Observable implements Observer
 				
 				if(block.getHeight() % 2000 == 0) 
 				{
-					Logger.getGlobal().info("Synchronize wallet: " + block.getHeight());
+					Controller.getInstance().walletStatusUpdate(block.getHeight());
+					
+					//Gui.getInstance().
+					
+					this.syncHeight = block.getHeight();
+					Logger.getGlobal().info("Synchronize wallet: " + this.syncHeight);
 					this.database.commit();
 				}
 				
@@ -434,8 +476,9 @@ public class Wallet extends Observable implements Observer
 			while(block != null);
 			
 		}finally{
-			Controller.getInstance().isProcessSynchronize = false;
+			Controller.getInstance().setProcessingWalletSynchronize(false);
 			this.database.commit();
+			this.syncHeight = -1;
 		}
 		
 		
@@ -448,6 +491,17 @@ public class Wallet extends Observable implements Observer
 			}
 		}
 		Logger.getGlobal().info("Resetted balances");
+
+		Controller.getInstance().walletStatusUpdate(-1);
+		
+		//NOW IF NOT SYNCHRONIZED SET STATUS
+		//CHECK IF WE ARE UPTODATE
+		if(!Controller.getInstance().isUpToDate())
+		{
+			// NOTIFY
+			Controller.getInstance().notifyObservers(new ObserverMessage(
+					ObserverMessage.NETWORK_STATUS, Controller.STATUS_SYNCHRONIZING));
+		}
 		
 		//SET LAST BLOCK
 		
@@ -1505,4 +1559,9 @@ public class Wallet extends Observable implements Observer
 		}
 		
 	}	
+	
+	public byte[] getLastBlockSignature()
+	{
+		return this.database.getLastBlockSignature();
+	}
 }

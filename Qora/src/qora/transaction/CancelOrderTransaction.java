@@ -214,7 +214,7 @@ public class CancelOrderTransaction extends Transaction
 			return NO_BALANCE;
 		}
 		
-		//CHECK IF REFERENCE IS OKE
+		//CHECK IF REFERENCE IS OK
 		if(!Arrays.equals(this.creator.getLastReference(db), this.reference))
 		{
 			return INVALID_REFERENCE;
@@ -226,7 +226,7 @@ public class CancelOrderTransaction extends Transaction
 			return NEGATIVE_FEE;
 		}
 		
-		return VALIDATE_OKE;
+		return VALIDATE_OK;
 	}
 	
 	//PROCESS/ORPHAN

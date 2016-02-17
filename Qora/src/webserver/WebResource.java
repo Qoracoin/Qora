@@ -54,6 +54,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import com.google.common.base.Charsets;
+import com.mitchellbosecke.pebble.error.PebbleException;
+
+import api.BlogPostResource;
+import api.NameStorageResource;
+import controller.Controller;
+import database.DBSet;
+import database.NameMap;
 import qora.account.Account;
 import qora.account.PrivateKeyAccount;
 import qora.blockexplorer.BlockExplorer;
@@ -76,25 +84,16 @@ import qora.web.blog.BlogEntry;
 import settings.Settings;
 import utils.AccountBalanceComparator;
 import utils.BlogUtils;
+import utils.DiffHelper;
 import utils.JSonWriter;
 import utils.NameUtils;
 import utils.NameUtils.NameResult;
-import utils.DiffHelper;
 import utils.Pair;
 import utils.PebbleHelper;
 import utils.Qorakeys;
 import utils.StorageUtils;
 import utils.StrJSonFine;
 import utils.UpdateUtil;
-import api.BlogPostResource;
-import api.NameStorageResource;
-
-import com.google.common.base.Charsets;
-import com.mitchellbosecke.pebble.error.PebbleException;
-
-import controller.Controller;
-import database.DBSet;
-import database.NameMap;
 
 @Path("/")
 public class WebResource {
@@ -477,6 +476,7 @@ public class WebResource {
 				+ Settings.getInstance().getRpcPort() + "/" + apiurl);
 		HttpURLConnection connection = (HttpURLConnection) urlToCall
 				.openConnection();
+		connection.setRequestProperty("X-FORWARDED-FOR", ServletUtils.getRemoteAddress(request));
 
 		// EXECUTE
 		connection.setRequestMethod(type.toUpperCase());
@@ -699,6 +699,8 @@ public class WebResource {
 
 			boolean blogenable = Boolean.valueOf(form
 					.getFirst(Qorakeys.BLOGENABLE.toString()));
+			boolean blockComments = Boolean.valueOf(form
+					.getFirst(Qorakeys.BLOGBLOCKCOMMENTS.toString()));
 			boolean profileenable = Boolean.valueOf(form
 					.getFirst(Qorakeys.PROFILEENABLE.toString()));
 			String titleOpt = form.getFirst(Qorakeys.BLOGTITLE.toString());
@@ -724,6 +726,7 @@ public class WebResource {
 			profile.saveBlogDescription(blogDescrOpt);
 			profile.saveBlogTitle(titleOpt);
 			profile.setBlogEnabled(blogenable);
+			profile.setBlockComments(blockComments);
 			profile.setProfileEnabled(profileenable);
 
 			profile.getBlogBlackWhiteList().clearList();
@@ -885,29 +888,34 @@ public class WebResource {
 			pebbleHelper.getContextMap().put(
 					"forgestatus",
 					Controller.getInstance().getForgingStatus().getName());
+			pebbleHelper.getContextMap().put(
+					"version",
+					"Qora " + Controller.getInstance().getVersion());
 			
 			int status = Controller.getInstance().getStatus();
 			String statustext = "";
 			//TODO this needs to be moved to another place
-			if(status == Controller.STATUS_NO_CONNECTIONS)
-			{
-				statustext ="No connections";
-			}
-			if(status == Controller.STATUS_SYNCHRONIZING)
-			{
-				statustext ="Synchronizing";
-			}
-			if(status == Controller.STATUS_OKE)
-			{
-				statustext ="Oke";
-			}
 			
+			if(Controller.getInstance().getWalletSyncHeight() > 0) {
+				statustext = "Wallet Synchronizing ";
+				statustext += 100 * Controller.getInstance().getWalletSyncHeight()/Controller.getInstance().getHeight() + "%<br>";
+				statustext += "Height: " + Controller.getInstance().getWalletSyncHeight() + "/" + Controller.getInstance().getHeight() + "/" + Controller.getInstance().getMaxPeerHeight();
+			} else if(status == Controller.STATUS_OK) {
+				statustext = "OK<br>";
+				statustext += "Height: " + Controller.getInstance().getHeight();
+			} else if(status == Controller.STATUS_NO_CONNECTIONS) {
+				statustext = "No connections<br>";
+				statustext += "Height: " + Controller.getInstance().getHeight();
+			} else if(status == Controller.STATUS_SYNCHRONIZING) {
+				statustext = "Synchronizing ";
+				statustext += 100 * Controller.getInstance().getHeight()/Controller.getInstance().getMaxPeerHeight() + "%<br>";
+				statustext += "Height: " + Controller.getInstance().getHeight() + "/" + Controller.getInstance().getMaxPeerHeight();
+			} 
+						
 			pebbleHelper.getContextMap().put(
 					"status",
 					statustext);
 			
-			
-
 			return Response.ok(pebbleHelper.evaluate(),
 					"text/html; charset=utf-8").build();
 		} catch (PebbleException e) {
@@ -1218,7 +1226,12 @@ public class WebResource {
 		String creator = form.getFirst("creator");
 		String contentparam = form.getFirst("content");
 		String preview = form.getFirst("preview");
+		
+		
+		
+		
 		String blogname = form.getFirst(BlogPostResource.BLOGNAME_KEY);
+		String postid = form.getFirst(BlogPostResource.COMMENT_POSTID_KEY);
 
 		if (StringUtil.isNotBlank(creator)
 				&& StringUtil.isNotBlank(contentparam)) {
@@ -1239,6 +1252,7 @@ public class WebResource {
 
 			jsonBlogPost.put("title", title);
 			jsonBlogPost.put("body", contentparam);
+			
 
 			if (StringUtils.isNotBlank(preview) && preview.equals("true")) {
 				json.put("type", "preview");
@@ -1262,11 +1276,21 @@ public class WebResource {
 						Controller
 								.getInstance()
 								.calcRecommendedFeeForArbitraryTransaction(
-										jsonBlogPost.toJSONString().getBytes(StandardCharsets.UTF_8))
+										jsonBlogPost.toJSONString().getBytes(StandardCharsets.UTF_8), null)
 								.getA().toPlainString());
 
-				String result = new BlogPostResource().addBlogEntry(
-						jsonBlogPost.toJSONString(), blogname);
+				String result;
+				//COMMENT OR REAL BLOGPOST?
+				if(postid != null)
+				{
+					jsonBlogPost.put(BlogPostResource.COMMENT_POSTID_KEY, postid);
+					result = new BlogPostResource().commentBlogEntry(
+							jsonBlogPost.toJSONString());
+				}else
+				{
+					result = new BlogPostResource().addBlogEntry(
+							jsonBlogPost.toJSONString(), blogname);
+				}
 
 				json.put("type", "postSuccessful");
 				json.put("result", result);
@@ -1295,6 +1319,104 @@ public class WebResource {
 				.header("Content-Type", "application/json; charset=utf-8")
 				.entity(json.toJSONString()).build();
 	}
+	
+	
+	@Path("index/postcomment.html")
+	@GET
+	public Response postComment() {
+
+		try {
+
+			PebbleHelper pebbleHelper = PebbleHelper.getPebbleHelper(
+					"web/postblog.html", request);
+
+			pebbleHelper.getContextMap().put("errormessage", "");
+			pebbleHelper.getContextMap().put("font", "");
+			pebbleHelper.getContextMap().put("content", "");
+			pebbleHelper.getContextMap().put("option", "");
+			pebbleHelper.getContextMap().put("oldtitle", "");
+			pebbleHelper.getContextMap().put("oldcreator", "");
+			pebbleHelper.getContextMap().put("oldcontent", "");
+			pebbleHelper.getContextMap().put("oldfee", "");
+			pebbleHelper.getContextMap().put("preview", "");
+
+			List<Account> resultingAccounts;
+
+			
+			/**
+			 * Currently we allow all names and accounts, that needs to be restricted later
+			 */
+			if (Controller.getInstance().doesWalletDatabaseExists()) {
+				resultingAccounts = new ArrayList<Account>(Controller.getInstance()
+						.getAccounts());
+			} else {
+				resultingAccounts = new ArrayList<Account>();
+			}
+			List<Name> resultingNames = new ArrayList<Name>(Controller.getInstance()
+					.getNamesAsList());
+			
+			for (Name name : resultingNames) {
+				// No balance account not shown
+				if (name.getOwner().getBalance(0).compareTo(BigDecimal.ZERO) <= 0) {
+					resultingNames.remove(name);
+				}
+			}
+
+			for (Account account : resultingAccounts) {
+				if (account.getBalance(0).compareTo(BigDecimal.ZERO) <= 0) {
+					resultingAccounts.remove(account);
+				}
+			}
+
+//		 Pair<List<Account>, List<Name>> accountdAndNames = new Pair<List<Account>, List<Name>>(resultingAccounts,
+//				resultingNames);
+
+			
+
+			Collections.sort(resultingAccounts, new AccountBalanceComparator());
+			Collections.reverse(resultingAccounts);
+
+			String accountStrings = "";
+
+			for (Name name : resultingNames) {
+				accountStrings += "<option value=" + name.getName() + ">"
+						+ name.getNameBalanceString() + "</option>";
+			}
+
+			for (Account account : resultingAccounts) {
+				accountStrings += "<option value=" + account.getAddress() + ">"
+						+ account + "</option>";
+			}
+
+			// are we allowed to post
+			if (resultingNames.size() == 0 && resultingAccounts.size() == 0) {
+
+				pebbleHelper
+						.getContextMap()
+						.put("errormessage",
+								"<div id=\"result\"><div class=\"alert alert-dismissible alert-danger\" role=\"alert\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">x</button>You can't post to this blog! None of your accounts has balance or the blog owner did not allow your accounts to post!<br></div></div>");
+
+			}
+
+			Profile activeProfileOpt = ProfileHelper.getInstance()
+					.getActiveProfileOpt(request);
+
+			if (activeProfileOpt != null
+					&& resultingNames.contains(activeProfileOpt.getName())) {
+				pebbleHelper.getContextMap().put("primaryname",
+						activeProfileOpt.getName().getName());
+			}
+
+			pebbleHelper.getContextMap().put("option", accountStrings);
+
+			return Response.ok(pebbleHelper.evaluate(),
+					"text/html; charset=utf-8").build();
+		} catch (Throwable e) {
+			e.printStackTrace();
+			return error404(request, null);
+		}
+	}
+
 
 	@Path("index/postblog.html")
 	@GET
@@ -1532,6 +1654,117 @@ public class WebResource {
 		}
 
 	}
+	
+	@SuppressWarnings("unchecked")
+	@POST
+	@Path("index/deletecomment.html")
+	@Consumes("application/x-www-form-urlencoded")
+	public Response deleteComment(@Context HttpServletRequest request,
+			MultivaluedMap<String, String> form) {
+
+		JSONObject jsonanswer = new JSONObject();
+		try {
+
+			String signature = form.getFirst("signature");
+
+			if (signature != null) {
+
+				BlogEntry blogEntryOpt = BlogUtils.getCommentBlogEntryOpt(signature);
+
+				if (blogEntryOpt == null) {
+					// TODO put this snippet in method
+					jsonanswer.put("type", "deleteError");
+					jsonanswer
+							.put("errordetail",
+									"The comment you are trying to delete does not exist!");
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				}
+
+				if (!Controller.getInstance().doesWalletDatabaseExists()) {
+					jsonanswer.put("type", "deleteError");
+					jsonanswer.put("errordetail", "You don't have a wallet!");
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				}
+
+				String creator = BlogUtils.getCreatorOrBlogOwnerOpt(blogEntryOpt);
+				
+				
+//				if(profileOpt != null && )
+				
+				
+
+				if (creator == null) {
+					jsonanswer.put("type", "deleteError");
+					jsonanswer
+							.put("errordetail",
+									"You are not allowed to delete this comment! You need to be the owner of the blog or author of the comment!");
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				}
+
+				try {
+
+					String result = new BlogPostResource().deleteCommentEntry(
+							signature);
+
+					jsonanswer.put("type", "deleteSuccessful");
+					jsonanswer.put("result", result);
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+				} catch (WebApplicationException e) {
+
+					jsonanswer.put("type", "deleteError");
+					jsonanswer.put("errordetail", e.getResponse().getEntity());
+
+					return Response
+							.status(200)
+							.header("Content-Type",
+									"application/json; charset=utf-8")
+							.entity(jsonanswer.toJSONString()).build();
+
+				}
+
+			}
+
+			jsonanswer.put("type", "deleteError");
+			jsonanswer.put("errordetail",
+					"the signature parameter must be set!");
+
+			return Response.status(200)
+					.header("Content-Type", "application/json; charset=utf-8")
+					.entity(jsonanswer.toJSONString()).build();
+
+		} catch (Throwable e) {
+			e.printStackTrace();
+
+			jsonanswer.put("type", "deleteError");
+			jsonanswer.put("errordetail", e.getMessage());
+
+			return Response.status(200)
+					.header("Content-Type", "application/json; charset=utf-8")
+					.entity(jsonanswer.toJSONString()).build();
+		}
+
+	}
+
 
 	@SuppressWarnings("unchecked")
 	@POST
@@ -1589,7 +1822,7 @@ public class WebResource {
 					jsonBlogPost.put("creator", creator);
 					Pair<BigDecimal, Integer> fee = Controller.getInstance()
 							.calcRecommendedFeeForArbitraryTransaction(
-									jsonBlogPost.toJSONString().getBytes(StandardCharsets.UTF_8));
+									jsonBlogPost.toJSONString().getBytes(StandardCharsets.UTF_8), null);
 					jsonBlogPost.put("fee", fee.getA().toPlainString());
 					// I am not author, but am I the owner of the blog?
 				} else if (blognameOpt != null
@@ -1727,7 +1960,7 @@ public class WebResource {
 
 					Pair<BigDecimal, Integer> fee = Controller.getInstance()
 							.calcRecommendedFeeForArbitraryTransaction(
-									jsonBlogPost.toJSONString().getBytes(StandardCharsets.UTF_8));
+									jsonBlogPost.toJSONString().getBytes(StandardCharsets.UTF_8), null);
 					jsonBlogPost.put("fee", fee.getA().toPlainString());
 
 					try {
@@ -2018,7 +2251,7 @@ public class WebResource {
 
 	}
 
-	public void addSharingAndLiking(BlogEntry blogEntry, String signature) {
+	public static void addSharingAndLiking(BlogEntry blogEntry, String signature) {
 		List<String> list = DBSet.getInstance().getSharedPostsMap()
 				.get(Base58.decode(blogEntry.getSignature()));
 		if (list != null) {
@@ -2394,6 +2627,383 @@ public class WebResource {
 		}
 	}
 
+	@Path("index/libs/ckeditor/{folder : .+}")
+	@GET
+	public Response ckeditor(@PathParam("folder") String folder) {
+
+		String[] files =
+			{
+				"adapters/jquery.js",
+				"README.md",
+				"CHANGES.md",
+				"styles.js",
+				"lang/sk.js",
+				"lang/fi.js",
+				"lang/it.js",
+				"lang/he.js",
+				"lang/uk.js",
+				"lang/sv.js",
+				"lang/en-ca.js",
+				"lang/sr-latn.js",
+				"lang/ru.js",
+				"lang/zh-cn.js",
+				"lang/no.js",
+				"lang/fr.js",
+				"lang/fa.js",
+				"lang/da.js",
+				"lang/mk.js",
+				"lang/ko.js",
+				"lang/ro.js",
+				"lang/mn.js",
+				"lang/tr.js",
+				"lang/bg.js",
+				"lang/ka.js",
+				"lang/de.js",
+				"lang/el.js",
+				"lang/pt.js",
+				"lang/af.js",
+				"lang/eu.js",
+				"lang/cy.js",
+				"lang/en-au.js",
+				"lang/hi.js",
+				"lang/en.js",
+				"lang/fr-ca.js",
+				"lang/nb.js",
+				"lang/sr.js",
+				"lang/en-gb.js",
+				"lang/ms.js",
+				"lang/pl.js",
+				"lang/is.js",
+				"lang/lv.js",
+				"lang/km.js",
+				"lang/tt.js",
+				"lang/th.js",
+				"lang/hu.js",
+				"lang/bn.js",
+				"lang/zh.js",
+				"lang/ja.js",
+				"lang/et.js",
+				"lang/nl.js",
+				"lang/ar.js",
+				"lang/eo.js",
+				"lang/lt.js",
+				"lang/gl.js",
+				"lang/ku.js",
+				"lang/cs.js",
+				"lang/vi.js",
+				"lang/ca.js",
+				"lang/ug.js",
+				"lang/fo.js",
+				"lang/id.js",
+				"lang/si.js",
+				"lang/sl.js",
+				"lang/pt-br.js",
+				"lang/es.js",
+				"lang/hr.js",
+				"lang/sq.js",
+				"lang/bs.js",
+				"lang/gu.js",
+				"skins/moono/dialog_ie7.css",
+				"skins/moono/dialog_ie.css",
+				"skins/moono/editor_iequirks.css",
+				"skins/moono/icons_hidpi.png",
+				"skins/moono/editor.css",
+				"skins/moono/readme.md",
+				"skins/moono/dialog_ie8.css",
+				"skins/moono/editor_ie.css",
+				"skins/moono/dialog.css",
+				"skins/moono/icons.png",
+				"skins/moono/dialog_iequirks.css",
+				"skins/moono/editor_ie7.css",
+				"skins/moono/editor_gecko.css",
+				"skins/moono/editor_ie8.css",
+				"skins/moono/images/spinner.gif",
+				"skins/moono/images/arrow.png",
+				"skins/moono/images/lock-open.png",
+				"skins/moono/images/lock.png",
+				"skins/moono/images/close.png",
+				"skins/moono/images/refresh.png",
+				"skins/moono/images/hidpi/lock-open.png",
+				"skins/moono/images/hidpi/lock.png",
+				"skins/moono/images/hidpi/close.png",
+				"skins/moono/images/hidpi/refresh.png",
+				"build-config.js",
+				"config.js",
+				"ckeditor.js",
+				"LICENSE.md",
+				"plugins/preview/preview.html",
+				"plugins/templates/templates/default.js",
+				"plugins/templates/templates/images/template3.gif",
+				"plugins/templates/templates/images/template1.gif",
+				"plugins/templates/templates/images/template2.gif",
+				"plugins/templates/dialogs/templates.css",
+				"plugins/templates/dialogs/templates.js",
+				"plugins/tabletools/dialogs/tableCell.js",
+				"plugins/icons_hidpi.png",
+				"plugins/dialog/dialogDefinition.js",
+				"plugins/iframe/dialogs/iframe.js",
+				"plugins/iframe/images/placeholder.png",
+				"plugins/liststyle/dialogs/liststyle.js",
+				"plugins/magicline/images/icon-rtl.png",
+				"plugins/magicline/images/icon.png",
+				"plugins/magicline/images/hidpi/icon-rtl.png",
+				"plugins/magicline/images/hidpi/icon.png",
+				"plugins/image/dialogs/image.js",
+				"plugins/image/images/noimage.png",
+				"plugins/link/dialogs/link.js",
+				"plugins/link/dialogs/anchor.js",
+				"plugins/link/images/anchor.png",
+				"plugins/link/images/hidpi/anchor.png",
+				"plugins/flash/dialogs/flash.js",
+				"plugins/flash/images/placeholder.png",
+				"plugins/about/dialogs/logo_ckeditor.png",
+				"plugins/about/dialogs/about.js",
+				"plugins/about/dialogs/hidpi/logo_ckeditor.png",
+				"plugins/icons.png",
+				"plugins/div/dialogs/div.js",
+				"plugins/specialchar/dialogs/lang/sk.js",
+				"plugins/specialchar/dialogs/lang/fi.js",
+				"plugins/specialchar/dialogs/lang/it.js",
+				"plugins/specialchar/dialogs/lang/he.js",
+				"plugins/specialchar/dialogs/lang/uk.js",
+				"plugins/specialchar/dialogs/lang/_translationstatus.txt",
+				"plugins/specialchar/dialogs/lang/sv.js",
+				"plugins/specialchar/dialogs/lang/ru.js",
+				"plugins/specialchar/dialogs/lang/zh-cn.js",
+				"plugins/specialchar/dialogs/lang/no.js",
+				"plugins/specialchar/dialogs/lang/fr.js",
+				"plugins/specialchar/dialogs/lang/fa.js",
+				"plugins/specialchar/dialogs/lang/da.js",
+				"plugins/specialchar/dialogs/lang/ko.js",
+				"plugins/specialchar/dialogs/lang/tr.js",
+				"plugins/specialchar/dialogs/lang/bg.js",
+				"plugins/specialchar/dialogs/lang/de.js",
+				"plugins/specialchar/dialogs/lang/el.js",
+				"plugins/specialchar/dialogs/lang/pt.js",
+				"plugins/specialchar/dialogs/lang/af.js",
+				"plugins/specialchar/dialogs/lang/eu.js",
+				"plugins/specialchar/dialogs/lang/cy.js",
+				"plugins/specialchar/dialogs/lang/en.js",
+				"plugins/specialchar/dialogs/lang/fr-ca.js",
+				"plugins/specialchar/dialogs/lang/nb.js",
+				"plugins/specialchar/dialogs/lang/en-gb.js",
+				"plugins/specialchar/dialogs/lang/pl.js",
+				"plugins/specialchar/dialogs/lang/lv.js",
+				"plugins/specialchar/dialogs/lang/km.js",
+				"plugins/specialchar/dialogs/lang/tt.js",
+				"plugins/specialchar/dialogs/lang/th.js",
+				"plugins/specialchar/dialogs/lang/hu.js",
+				"plugins/specialchar/dialogs/lang/zh.js",
+				"plugins/specialchar/dialogs/lang/ja.js",
+				"plugins/specialchar/dialogs/lang/et.js",
+				"plugins/specialchar/dialogs/lang/nl.js",
+				"plugins/specialchar/dialogs/lang/ar.js",
+				"plugins/specialchar/dialogs/lang/eo.js",
+				"plugins/specialchar/dialogs/lang/lt.js",
+				"plugins/specialchar/dialogs/lang/gl.js",
+				"plugins/specialchar/dialogs/lang/ku.js",
+				"plugins/specialchar/dialogs/lang/cs.js",
+				"plugins/specialchar/dialogs/lang/vi.js",
+				"plugins/specialchar/dialogs/lang/ca.js",
+				"plugins/specialchar/dialogs/lang/ug.js",
+				"plugins/specialchar/dialogs/lang/id.js",
+				"plugins/specialchar/dialogs/lang/si.js",
+				"plugins/specialchar/dialogs/lang/sl.js",
+				"plugins/specialchar/dialogs/lang/pt-br.js",
+				"plugins/specialchar/dialogs/lang/es.js",
+				"plugins/specialchar/dialogs/lang/hr.js",
+				"plugins/specialchar/dialogs/lang/sq.js",
+				"plugins/specialchar/dialogs/specialchar.js",
+				"plugins/table/dialogs/table.js",
+				"plugins/showblocks/images/block_address.png",
+				"plugins/showblocks/images/block_blockquote.png",
+				"plugins/showblocks/images/block_pre.png",
+				"plugins/showblocks/images/block_h2.png",
+				"plugins/showblocks/images/block_h3.png",
+				"plugins/showblocks/images/block_h1.png",
+				"plugins/showblocks/images/block_h4.png",
+				"plugins/showblocks/images/block_h6.png",
+				"plugins/showblocks/images/block_div.png",
+				"plugins/showblocks/images/block_p.png",
+				"plugins/showblocks/images/block_h5.png",
+				"plugins/find/dialogs/find.js",
+				"plugins/smiley/dialogs/smiley.js",
+				"plugins/smiley/images/lightbulb.gif",
+				"plugins/smiley/images/cry_smile.png",
+				"plugins/smiley/images/heart.gif",
+				"plugins/smiley/images/thumbs_up.png",
+				"plugins/smiley/images/wink_smile.png",
+				"plugins/smiley/images/teeth_smile.gif",
+				"plugins/smiley/images/teeth_smile.png",
+				"plugins/smiley/images/heart.png",
+				"plugins/smiley/images/regular_smile.gif",
+				"plugins/smiley/images/cry_smile.gif",
+				"plugins/smiley/images/shades_smile.gif",
+				"plugins/smiley/images/embarrassed_smile.png",
+				"plugins/smiley/images/broken_heart.gif",
+				"plugins/smiley/images/shades_smile.png",
+				"plugins/smiley/images/sad_smile.gif",
+				"plugins/smiley/images/omg_smile.gif",
+				"plugins/smiley/images/regular_smile.png",
+				"plugins/smiley/images/angel_smile.png",
+				"plugins/smiley/images/devil_smile.png",
+				"plugins/smiley/images/kiss.gif",
+				"plugins/smiley/images/whatchutalkingabout_smile.gif",
+				"plugins/smiley/images/omg_smile.png",
+				"plugins/smiley/images/envelope.gif",
+				"plugins/smiley/images/confused_smile.png",
+				"plugins/smiley/images/envelope.png",
+				"plugins/smiley/images/tongue_smile.gif",
+				"plugins/smiley/images/embarrassed_smile.gif",
+				"plugins/smiley/images/confused_smile.gif",
+				"plugins/smiley/images/angel_smile.gif",
+				"plugins/smiley/images/tounge_smile.gif",
+				"plugins/smiley/images/thumbs_down.png",
+				"plugins/smiley/images/thumbs_up.gif",
+				"plugins/smiley/images/lightbulb.png",
+				"plugins/smiley/images/tongue_smile.png",
+				"plugins/smiley/images/sad_smile.png",
+				"plugins/smiley/images/angry_smile.gif",
+				"plugins/smiley/images/angry_smile.png",
+				"plugins/smiley/images/devil_smile.gif",
+				"plugins/smiley/images/thumbs_down.gif",
+				"plugins/smiley/images/kiss.png",
+				"plugins/smiley/images/whatchutalkingabout_smile.png",
+				"plugins/smiley/images/wink_smile.gif",
+				"plugins/smiley/images/broken_heart.png",
+				"plugins/smiley/images/embaressed_smile.gif",
+				"plugins/forms/dialogs/textfield.js",
+				"plugins/forms/dialogs/select.js",
+				"plugins/forms/dialogs/hiddenfield.js",
+				"plugins/forms/dialogs/button.js",
+				"plugins/forms/dialogs/checkbox.js",
+				"plugins/forms/dialogs/textarea.js",
+				"plugins/forms/dialogs/form.js",
+				"plugins/forms/dialogs/radio.js",
+				"plugins/forms/images/hiddenfield.gif",
+				"plugins/pastefromword/filter/default.js",
+				"plugins/pagebreak/images/pagebreak.gif",
+				"plugins/wsc/README.md",
+				"plugins/wsc/dialogs/ciframe.html",
+				"plugins/wsc/dialogs/wsc.css",
+				"plugins/wsc/dialogs/wsc_ie.js",
+				"plugins/wsc/dialogs/wsc.js",
+				"plugins/wsc/dialogs/tmpFrameset.html",
+				"plugins/wsc/LICENSE.md",
+				"plugins/scayt/README.md",
+				"plugins/scayt/dialogs/toolbar.css",
+				"plugins/scayt/dialogs/options.js",
+				"plugins/scayt/CHANGELOG.md",
+				"plugins/scayt/LICENSE.md",
+				"plugins/colordialog/dialogs/colordialog.js",
+				"plugins/clipboard/dialogs/paste.js",
+				"plugins/a11yhelp/dialogs/a11yhelp.js",
+				"plugins/a11yhelp/dialogs/lang/sk.js",
+				"plugins/a11yhelp/dialogs/lang/fi.js",
+				"plugins/a11yhelp/dialogs/lang/it.js",
+				"plugins/a11yhelp/dialogs/lang/he.js",
+				"plugins/a11yhelp/dialogs/lang/uk.js",
+				"plugins/a11yhelp/dialogs/lang/_translationstatus.txt",
+				"plugins/a11yhelp/dialogs/lang/sv.js",
+				"plugins/a11yhelp/dialogs/lang/sr-latn.js",
+				"plugins/a11yhelp/dialogs/lang/ru.js",
+				"plugins/a11yhelp/dialogs/lang/zh-cn.js",
+				"plugins/a11yhelp/dialogs/lang/no.js",
+				"plugins/a11yhelp/dialogs/lang/fr.js",
+				"plugins/a11yhelp/dialogs/lang/fa.js",
+				"plugins/a11yhelp/dialogs/lang/da.js",
+				"plugins/a11yhelp/dialogs/lang/mk.js",
+				"plugins/a11yhelp/dialogs/lang/ko.js",
+				"plugins/a11yhelp/dialogs/lang/ro.js",
+				"plugins/a11yhelp/dialogs/lang/mn.js",
+				"plugins/a11yhelp/dialogs/lang/tr.js",
+				"plugins/a11yhelp/dialogs/lang/bg.js",
+				"plugins/a11yhelp/dialogs/lang/de.js",
+				"plugins/a11yhelp/dialogs/lang/el.js",
+				"plugins/a11yhelp/dialogs/lang/pt.js",
+				"plugins/a11yhelp/dialogs/lang/af.js",
+				"plugins/a11yhelp/dialogs/lang/eu.js",
+				"plugins/a11yhelp/dialogs/lang/cy.js",
+				"plugins/a11yhelp/dialogs/lang/hi.js",
+				"plugins/a11yhelp/dialogs/lang/en.js",
+				"plugins/a11yhelp/dialogs/lang/fr-ca.js",
+				"plugins/a11yhelp/dialogs/lang/nb.js",
+				"plugins/a11yhelp/dialogs/lang/sr.js",
+				"plugins/a11yhelp/dialogs/lang/en-gb.js",
+				"plugins/a11yhelp/dialogs/lang/pl.js",
+				"plugins/a11yhelp/dialogs/lang/lv.js",
+				"plugins/a11yhelp/dialogs/lang/km.js",
+				"plugins/a11yhelp/dialogs/lang/tt.js",
+				"plugins/a11yhelp/dialogs/lang/th.js",
+				"plugins/a11yhelp/dialogs/lang/hu.js",
+				"plugins/a11yhelp/dialogs/lang/zh.js",
+				"plugins/a11yhelp/dialogs/lang/ja.js",
+				"plugins/a11yhelp/dialogs/lang/et.js",
+				"plugins/a11yhelp/dialogs/lang/nl.js",
+				"plugins/a11yhelp/dialogs/lang/ar.js",
+				"plugins/a11yhelp/dialogs/lang/eo.js",
+				"plugins/a11yhelp/dialogs/lang/lt.js",
+				"plugins/a11yhelp/dialogs/lang/gl.js",
+				"plugins/a11yhelp/dialogs/lang/ku.js",
+				"plugins/a11yhelp/dialogs/lang/cs.js",
+				"plugins/a11yhelp/dialogs/lang/vi.js",
+				"plugins/a11yhelp/dialogs/lang/ca.js",
+				"plugins/a11yhelp/dialogs/lang/ug.js",
+				"plugins/a11yhelp/dialogs/lang/fo.js",
+				"plugins/a11yhelp/dialogs/lang/id.js",
+				"plugins/a11yhelp/dialogs/lang/si.js",
+				"plugins/a11yhelp/dialogs/lang/sl.js",
+				"plugins/a11yhelp/dialogs/lang/pt-br.js",
+				"plugins/a11yhelp/dialogs/lang/es.js",
+				"plugins/a11yhelp/dialogs/lang/hr.js",
+				"plugins/a11yhelp/dialogs/lang/sq.js",
+				"plugins/a11yhelp/dialogs/lang/gu.js",
+				"contents.css"
+			};
+
+		
+		String fullname = "";
+		String type = "text/plain";
+		File file;
+		
+		for (String filename : files) {
+			if(filename.equals(folder))
+			{
+				fullname = "web/libs/ckeditor/"+filename;
+				
+			    switch (filename.substring(filename.lastIndexOf(".") + 1)) {
+			    	case "js":
+			    		type = "text/javascript";
+			    		break;
+			    	case "css":
+			    		type = "text/css";
+			    		break;
+			    	case "html":
+			    		type = "text/html";
+			    		break;
+			    	case "txt":
+			    	case "md":
+			    		type = "text/plain";
+			    		break;
+			    	case "png":
+			    		type = "image/png";
+			    		break;
+			    	case "gif":
+			    		type = "image/gif";
+			    		break;			    		
+			    }
+			}	
+		}
+		
+		file = new File(fullname);
+		
+		if (file.exists()) {
+			return Response.ok(file, type).build();
+		} else {
+			return error404(request, null);
+		}
+	}
+	
 	public Response error404(HttpServletRequest request, String titleOpt) {
 
 		try {

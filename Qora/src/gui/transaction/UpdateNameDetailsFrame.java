@@ -22,6 +22,7 @@ import qora.crypto.Base58;
 import qora.transaction.UpdateNameTransaction;
 import utils.DateTimeFormat;
 import utils.GZIP;
+import utils.MenuPopupUtil;
 
 @SuppressWarnings("serial")
 public class UpdateNameDetailsFrame extends JFrame
@@ -83,6 +84,7 @@ public class UpdateNameDetailsFrame extends JFrame
 		detailGBC.gridy = 1;
 		JTextField signature = new JTextField(Base58.encode(nameUpdate.getSignature()));
 		signature.setEditable(false);
+		MenuPopupUtil.installContextMenu(signature);
 		this.add(signature, detailGBC);
 		
 		//LABEL REFERENCE
@@ -94,6 +96,7 @@ public class UpdateNameDetailsFrame extends JFrame
 		detailGBC.gridy = 2;
 		JTextField reference = new JTextField(Base58.encode(nameUpdate.getReference()));
 		reference.setEditable(false);
+		MenuPopupUtil.installContextMenu(reference);
 		this.add(reference, detailGBC);
 		
 		//LABEL TIMESTAMP
@@ -103,7 +106,9 @@ public class UpdateNameDetailsFrame extends JFrame
 						
 		//TIMESTAMP
 		detailGBC.gridy = 3;
-		JLabel timestamp = new JLabel(DateTimeFormat.timestamptoString(nameUpdate.getTimestamp()));
+		JTextField timestamp = new JTextField(DateTimeFormat.timestamptoString(nameUpdate.getTimestamp()));
+		timestamp.setEditable(false);
+		MenuPopupUtil.installContextMenu(timestamp);
 		this.add(timestamp, detailGBC);
 		
 		//LABEL REGISTRANT
@@ -115,6 +120,7 @@ public class UpdateNameDetailsFrame extends JFrame
 		detailGBC.gridy = 4;
 		JTextField registrant = new JTextField(nameUpdate.getOwner().getAddress());
 		registrant.setEditable(false);
+		MenuPopupUtil.installContextMenu(registrant);
 		this.add(registrant, detailGBC);
 		
 		//LABEL OWNER
@@ -126,6 +132,7 @@ public class UpdateNameDetailsFrame extends JFrame
 		detailGBC.gridy = 5;
 		JTextField owner = new JTextField(nameUpdate.getName().getOwner().getAddress());
 		owner.setEditable(false);
+		MenuPopupUtil.installContextMenu(owner);
 		this.add(owner, detailGBC);
 		
 		//LABEL NAME
@@ -137,6 +144,7 @@ public class UpdateNameDetailsFrame extends JFrame
 		detailGBC.gridy = 6;
 		JTextField name = new JTextField(nameUpdate.getName().getName());
 		name.setEditable(false);
+		MenuPopupUtil.installContextMenu(name);
 		this.add(name, detailGBC);		
 		
 		//LABEL VALUE
@@ -151,6 +159,7 @@ public class UpdateNameDetailsFrame extends JFrame
 		txtareaValue.setRows(10);
       	txtareaValue.setColumns(43);
       	txtareaValue.setEditable(false);
+		MenuPopupUtil.installContextMenu(txtareaValue);
       	
       	JScrollPane valueScroll = new JScrollPane(txtareaValue);
       	valueScroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -167,7 +176,7 @@ public class UpdateNameDetailsFrame extends JFrame
   		final JCheckBox compressed = new JCheckBox();
   		compressed.setSelected(nameUpdate.getName().getValue().startsWith("?gz!"));
   		compressed.setEnabled(false);
-      	
+     	
   		this.add(compressed, detailGBC);		
       	
 		//LABEL FEE
@@ -179,6 +188,7 @@ public class UpdateNameDetailsFrame extends JFrame
 		detailGBC.gridy = 9;
 		JTextField fee = new JTextField(nameUpdate.getFee().toPlainString());
 		fee.setEditable(false);
+		MenuPopupUtil.installContextMenu(fee);
 		this.add(fee, detailGBC);	
 		
 		//LABEL CONFIRMATIONS

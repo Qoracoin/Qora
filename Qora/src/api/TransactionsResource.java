@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 
 import org.json.simple.JSONArray;
@@ -23,11 +25,15 @@ import qora.block.Block;
 import qora.crypto.Base58;
 import qora.crypto.Crypto;
 import qora.transaction.Transaction;
+import utils.APIUtils;
 import utils.Pair;
 
 @Path("transactions")
 @Produces(MediaType.APPLICATION_JSON)
 public class TransactionsResource {
+
+	@Context
+	HttpServletRequest request;
 
 	@GET
 	public String getTransactions()
@@ -54,6 +60,8 @@ public class TransactionsResource {
 	@Path("limit/{limit}")
 	public String getTransactionsLimited(@PathParam("limit") int limit)
 	{
+		APIUtils.askAPICallAllowed("GET transactions/limit/" + limit, request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{
@@ -100,6 +108,8 @@ public class TransactionsResource {
 	@Path("address/{address}/limit/{limit}")
 	public String getTransactionsLimited(@PathParam("address") String address, @PathParam("limit") int limit)
 	{
+		APIUtils.askAPICallAllowed("GET transactions/address/" + address + "/limit/" + limit, request);
+
 		//CHECK IF WALLET EXISTS
 		if(!Controller.getInstance().doesWalletExists())
 		{
@@ -209,18 +219,24 @@ public class TransactionsResource {
 			int blockLimit = -1;
 			try
 			{
-				 blockLimit = ((Long) jsonObject.get("blocklimit")).intValue();
+				blockLimit = ((Long) jsonObject.get("blocklimit")).intValue();
+
+				if (blockLimit > 360) // 360 ensures at least six hours of blocks can be queried at once
+				{
+					APIUtils.disallowRemote(request);
+				}
 			}
 			catch(NullPointerException e)
 			{
 				//OPTION DOES NOT EXIST
+				APIUtils.disallowRemote(request);
 			}
 			catch(ClassCastException e)
 			{
 				//JSON EXCEPTION
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_JSON);
 			}
-			
+
 			//CHECK FOR TRANSACTIONLIMIT
 			int transactionLimit = -1;
 			try

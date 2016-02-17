@@ -156,7 +156,9 @@ public class ATResource
 			{
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_INVALID_SENDER);
 			}
-				
+
+			APIUtils.askAPICallAllowed("POST at "+ x, request);
+
 			//CHECK IF WALLET EXISTS
 			if(!Controller.getInstance().doesWalletExists())
 			{
@@ -168,9 +170,7 @@ public class ATResource
 			{
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_WALLET_LOCKED);
 			}
-			
-			APIUtils.askAPICallAllowed("POST at "+ x, request);
-			
+
 			//GET ACCOUNT
 			PrivateKeyAccount account = Controller.getInstance().getPrivateKeyAccountByAddress(creator);				
 			if(account == null)
@@ -328,7 +328,7 @@ public class ATResource
 
 			switch(result.getB())
 			{
-			case Transaction.VALIDATE_OKE:
+			case Transaction.VALIDATE_OK:
 				return result.getA().toJson().toJSONString();
 			case Transaction.INVALID_CREATION_BYTES:
 				throw ApiErrorFactory.getInstance().createError(ApiErrorFactory.ERROR_INVALID_CREATION_BYTES);

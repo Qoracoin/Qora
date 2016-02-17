@@ -9,10 +9,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.eclipse.jetty.util.StringUtil;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import com.google.common.collect.Lists;
+import com.twitter.Extractor;
+
+import api.BlogPostResource;
+import controller.Controller;
+import database.PostCommentMap;
+import database.DBSet;
 import qora.crypto.Base58;
 import qora.transaction.ArbitraryTransaction;
 import qora.transaction.Transaction;
@@ -21,14 +29,10 @@ import qora.web.BlogProfile;
 import qora.web.NameStorageMap;
 import qora.web.Profile;
 import qora.web.blog.BlogEntry;
-import api.BlogPostResource;
-
-import com.twitter.Extractor;
-
-import controller.Controller;
-import database.DBSet;
 
 public class BlogUtils {
+
+	public static int COMMENT_SERVICE_ID = 778;
 
 	/**
 	 * 
@@ -136,7 +140,7 @@ public class BlogUtils {
 				}
 			}
 		}
-		
+
 		Collections.sort(results, new BlogEntryTimestampComparator());
 
 		Collections.reverse(results);
@@ -152,21 +156,35 @@ public class BlogUtils {
 		}
 		return result;
 	}
-	
+
 	public static List<String> getBlogTags(String text) {
-		List<String> extractScreenNames = new Extractor().extractMentionedScreennames(text);
+		List<String> extractScreenNames = new Extractor()
+				.extractMentionedScreennames(text);
 		List<String> result = new ArrayList<String>();
 		for (String screenNames : extractScreenNames) {
 			result.add("@" + screenNames);
 		}
 		return result;
 	}
-	
+
 	public static List<BlogEntry> getBlogPosts(String blogOpt) {
+		return getBlogPosts(blogOpt, -1);
+	}
+
+	public static List<BlogEntry> getCommentBlogPosts(String signatureOfBlogPost) {
+		return getCommentBlogPosts(signatureOfBlogPost, -1);
+	}
+
+	public static List<BlogEntry> getCommentBlogPosts(
+			String signatureOfBlogPost, int limit) {
 		List<BlogEntry> results = new ArrayList<>();
 
-		List<byte[]> list = DBSet.getInstance().getBlogPostMap()
-				.get(blogOpt == null ? "QORA" : blogOpt);
+		PostCommentMap commentPostMap = DBSet.getInstance().getPostCommentMap();
+
+		List<byte[]> list = commentPostMap.get(Base58
+				.decode(signatureOfBlogPost));
+
+		Collections.reverse(list);
 
 		List<ArbitraryTransaction> blogPostTX = new ArrayList<>();
 		if (list != null) {
@@ -179,88 +197,183 @@ public class BlogUtils {
 			}
 		}
 
+		int i = 0;
+
 		for (ArbitraryTransaction transaction : blogPostTX) {
 
-			byte[] data = ((ArbitraryTransaction) transaction).getData();
-			String string = new String(data, StandardCharsets.UTF_8);
+			// String creator = transaction.getCreator().getAddress();
 
-			JSONObject jsonObject = (JSONObject) JSONValue.parse(string);
-			if (jsonObject != null) {
-				// MAINBLOG OR CUSTOM BLOG?
-				if ((blogOpt == null && !jsonObject
-						.containsKey(BlogPostResource.BLOGNAME_KEY))
-						|| (jsonObject
-								.containsKey(BlogPostResource.BLOGNAME_KEY) && jsonObject
-								.get(BlogPostResource.BLOGNAME_KEY).equals(
-										blogOpt))) {
+			// TODO ARE COMMENTS ALLOWED CHECK!
+			// BlogBlackWhiteList blogBlackWhiteList = BlogBlackWhiteList
+			// .getBlogBlackWhiteList(blogOpt);
 
-					String title = (String) jsonObject
-							.get(BlogPostResource.TITLE_KEY);
-					String share = (String) jsonObject
-							.get(BlogPostResource.SHARE_KEY);
-					String post = (String) jsonObject
-							.get(BlogPostResource.POST_KEY);
-					String nameOpt = (String) jsonObject
-							.get(BlogPostResource.AUTHOR);
+			BlogEntry blogEntry = getCommentBlogEntryOpt(transaction);
 
-					String creator = transaction.getCreator().getAddress();
-					BlogBlackWhiteList blogBlackWhiteList = BlogBlackWhiteList
-							.getBlogBlackWhiteList(blogOpt);
-
-					if (blogBlackWhiteList.isAllowedPost(
-							nameOpt != null ? nameOpt : creator, creator)) {
-						if (StringUtils.isNotEmpty(share)) {
-							BlogEntry blogEntryToShareOpt = BlogUtils
-									.getBlogEntryOpt((ArbitraryTransaction) Controller
-											.getInstance().getTransaction(
-													Base58.decode(share)));
-							if (blogEntryToShareOpt != null
-									&& StringUtils
-											.isNotBlank(blogEntryToShareOpt
-													.getDescription())) {
-								// share gets time of sharing!
-								blogEntryToShareOpt.setTime(transaction
-										.getTimestamp());
-								blogEntryToShareOpt
-										.setShareAuthor(nameOpt != null ? nameOpt
-												: creator);
-								blogEntryToShareOpt.setShareSignatureOpt(Base58
-										.encode(transaction.getSignature()));
-								results.add(blogEntryToShareOpt);
-							}
-						} else {
-							// POST NEEDS TO BE FILLED AND POST MUST BE ALLOWED
-							if (StringUtil.isNotBlank(post)) {
-								results.add(new BlogEntry(title, post, nameOpt,
-										transaction.getTimestamp(), creator,
-										Base58.encode(transaction
-												.getSignature()), blogOpt));
-
-							}
-						}
-					}
-
-				}
+			// String nameOpt = blogEntry.getNameOpt();
+			if (blogEntry != null) {
+				results.add(blogEntry);
+				i++;
 			}
+			// if (blogBlackWhiteList.isAllowedPost(
+			// nameOpt != null ? nameOpt : creator, creator)) {
+			// results.add(blogEntry);
+			// i ++;
+			// }
 
+			if (i == limit)
+				break;
 		}
-
-		Collections.reverse(results);
 
 		return results;
 
 	}
+
+	public static List<BlogEntry> getBlogPosts(String blogOpt, int limit) {
+		List<BlogEntry> results = new ArrayList<>();
+
+		List<byte[]> blogPostList = DBSet.getInstance().getBlogPostMap()
+				.get(blogOpt == null ? "QORA" : blogOpt);
+
+		List<byte[]> list = blogPostList != null ? Lists
+				.newArrayList(blogPostList) : new ArrayList<byte[]>();
+
+		Collections.reverse(list);
+
+		List<ArbitraryTransaction> blogPostTX = new ArrayList<>();
+		if (list != null) {
+			for (byte[] blogArbTx : list) {
+				Transaction transaction = Controller.getInstance()
+						.getTransaction(blogArbTx);
+				if (transaction != null) {
+					blogPostTX.add((ArbitraryTransaction) transaction);
+				}
+			}
+		}
+
+		int i = 0;
+
+		for (ArbitraryTransaction transaction : blogPostTX) {
+
+			String creator = transaction.getCreator().getAddress();
+
+			BlogBlackWhiteList blogBlackWhiteList = BlogBlackWhiteList
+					.getBlogBlackWhiteList(blogOpt);
+
+			BlogEntry blogEntry = getBlogEntryOpt(transaction);
+
+			String nameOpt;
+			if (blogEntry.getShareAuthorOpt() != null)
+				nameOpt = blogEntry.getShareAuthorOpt();
+			else
+				nameOpt = blogEntry.getNameOpt();
+
+			if (blogBlackWhiteList.isAllowedPost(nameOpt != null ? nameOpt
+					: creator, creator)) {
+				results.add(blogEntry);
+				i++;
+			}
+
+			if (i == limit)
+				break;
+		}
+
+		return results;
+
+	}
+
+	public static void addCommentsToBlogEntry(ArbitraryTransaction transaction,
+			BlogEntry blogEntry) {
+		
+		if(blogEntry.getBlognameOpt() == null || Profile.getProfileOpt(blogEntry.getBlognameOpt()) != null && Profile.getProfileOpt(blogEntry.getBlognameOpt()).isCommentingAllowed())
+		{
+			PostCommentMap commentPostMap = DBSet.getInstance().getPostCommentMap();
+			List<byte[]> comments = commentPostMap.get(transaction.getSignature());
+			if(comments != null)
+			{
+				for (byte[] commentByteArray : comments) {
+					Transaction commentTa = Controller.getInstance()
+							.getTransaction(commentByteArray);
+					if (commentTa != null) {
+						BlogEntry commentBlogEntryOpt = getCommentBlogEntryOpt((ArbitraryTransaction) commentTa);
+						if(commentBlogEntryOpt != null)
+						{
+							blogEntry.addComment(commentBlogEntryOpt);
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	
+	public static BlogEntry getCommentBlogEntryOpt(String signatureOfComment)
+	{
+		BlogEntry result = null;
+		Transaction commentTa = Controller.getInstance()
+				.getTransaction(Base58
+						.decode(signatureOfComment));
+		
+		if (commentTa != null) {
+			result = getCommentBlogEntryOpt((ArbitraryTransaction) commentTa);
+		}
+		
+		return result;
+		
+		
+	}
+	
 
 	public static BlogEntry getBlogEntryOpt(String signature) {
 		return getBlogEntryOpt(Base58.decode(signature));
 	}
 
 	public static BlogEntry getBlogEntryOpt(byte[] signature) {
-		ArbitraryTransaction transaction = (ArbitraryTransaction) Controller
-				.getInstance().getTransaction(signature);
-
+		ArbitraryTransaction transaction = null;
+		try {
+			transaction = (ArbitraryTransaction) Controller.getInstance()
+					.getTransaction(signature);
+		} catch (Exception e) {
+			System.err.println(ExceptionUtils.getStackTrace(e));
+			return null;
+		}
 		return transaction == null ? null : BlogUtils
 				.getBlogEntryOpt(transaction);
+	}
+
+	public static BlogEntry getCommentBlogEntryOpt(
+			ArbitraryTransaction transaction) {
+		if (transaction.getService() != COMMENT_SERVICE_ID) {
+			return null;
+		}
+
+		byte[] data = ((ArbitraryTransaction) transaction).getData();
+		String string = new String(data, StandardCharsets.UTF_8);
+
+		JSONObject jsonObject = (JSONObject) JSONValue.parse(string);
+		if (jsonObject != null) {
+			// MAINBLOG OR CUSTOM BLOG?
+
+			String title = (String) jsonObject.get(BlogPostResource.TITLE_KEY);
+			String post = (String) jsonObject.get(BlogPostResource.POST_KEY);
+			String nameOpt = (String) jsonObject.get(BlogPostResource.AUTHOR);
+			String blognameOpt = (String) jsonObject
+					.get(BlogPostResource.BLOGNAME_KEY);
+			String postID = (String) jsonObject
+					.get(BlogPostResource.COMMENT_POSTID_KEY);
+
+			String creator = transaction.getCreator().getAddress();
+
+			if (StringUtil.isNotBlank(post) && StringUtil.isNotBlank(postID)) {
+				BlogEntry be = new BlogEntry(title, post, nameOpt,
+						transaction.getTimestamp(), creator,
+						Base58.encode(transaction.getSignature()), blognameOpt);
+				be.setCommentPostidOpt(postID);
+				return be;
+			}
+		}
+
+		return null;
+
 	}
 
 	/**
@@ -286,19 +399,66 @@ public class BlogUtils {
 			String nameOpt = (String) jsonObject.get(BlogPostResource.AUTHOR);
 			String blognameOpt = (String) jsonObject
 					.get(BlogPostResource.BLOGNAME_KEY);
+			String share = (String) jsonObject.get(BlogPostResource.SHARE_KEY);
 
 			String creator = transaction.getCreator().getAddress();
 
+			if (StringUtils.isNotEmpty(share)) {
+				BlogEntry blogEntryToShareOpt = BlogUtils
+						.getBlogEntryOpt((ArbitraryTransaction) Controller
+								.getInstance().getTransaction(
+										Base58.decode(share)));
+				if (blogEntryToShareOpt != null
+						&& StringUtils.isNotBlank(blogEntryToShareOpt
+								.getDescription())) {
+					// share gets time of sharing!
+					blogEntryToShareOpt.setTime(transaction.getTimestamp());
+					blogEntryToShareOpt
+							.setShareAuthor(nameOpt != null ? nameOpt : creator);
+					blogEntryToShareOpt.setShareSignatureOpt(Base58
+							.encode(transaction.getSignature()));
+					addCommentsToBlogEntry(transaction, blogEntryToShareOpt);
+					return blogEntryToShareOpt;
+				}
+			}
+			
 			// POST NEEDS TO BE FILLED
 			if (StringUtil.isNotBlank(post)) {
-				return new BlogEntry(title, post, nameOpt,
+				BlogEntry resultBlogEntry = new BlogEntry(title, post, nameOpt,
 						transaction.getTimestamp(), creator,
 						Base58.encode(transaction.getSignature()), blognameOpt);
-
+				addCommentsToBlogEntry(transaction, resultBlogEntry);
+				return resultBlogEntry;
 			}
 		}
 
 		return null;
 	}
+	
+	public static String getCreatorOrBlogOwnerOpt(BlogEntry blogEntryOpt) {
+		String creator = blogEntryOpt.getCreator();
+		
+		//WE don't have creator account
+		if(Controller.getInstance().getAccountByAddress(creator) == null)
+		{
+			creator = null;
+			String blognameOpt = blogEntryOpt.getBlognameOpt();
+			Profile profileOpt = Profile.getProfileOpt(blognameOpt);
+			
+			if(profileOpt != null)
+			{
+				String blogowner = profileOpt.getName().getOwner().getAddress();
+				//are we the owner of the blog?
+				if(Controller.getInstance().getAccountByAddress(blogowner) != null)
+				{
+					creator = blogowner;
+				}
+				
+			}
+			
+		}
+		return creator;
+	}
+
 
 }

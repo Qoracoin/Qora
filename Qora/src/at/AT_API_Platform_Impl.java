@@ -228,7 +228,7 @@ public class AT_API_Platform_Impl extends AT_API_Impl {
 
 		if ( tx != null)
 		{
-			if ( tx.getClass().equals( MessageTransaction.class ))
+			if ( tx instanceof MessageTransaction )
 			{
 				MessageTransaction txMessage = (MessageTransaction) tx;
 				if ( txMessage != null)

@@ -345,6 +345,8 @@ public class RegisterNameFrame extends JFrame
       	//CONTEXT MENU
       	MenuPopupUtil.installContextMenu(this.txtName);
       	MenuPopupUtil.installContextMenu(this.txtareaValue);
+      	MenuPopupUtil.installContextMenu(this.txtareaValue);
+		MenuPopupUtil.installContextMenu(this.txtKey);
       	MenuPopupUtil.installContextMenu(this.txtRecDetails);
       	MenuPopupUtil.installContextMenu(this.txtFee);
       	
@@ -427,7 +429,7 @@ public class RegisterNameFrame extends JFrame
 			txtRecDetails.setText("");
 			return;
 		}
-		if(Controller.getInstance().getStatus() != Controller.STATUS_OKE)
+		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
 			txtRecDetails.setText("Status must be OK to show receiver details.");
 			return;
@@ -451,10 +453,10 @@ public class RegisterNameFrame extends JFrame
 		//DISABLE
 		this.registerButton.setEnabled(false);
 	
-		//CHECK IF NETWORK OKE
-		if(Controller.getInstance().getStatus() != Controller.STATUS_OKE)
+		//CHECK IF NETWORK OK
+		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
-			//NETWORK NOT OKE
+			//NETWORK NOT OK
 			JOptionPane.showMessageDialog(null, "You are unable to send a transaction while synchronizing or while having no connections!", "Error", JOptionPane.ERROR_MESSAGE);
 			
 			//ENABLE
@@ -597,7 +599,7 @@ public class RegisterNameFrame extends JFrame
 			//CHECK VALIDATE MESSAGE
 			switch(result.getB())
 			{
-			case Transaction.VALIDATE_OKE:
+			case Transaction.VALIDATE_OK:
 				
 				JOptionPane.showMessageDialog(new JFrame(), "Name registration has been sent!", "Success", JOptionPane.INFORMATION_MESSAGE);
 				this.dispose();

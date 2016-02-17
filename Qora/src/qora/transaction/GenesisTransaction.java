@@ -177,7 +177,7 @@ public class GenesisTransaction extends Transaction {
 			return INVALID_ADDRESS;
 		}
 
-		return VALIDATE_OKE;
+		return VALIDATE_OK;
 	}
 	
 	//PROCESS/ORPHAN

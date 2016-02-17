@@ -3,12 +3,17 @@ package utils;
 import static org.junit.Assert.assertEquals;
 
 import java.math.BigDecimal;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.junit.Test;
 
+import network.Peer;
 import qora.account.PrivateKeyAccount;
 import qora.crypto.AEScrypto;
 import qora.crypto.Base58;
@@ -18,7 +23,45 @@ import qora.crypto.Crypto;
 public class AgransTests {
 
 	@Test
-	 public void stripTrailingZerosTest() {
+	public void testLinkedHashMap() throws UnknownHostException 
+	{
+		Map<Peer, Integer> peerHeight;
+		peerHeight = new LinkedHashMap<Peer, Integer>();
+		
+		Peer peer1 = new Peer(InetAddress.getByName("127.7.6.5"));
+		Peer peer2 = new Peer(InetAddress.getByName("127.3.4.5"));
+		
+		peerHeight.put(peer2, 1);
+		
+		System.out.println(peerHeight.toString());
+
+		peerHeight.remove(peer2);
+		peerHeight.remove(peer1);
+		
+		System.out.println("peer1 "+peerHeight.get(peer1));
+		
+		System.out.println(peerHeight.toString());
+	}
+	
+	@Test
+	public void testBigDecimal() {
+		
+		System.out.println( BigDecimal.ONE.compareTo(BigDecimal.ZERO));
+		System.out.println( BigDecimal.ZERO.compareTo(BigDecimal.ONE));
+		System.out.println( BigDecimal.ONE.compareTo(BigDecimal.ONE));
+		
+	}
+
+	@Test
+	public void testLong() {
+		assertEquals(0l, 0L);
+		assertEquals(1243124l, 1243124L);
+		// L differs more from unity
+	}
+
+	
+	@Test
+	public void stripTrailingZerosTest() {
 
         // create 4 BigDecimal objects
         BigDecimal bg1, bg2, bg3, bg4, bg5, bg6;

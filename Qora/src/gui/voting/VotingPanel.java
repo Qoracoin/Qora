@@ -21,6 +21,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableColumn;
+
+import controller.Controller;
 import database.wallet.PollMap;
 import qora.voting.Poll;
 
@@ -91,7 +93,7 @@ public class VotingPanel extends JPanel
 				{
 					row = table.convertRowIndexToModel(row);
 					Poll poll = pollsModel.getPoll(row);
-					new PollFrame(poll);
+					new PollFrame(poll, Controller.getInstance().getAsset(0l));
 				}
 		     }
 		});

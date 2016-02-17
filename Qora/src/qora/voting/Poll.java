@@ -75,11 +75,16 @@ public class Poll
 	
 	public BigDecimal getTotalVotes() 
 	{
+		return getTotalVotes(0);
+	}
+	
+	public BigDecimal getTotalVotes(long assetKey) 
+	{
 		BigDecimal votes = BigDecimal.ZERO.setScale(8);
 		
 		for(PollOption option: this.options)
 		{
-			votes = votes.add(option.getVotes());
+			votes = votes.add(option.getVotes(assetKey));
 		}
 		
 		return votes;

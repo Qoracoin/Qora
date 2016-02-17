@@ -1,16 +1,14 @@
 package network;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 import database.DBSet;
 import settings.Settings;
 
 public class PeerManager {
 
-	private static final int DATABASE_PEERS_AMOUNT = 1000;
-	
 	private static PeerManager instance;
 	
 	public static PeerManager getInstance()
@@ -28,23 +26,19 @@ public class PeerManager {
 		
 	}
 	
+	public List<Peer> getBestPeers()
+	{
+		return DBSet.getInstance().getPeerMap().getBestPeers(Settings.getInstance().getMaxSentPeers(), false);
+	}
+	
+	
 	public List<Peer> getKnownPeers()
 	{
+		List<Peer> knownPeers = new ArrayList<Peer>();
 		//ASK DATABASE FOR A LIST OF PEERS
-		List<Peer> knownPeers = DBSet.getInstance().getPeerMap().getKnownPeers(DATABASE_PEERS_AMOUNT);
-				
-		Logger.getGlobal().info("Peers retrieved from database : " + knownPeers.size());
-				
-		//IF PEERS LESS THEN DATABASE_PEERS_AMOUNT ALSO LOAD FROM SETTINGS
-		if(knownPeers.size() < DATABASE_PEERS_AMOUNT)
-		{
-			List<Peer> settingsPeers = Settings.getInstance().getKnownPeers();
-			settingsPeers.addAll(knownPeers);
-			
-			Logger.getGlobal().info("Peers retrieved after settings : " + settingsPeers.size());
-			
-			return settingsPeers;
-		}		
+		if(!DBSet.getInstance().isStoped()){
+			knownPeers = DBSet.getInstance().getPeerMap().getBestPeers(Settings.getInstance().getMaxReceivePeers(), true);
+		}
 		
 		//RETURN
 		return knownPeers;
@@ -52,17 +46,10 @@ public class PeerManager {
 	
 	public void addPeer(Peer peer)
 	{
-		//NO NEED TO INSERT PEER INTO DATABASE IF IT IS ALREADY IN SETTINGS
-		for(Peer knownPeer: Settings.getInstance().getKnownPeers())
-		{
-			if(knownPeer.getAddress().equals(peer.getAddress()))
-			{
-				return;
-			}
-		}
-		
 		//ADD TO DATABASE
-		DBSet.getInstance().getPeerMap().addPeer(peer);
+		if(!DBSet.getInstance().isStoped()){
+			DBSet.getInstance().getPeerMap().addPeer(peer);
+		}
 	}
 	
 	public void blacklistPeer(Peer peer)
@@ -72,7 +59,11 @@ public class PeerManager {
 	
 	public boolean isBlacklisted(InetAddress address)
 	{
-		return DBSet.getInstance().getPeerMap().isBlacklisted(address);
+		if(!DBSet.getInstance().isStoped()){
+			return DBSet.getInstance().getPeerMap().isBlacklisted(address);
+		}else{
+			return true;
+		}
 	}
 	
 	public boolean isBlacklisted(Peer peer)

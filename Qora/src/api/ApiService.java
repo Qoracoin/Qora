@@ -34,12 +34,14 @@ public class ApiService {
         s.add(ArbitraryTransactionsResource.class);
         s.add(NamePaymentResource.class);
 		s.add(ATResource.class);
-		s.add(VersionResource.class);
 		s.add(BlogPostResource.class);
+		s.add(BlogResource.class);
 		s.add(CalcFeeResource.class);
 		s.add(NameStorageResource.class);
 		s.add(MessageResource.class);
 		s.add(AssetsResource.class);
+		s.add(MultiPaymentResource.class);
+		
 		ResourceConfig config = new ResourceConfig(s);
 		
         //CREATE CONTAINER

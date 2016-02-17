@@ -144,8 +144,22 @@ public class AcctTableModel extends QoraTableModel<String, AT> implements Observ
 				message.getType() == ObserverMessage.REMOVE_AT_TX || message.getType() == ObserverMessage.ADD_AT_TX_TYPE ||
 				message.getType() == ObserverMessage.ADD_BLOCK_TYPE)
 		{
-			this.fireTableDataChanged();
+			
+			//CHECK IF LIST UPDATED
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
+			{
+				this.fireTableDataChanged();
+			}
 			this.ats = Controller.getInstance().getAcctATs(type, initiators);
+		}
+		
+		//STATUS_OK
+		if(message.getType() == ObserverMessage.NETWORK_STATUS )
+		{
+			if((int)message.getValue() == Controller.STATUS_OK)
+			{
+				this.fireTableDataChanged();
+			}
 		}
 	}
 	

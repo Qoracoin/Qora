@@ -16,6 +16,7 @@ import qora.account.PrivateKeyAccount;
 import qora.crypto.Crypto;
 import qora.naming.Name;
 import qora.transaction.ArbitraryTransaction;
+import qora.transaction.ArbitraryTransactionV1;
 import qora.transaction.GenesisTransaction;
 import qora.transaction.RegisterNameTransaction;
 import qora.transaction.Transaction;
@@ -70,7 +71,7 @@ public class NameStorageTest {
 		
 
 		// CHECK IF NAME REGISTRATION IS VALID
-		assertEquals(Transaction.VALIDATE_OKE,
+		assertEquals(Transaction.VALIDATE_OK,
 				nameRegistration.isValid(databaseSet));
 		nameRegistration.process(databaseSet);
 	}
@@ -94,7 +95,7 @@ public class NameStorageTest {
 		// ADDING KEY COMPLETE WITH YES
 		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet,
 				sender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -121,7 +122,7 @@ public class NameStorageTest {
 			// ADDING KEY COMPLETE WITH YES
 			 signature = ArbitraryTransaction.generateSignature(databaseSet,
 					badSender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-			arbitraryTransaction = new ArbitraryTransaction(
+			arbitraryTransaction = new ArbitraryTransactionV1(
 					badSender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 					badSender.getLastReference(databaseSet), signature);
 			
@@ -158,7 +159,7 @@ public class NameStorageTest {
 		// ADDING KEY COMPLETE WITH YES
 		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet,
 				sender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -179,7 +180,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -200,7 +201,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -230,7 +231,7 @@ public class NameStorageTest {
 		// ADDING Skerberus as List key
 		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet,
 				sender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -250,7 +251,7 @@ public class NameStorageTest {
 		// ADDING vrontis as List key
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -271,7 +272,7 @@ public class NameStorageTest {
 		// removing skerberus as List key
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -297,7 +298,7 @@ public class NameStorageTest {
 		// removing skerberus as List key
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -323,7 +324,7 @@ public class NameStorageTest {
 		// removing skerberus as List key
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -343,7 +344,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -364,7 +365,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		arbitraryTransaction = new ArbitraryTransaction(sender, 10, data,
+		arbitraryTransaction = new ArbitraryTransactionV1(sender, 10, data,
 				BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -391,7 +392,7 @@ public class NameStorageTest {
 
 		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet,
 				sender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -411,7 +412,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction2.process(databaseSet);
@@ -455,7 +456,7 @@ public class NameStorageTest {
 
 		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet,
 				sender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -477,7 +478,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction2.process(databaseSet);
@@ -499,7 +500,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction3 = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction3 = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction3.process(databaseSet);
@@ -564,7 +565,7 @@ public class NameStorageTest {
 
 		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet,
 				sender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -586,7 +587,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction2.process(databaseSet);
@@ -608,7 +609,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction3 = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction3 = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction3.process(databaseSet);
@@ -690,7 +691,7 @@ public class NameStorageTest {
 
 		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet,
 				sender, 10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction.process(databaseSet);
@@ -712,7 +713,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction2 = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction2.process(databaseSet);
@@ -734,7 +735,7 @@ public class NameStorageTest {
 
 		signature = ArbitraryTransaction.generateSignature(databaseSet, sender,
 				10, data, BigDecimal.valueOf(1).setScale(8), timestamp);
-		ArbitraryTransaction arbitraryTransaction3 = new ArbitraryTransaction(
+		ArbitraryTransaction arbitraryTransaction3 = new ArbitraryTransactionV1(
 				sender, 10, data, BigDecimal.ONE.setScale(8), timestamp,
 				sender.getLastReference(databaseSet), signature);
 		arbitraryTransaction3.process(databaseSet);

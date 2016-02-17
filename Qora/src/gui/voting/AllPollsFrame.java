@@ -1,14 +1,13 @@
 package gui.voting;
 
-import gui.QoraRowSorter;
-import gui.models.PollsTableModel;
-
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -27,13 +27,19 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
 import database.PollMap;
+import gui.QoraRowSorter;
+import gui.models.AssetsAllComboBoxModel;
+import gui.models.PollsTableModel;
+import qora.assets.Asset;
 import qora.voting.Poll;
 
 @SuppressWarnings("serial")
 public class AllPollsFrame extends JFrame{
 
 	private PollsTableModel pollsTableModel;
+	private JComboBox<Asset> cbxAssets;
 	
 	public AllPollsFrame() 
 	{
@@ -58,11 +64,11 @@ public class AllPollsFrame extends JFrame{
 		GridBagConstraints searchLabelGBC = new GridBagConstraints();
 		searchLabelGBC.insets = new Insets(0, 5, 5, 0);
 		searchLabelGBC.fill = GridBagConstraints.HORIZONTAL;   
-		searchLabelGBC.anchor = GridBagConstraints.NORTHWEST;
+		searchLabelGBC.anchor = GridBagConstraints.CENTER;
 		searchLabelGBC.weightx = 0;	
 		searchLabelGBC.gridwidth = 1;
 		searchLabelGBC.gridx = 0;
-		searchLabelGBC.gridy = 0;
+		searchLabelGBC.gridy = 1;
 		
 		//SEACH GBC
 		GridBagConstraints searchGBC = new GridBagConstraints();
@@ -72,8 +78,8 @@ public class AllPollsFrame extends JFrame{
 		searchGBC.weightx = 1;	
 		searchGBC.gridwidth = 1;
 		searchGBC.gridx = 1;
-		searchGBC.gridy = 0;
-		
+		searchGBC.gridy = 1;
+				
 		//TABLE GBC
 		GridBagConstraints tableGBC = new GridBagConstraints();
 		tableGBC.insets = new Insets(0, 5, 5, 0);
@@ -83,8 +89,28 @@ public class AllPollsFrame extends JFrame{
 		tableGBC.weighty = 1;	
 		tableGBC.gridwidth = 2;
 		tableGBC.gridx = 0;	
-		tableGBC.gridy = 1;	
+		tableGBC.gridy = 2;	
 		
+		//ASSET LABEL GBC
+		GridBagConstraints assetLabelGBC = new GridBagConstraints();
+		assetLabelGBC.insets = new Insets(0, 5, 5, 0);
+		assetLabelGBC.fill = GridBagConstraints.HORIZONTAL;   
+		assetLabelGBC.anchor = GridBagConstraints.CENTER;
+		assetLabelGBC.weightx = 0;	
+		assetLabelGBC.gridwidth = 1;
+		assetLabelGBC.gridx = 0;
+		assetLabelGBC.gridy = 0;
+		
+		//ASSETS GBC
+		GridBagConstraints assetsGBC = new GridBagConstraints();
+		assetsGBC.insets = new Insets(0, 5, 5, 0);
+		assetsGBC.fill = GridBagConstraints.HORIZONTAL;   
+		assetsGBC.anchor = GridBagConstraints.NORTHWEST;
+		assetsGBC.weightx = 0;	
+		assetsGBC.gridwidth = 1;
+		assetsGBC.gridx = 1;
+		assetsGBC.gridy = 0;
+
 		//CREATE TABLE
 		this.pollsTableModel = new PollsTableModel();
 		final JTable pollsTable = new JTable(this.pollsTableModel);
@@ -119,7 +145,8 @@ public class AllPollsFrame extends JFrame{
 				{
 					row = pollsTable.convertRowIndexToModel(row);
 					Poll poll = pollsTableModel.getPoll(row);
-					new PollFrame(poll);
+					Asset asset = (Asset) cbxAssets.getSelectedItem();
+					new PollFrame(poll, asset);
 				}
 		     }
 		});
@@ -152,10 +179,27 @@ public class AllPollsFrame extends JFrame{
 			}
 		});
 
-		this.add(new JLabel("search:"), searchLabelGBC);
+		this.add(new JLabel("Search:"), searchLabelGBC);
 		this.add(txtSearch, searchGBC);
 		this.add(new JScrollPane(pollsTable), tableGBC);
 
+		this.add(new JLabel("Asset:"), assetLabelGBC);
+		
+		cbxAssets = new JComboBox<Asset>(new AssetsAllComboBoxModel());
+		this.add(cbxAssets, assetsGBC);
+		
+		cbxAssets.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+
+		    	Asset asset = ((Asset) cbxAssets.getSelectedItem());
+
+		    	if(asset != null)
+		    	{
+		    		pollsTableModel.setAsset(asset);
+		    	}
+		    }
+		});
+		
 		//ON CLOSE
 		this.addWindowListener(new WindowAdapter()
 		{

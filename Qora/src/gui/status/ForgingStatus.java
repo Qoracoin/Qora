@@ -60,7 +60,7 @@ public class ForgingStatus extends JLabel implements Observer {
 			        
 		            setToolTipText("Approx time to find the block: " + timeForge + ".");
 				}
-				else if (Controller.getInstance().getForgingStatus() == BlockGenerator.ForgingStatus.FORGING_DISABLED && Controller.getInstance().getStatus() == Controller.STATUS_OKE) 
+				else if (Controller.getInstance().getForgingStatus() == BlockGenerator.ForgingStatus.FORGING_DISABLED && Controller.getInstance().getStatus() == Controller.STATUS_OK) 
 				{
 					setToolTipText("To start forging you need to unlock the wallet.");
 				}

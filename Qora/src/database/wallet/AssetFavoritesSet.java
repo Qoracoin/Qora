@@ -1,5 +1,6 @@
 package database.wallet;
 
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Set;
@@ -25,6 +26,16 @@ public class AssetFavoritesSet extends Observable {
 		{
 			this.add(0l);
 		}
+	}
+	
+	public void replace(List<Long> keys)
+	{
+		this.assetsSet.clear();
+		this.assetsSet.addAll(keys);
+		this.walletDatabase.commit();
+		
+		//NOTIFY
+		this.notifyFavorites();
 	}
 	
 	public void add(Long key)

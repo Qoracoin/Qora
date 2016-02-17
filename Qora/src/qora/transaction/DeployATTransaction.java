@@ -362,7 +362,7 @@ public class DeployATTransaction extends Transaction
 	public int isValid(DBSet db, Integer forkHeight) 
 	{
 		//CHECK IF RELEASED
-		if(db.getBlockMap().getLastBlock().getHeight(db) + 1 < AT_BLOCK_HEIGHT_RELEASE)
+		if(db.getBlockMap().getLastBlock().getHeight(db) + 1 < Transaction.getAT_BLOCK_HEIGHT_RELEASE())
 		{
 			return NOT_YET_RELEASED;
 		}
@@ -399,7 +399,7 @@ public class DeployATTransaction extends Transaction
 			return NO_BALANCE;
 		}
 
-		//CHECK IF REFERENCE IS OKE
+		//CHECK IF REFERENCE IS OK
 		if(!Arrays.equals(this.creator.getLastReference(db), this.reference))
 		{
 			return INVALID_REFERENCE;
@@ -445,7 +445,7 @@ public class DeployATTransaction extends Transaction
 			return INVALID_CREATION_BYTES;
 		}
 
-		return VALIDATE_OKE;
+		return VALIDATE_OK;
 
 	}
 

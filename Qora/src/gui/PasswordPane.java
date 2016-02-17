@@ -53,4 +53,20 @@ public class PasswordPane
 		
 		return new String(passwordFld.getPassword());
 	}
+	
+	public static void switchLockDialog()
+	{
+		if(Controller.getInstance().isWalletUnlocked())
+		{
+			Controller.getInstance().lockWallet();
+		}
+		else
+		{
+			String password = PasswordPane.showUnlockWalletDialog(); 
+			if(!password.equals("") && !Controller.getInstance().unlockWallet(password))
+			{
+				JOptionPane.showMessageDialog(null, "Invalid password", "Unlock Wallet", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
 }

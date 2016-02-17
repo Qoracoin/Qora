@@ -114,5 +114,33 @@ public class UpdateUtil {
 		}while ( b != null );
 
 	}
+	
+	public static void repopulateCommentPostMap() {
+		DBSet.getInstance().getPostCommentMap().reset();
+		DBSet.getInstance().commit();
+		Block b = new GenesisBlock();
+		do
+		{
+			List<Transaction> txs = b.getTransactions();
+			for (Transaction tx : txs)
+			{
+				if(tx instanceof ArbitraryTransaction)
+				{
+					int service = ((ArbitraryTransaction) tx).getService();
+					if(service == BlogUtils.COMMENT_SERVICE_ID)
+					{
+						((ArbitraryTransaction) tx).addToCommentMapOnDemand(DBSet.getInstance());
+					}
+				}
+			}
+			if ( b.getHeight()%2000 == 0 )
+			{
+				Logger.getGlobal().info("UpdateUtil - Repopulating CommentPostMap : " + b.getHeight());
+				DBSet.getInstance().commit();
+			}
+			b = b.getChild();
+		}while ( b != null );
+		
+	}
 }
 

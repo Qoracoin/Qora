@@ -190,6 +190,14 @@
                 <input type="text" class="form-control" id="blogdescription" placeholder="Blog Description" disabled="">
               </div>
             </div>
+            <div class="form-group">
+            <div class="checkbox">
+              <label for="blockComments" class="col-lg-2 control-label"></label>
+                  <label>
+                    <br><input type="checkbox" id="blockComments"> Disable Comments
+                  </label>
+            </div>
+            </div>
 
 			<div class="form-group">
               <label for="blogdescription" class="col-lg-2 control-label">Black/Whitelist </label>
@@ -278,6 +286,7 @@
 				blogtitle: document.getElementById('blogtitle').value,
 				profileavatar: document.getElementById('avatar').value,
 				profilemaingraphic: document.getElementById('banner').value,
+				blogblockcomments: document.getElementById('blockComments').checked,
 				blackwhitelist: allbwlistData,
 				bwlistkind: document.getElementById('select-list-type').value
 			})
@@ -340,6 +349,7 @@
 		$("#select-name").val('{{name}}');
         $( "#profile-status" ).prop( "checked", {{profile.isProfileEnabled}} );
         $( "#blog-status" ).prop( "checked", {{profile.isBlogEnabled}} );
+        $( "#blockComments" ).prop( "checked", {{profile.isCommentingDisabled()}} );
         $("#blogdescription").val ("{{profile.getBlogDescriptionOpt}}");
         $("#blogtitle").val ("{{profile.getBlogTitleOpt}}");
         $("#avatar").val ("{{profile.getAvatarOpt}}");
@@ -403,17 +413,21 @@
             if ($('#blog-status').prop('checked') === false) {
                 $('#blogtitle').attr('disabled', true);
                 $('#blogdescription').attr('disabled', true);
+                $('#blockComments').attr('disabled', true);
             } else {
                 $('#blogtitle').removeAttr('disabled');
                 $('#blogdescription').removeAttr('disabled');
+                $('#blockComments').removeAttr('disabled');
             };
         $('#blog-status').change(function() {
             if ($('#blog-status').prop('checked') === false) {
                 $('#blogtitle').attr('disabled', true);
                 $('#blogdescription').attr('disabled', true);
+                $('#blockComments').attr('disabled', true);
             } else {
                 $('#blogtitle').removeAttr('disabled');
                 $('#blogdescription').removeAttr('disabled');
+                $('#blockComments').removeAttr('disabled');
             };
         });
         $('#settings-submit').click(function() {
@@ -424,6 +438,8 @@
 
 		{% if profile.getBlogBlackWhiteList().isWhitelist() %}
 		 $("#select-list-type").val("white");
+		 {%else%}
+		 $("#select-list-type").val("black");
 		{% endif %}
 		 {% for bwlistentry in profile.getBlogBlackWhiteList().getBlackwhiteList() %}
 			AddValue('{{bwlistentry}}');
@@ -472,6 +488,7 @@
           $('#select-name').attr('disabled', true);
           $('#profile-status').attr('disabled', true);
           $('#blog-status').attr('disabled', true);
+          $('#blockComments').attr('disabled', true);
           $('#btnAddd').attr('disabled', true);
           $('#select-list-type').attr('disabled', true);
           $('#btnsubmit').attr('disabled', true);

@@ -1,19 +1,30 @@
 package gui.voting;
 
-import gui.Gui;
-import gui.models.PollOptionsTableModel;
-
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.TableRowSorter;
 
+import database.DBSet;
+import gui.Gui;
+import gui.models.PollOptionsTableModel;
+import qora.assets.Asset;
+import qora.blockexplorer.BlockExplorer;
+import qora.transaction.CreatePollTransaction;
+import qora.transaction.Transaction;
 import qora.voting.Poll;
 import utils.BigDecimalStringComparator;
 
@@ -22,11 +33,14 @@ public class PollDetailsPanel extends JPanel
 {
 	private Poll poll;
 	private JTable table;
+	private PollOptionsTableModel pollOptionsTableModel;
+	private Asset asset;
 	
 	@SuppressWarnings("unchecked")
-	public PollDetailsPanel(Poll poll)
+	public PollDetailsPanel(Poll poll, Asset asset)
 	{
 		this.poll = poll;
+		this.asset = asset;
 		
 		//LAYOUT
 		this.setLayout(new GridBagLayout());
@@ -73,13 +87,36 @@ public class PollDetailsPanel extends JPanel
 		name.setEditable(false);
 		this.add(name, detailGBC);		
 		
-		//LABEL DESCRIPTION
+		//LABEL DATE
 		labelGBC.gridy = 3;
+		JLabel dateLabel = new JLabel("Creation date:");
+		this.add(dateLabel, labelGBC);
+		
+		String dateTime = "";
+		List<Transaction> transactions = DBSet.getInstance().getTransactionFinalMap().getTransactionsByTypeAndAddress(poll.getCreator().getAddress(), Transaction.CREATE_POLL_TRANSACTION, 0);
+		for (Transaction transaction : transactions) {
+			CreatePollTransaction createPollTransaction = ((CreatePollTransaction)transaction);
+			if(createPollTransaction.getPoll().getName().equals(poll.getName()))
+			{
+				
+				dateTime = BlockExplorer.timestampToStr(createPollTransaction.getTimestamp());
+				break;
+			}
+		}
+		
+		//DATE
+		detailGBC.gridy = 3;
+		JTextField date = new JTextField(dateTime);
+		date.setEditable(false);
+		this.add(date, detailGBC);		
+
+		//LABEL DESCRIPTION
+		labelGBC.gridy = 4;
 		JLabel descriptionLabel = new JLabel("Description:");
 		this.add(descriptionLabel, labelGBC);
 				
 		//DESCRIPTION
-		detailGBC.gridy = 3;
+		detailGBC.gridy = 4;
 		JTextArea txtAreaDescription = new JTextArea(poll.getDescription());
 		txtAreaDescription.setRows(4);
 		txtAreaDescription.setBorder(name.getBorder());
@@ -87,13 +124,13 @@ public class PollDetailsPanel extends JPanel
 		this.add(txtAreaDescription, detailGBC);		
 		
 		//LABEL OPTIONS
-		labelGBC.gridy = 4;
+		labelGBC.gridy = 5;
 		JLabel optionsLabel = new JLabel("Options:");
 		this.add(optionsLabel, labelGBC);
 		
 		//OPTIONS
-		detailGBC.gridy = 4;
-		PollOptionsTableModel pollOptionsTableModel = new PollOptionsTableModel(poll);
+		detailGBC.gridy = 5;
+		pollOptionsTableModel = new PollOptionsTableModel(poll, asset);
 		table = Gui.createSortableTable(pollOptionsTableModel, 0);
 		
 		TableRowSorter<PollOptionsTableModel> sorter =  (TableRowSorter<PollOptionsTableModel>) table.getRowSorter();
@@ -102,7 +139,7 @@ public class PollDetailsPanel extends JPanel
 		this.add(new JScrollPane(table), detailGBC);
 		
 		//ADD EXCHANGE BUTTON
-		detailGBC.gridy = 5;
+		detailGBC.gridy = 6;
 		JButton allButton = new JButton("Vote");
 		allButton.setPreferredSize(new Dimension(100, 25));
 		allButton.addActionListener(new ActionListener()
@@ -128,6 +165,12 @@ public class PollDetailsPanel extends JPanel
 		}
 		row = this.table.convertRowIndexToModel(row);
 		
-		new VoteFrame(this.poll, row);
+		new VoteFrame(this.poll, row, asset);
+	}
+	
+	public void setAsset(Asset asset)
+	{
+		this.asset = asset;
+		pollOptionsTableModel.setAsset(asset);
 	}
 }

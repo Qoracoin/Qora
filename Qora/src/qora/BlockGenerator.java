@@ -165,14 +165,17 @@ public class BlockGenerator extends Thread implements Observer
 	{
 		while(true)
 		{
+			if(DBSet.getInstance().isStoped())
+				continue;
+			
 			//CHECK IF WE ARE UPTODATE
-			if(!Controller.getInstance().isUpToDate())
+			if(!Controller.getInstance().isUpToDate() && !Controller.getInstance().isProcessingWalletSynchronize())
 			{
 				Controller.getInstance().update();
 			}
 			
 			//CHECK IF WE HAVE CONNECTIONS
-			if(Controller.getInstance().getStatus() == Controller.STATUS_OKE)
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
 			{
 				//GET LAST BLOCK
 				byte[] lastBlockSignature = DBSet.getInstance().getBlockMap().getLastBlockSignature();
@@ -274,13 +277,26 @@ public class BlockGenerator extends Thread implements Observer
 		{
 			return null;
 		}
-		
+
 		//CALCULATE SIGNATURE
 		byte[] signature = this.calculateSignature(db, block, account);
-		
+
+		//DETERMINE BLOCK VERSION
+		int version = block.getNextBlockVersion(db);
+
 		//CALCULATE HASH
-		byte[] hash = Crypto.getInstance().digest(signature);
-			
+		byte[] hash;
+		if (version < 3)
+		{
+			hash = Crypto.getInstance().digest(signature);
+		}
+		else
+		{
+			//newSig = sha256(prevSig || pubKey)
+			byte[] data = Bytes.concat(block.getSignature(), account.getPublicKey());
+			hash = Crypto.getInstance().digest(data);
+		}
+
 		//CONVERT HASH TO BIGINT
 		BigInteger hashValue = new BigInteger(1, hash);
 		
@@ -312,7 +328,6 @@ public class BlockGenerator extends Thread implements Observer
 		
 		//CREATE NEW BLOCK
 		Block newBlock;
-		int version = (block.getHeight(db) + 1 > Transaction.AT_BLOCK_HEIGHT_RELEASE) ? 2 : 1 ;
 		if ( version > 1 )
 		{
 			AT_Block atBlock = AT_Controller.getCurrentBlockATs( AT_Constants.getInstance().MAX_PAYLOAD_FOR_BLOCK( block.getHeight() ) , block.getHeight() + 1 );
@@ -386,7 +401,7 @@ public class BlockGenerator extends Thread implements Observer
 				{
 					try{
 						//CHECK IF VALID
-						if(transaction.isValid(newBlockDb) == Transaction.VALIDATE_OKE)
+						if(transaction.isValid(newBlockDb) == Transaction.VALIDATE_OK)
 						{
 							//CHECK IF ENOUGH ROOM
 							if(totalBytes + transaction.getDataLength() <= Block.MAX_TRANSACTION_BYTES)
@@ -517,7 +532,7 @@ public class BlockGenerator extends Thread implements Observer
 		if(getKnownAccounts().size() > 0)
 		{
 			//CONNECTIONS OKE? -> FORGING
-			if(Controller.getInstance().getStatus() == Controller.STATUS_OKE)
+			if(Controller.getInstance().getStatus() == Controller.STATUS_OK)
 			{
 				setForgingStatus(ForgingStatus.FORGING);
 			}else
