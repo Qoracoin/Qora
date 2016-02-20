@@ -65,6 +65,8 @@ public abstract class Transaction {
 	
 	public static final int FEE_LESS_REQUIRED = 40;
 	
+	public static final int INVALID_RAW_DATA = 41;
+	
 	public static final int NOT_YET_RELEASED = 1000;
 	
 	//TYPES

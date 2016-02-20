@@ -4,6 +4,7 @@ import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -18,10 +19,12 @@ import org.mapdb.DBMaker;
 import org.mapdb.Fun;
 import org.mapdb.Fun.Tuple2;
 
+import com.google.common.collect.Iterables;
+
+import database.serializer.TransactionSerializer;
 import qora.account.Account;
 import qora.transaction.GenesisTransaction;
 import qora.transaction.Transaction;
-import database.serializer.TransactionSerializer;
 
 public class TransactionFinalMap extends DBMap<Tuple2<Integer, Integer>, Transaction>
 {
@@ -193,15 +196,32 @@ public class TransactionFinalMap extends DBMap<Tuple2<Integer, Integer>, Transac
 	
 	public List<Transaction> getTransactionsByRecipient(String address)
 	{
-		return getTransactionsByRecipient(address, 0);
+		return getTransactionsByRecipient(address, false, 0, 0);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<Transaction> getTransactionsByRecipient(String address, int limit)
+	public List<Transaction> getTransactionsByRecipient(String address, boolean desc, int offset, int limit)
 	{
 		Iterable keys = Fun.filter(this.recipientKey, address);
+		
+		if (desc) {
+			int skip;
+			if(limit == 0) {
+				skip = offset;
+			} else {
+				skip = Iterables.size(keys) - offset - limit;
+				
+				if (skip < 0) {
+					skip = Iterables.size(keys);
+				}
+			}
+			keys = Iterables.skip(keys, skip);
+		} else {
+			keys = Iterables.skip(keys, offset);
+		}
+		
 		Iterator iter = keys.iterator();
-
+		
 		List<Transaction> txs = new ArrayList<>();
 		int counter=0;
 		while ( iter.hasNext() && (limit ==0 || counter<limit) )
@@ -209,18 +229,56 @@ public class TransactionFinalMap extends DBMap<Tuple2<Integer, Integer>, Transac
 			txs.add(this.map.get(iter.next()));
 			counter++;
 		}
+		
+		if (desc) {
+			Collections.reverse(txs);
+		}
+		
 		return txs;
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public int getTransactionsByRecipientCount(String address)
+	{
+		Iterable keys = Fun.filter(this.recipientKey, address);
+		
+		return Iterables.size(keys);
+	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public int getTransactionsBySenderCount(String address)
+	{
+		Iterable keys = Fun.filter(this.senderKey, address);
+		
+		return Iterables.size(keys);
 	}
 	
 	public List<Transaction> getTransactionsBySender(String address)
 	{
-		return getTransactionsBySender(address, 0);
+		return getTransactionsBySender(address, false, 0, 0);
 	}
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public List<Transaction> getTransactionsBySender(String address, int limit)
+	public List<Transaction> getTransactionsBySender(String address, boolean desc, int offset, int limit)
 	{
 		Iterable keys = Fun.filter(this.senderKey, address);
+
+		if (desc) {
+			int skip;
+			if(limit == 0) {
+				skip = offset;
+			} else {
+				skip = Iterables.size(keys) - offset - limit;
+				
+				if (skip < 0) {
+					skip = Iterables.size(keys);
+				}
+			}
+			keys = Iterables.skip(keys, skip);
+		} else {
+			keys = Iterables.skip(keys, offset);
+		}
+
 		Iterator iter = keys.iterator();
 
 		List<Transaction> txs = new ArrayList<>();
@@ -231,6 +289,10 @@ public class TransactionFinalMap extends DBMap<Tuple2<Integer, Integer>, Transac
 			counter++;
 		}
 		
+		if (desc) {
+			Collections.reverse(txs);
+		}
+
 		return txs;
 	}
 	

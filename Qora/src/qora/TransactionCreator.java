@@ -35,6 +35,7 @@ import qora.transaction.PaymentTransaction;
 import qora.transaction.RegisterNameTransaction;
 import qora.transaction.SellNameTransaction;
 import qora.transaction.Transaction;
+import qora.transaction.TransactionFactory;
 import qora.transaction.TransferAssetTransaction;
 import qora.transaction.UpdateNameTransaction;
 import qora.transaction.VoteOnPollTransaction;
@@ -726,6 +727,23 @@ public class TransactionCreator
 		return new Pair(messageTx.calcRecommendedFee(), messageTx.getDataLength());
 	}
 	
+	public Pair<Transaction, Integer> createTransactionFromRaw(byte[] rawData)
+	{
+		//CHECK FOR UPDATES
+		this.checkUpdate();
+								
+		//CREATE TRANSACTION FROM RAW
+		Transaction transaction;
+		try {
+			transaction = TransactionFactory.getInstance().parse(rawData);
+		} catch (Exception e) {
+			return new Pair<Transaction, Integer>(null, Transaction.INVALID_RAW_DATA);
+		}
+		
+		//VALIDATE AND PROCESS
+		return this.afterCreate(transaction);
+	}
+	
 	private Pair<Transaction, Integer> afterCreate(Transaction transaction)
 	{
 		//CHECK IF PAYMENT VALID
@@ -751,4 +769,6 @@ public class TransactionCreator
 		//RETURN
 		return new Pair<Transaction, Integer>(transaction, valid);
 	}
+	
+	
 }

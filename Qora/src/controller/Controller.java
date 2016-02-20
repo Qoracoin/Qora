@@ -87,11 +87,11 @@ import webserver.WebService;
 
 public class Controller extends Observable {
 
-	private String version = "0.25.1";
-	private String buildTime = "2016-02-17 00:00:00 UTC";
+	private String version = "0.26.0 beta";
+	private String buildTime = "2016-02-19 00:00:00 UTC";
 	private long buildTimestamp;
 	
-	public static final String releaseVersion = "0.25.1";
+	public static final String releaseVersion = "0.26.0";
 
 //	TODO ENUM would be better here
 	public static final int STATUS_NO_CONNECTIONS = 0;
@@ -1693,6 +1693,14 @@ public class Controller extends Observable {
 		}
 	}
 
+	public Pair<Transaction, Integer> createTransactionFromRaw(
+			byte[] rawData) {
+		
+		synchronized (this.transactionCreator) {
+			return this.transactionCreator.createTransactionFromRaw(rawData);
+		}
+	}
+	
 	public Pair<Transaction, Integer> issueAsset(PrivateKeyAccount creator,
 			String name, String description, long quantity, boolean divisible,
 			BigDecimal fee) {

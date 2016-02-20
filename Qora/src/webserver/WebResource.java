@@ -438,12 +438,8 @@ public class WebResource {
 		String apiurl = form.getFirst("apiurl");
 
 		String jsonContent = form.getFirst("json");
-		JSONObject json = new JSONObject();
 		JSONObject jsonanswer = new JSONObject();
-		if (StringUtils.isNotBlank(jsonContent)) {
-			json = (JSONObject) JSONValue.parse(jsonContent);
-		}
-
+		
 		if (StringUtils.isBlank(type)
 				|| (!type.equalsIgnoreCase("get")
 						&& !type.equalsIgnoreCase("post") && !type
@@ -455,6 +451,7 @@ public class WebResource {
 
 			return Response.status(200)
 					.header("Content-Type", "application/json; charset=utf-8")
+					.header("Access-Control-Allow-Origin", "*")
 					.entity(jsonanswer.toJSONString()).build();
 		}
 
@@ -465,6 +462,7 @@ public class WebResource {
 
 			return Response.status(200)
 					.header("Content-Type", "application/json; charset=utf-8")
+					.header("Access-Control-Allow-Origin", "*")
 					.entity(jsonanswer.toJSONString()).build();
 		}
 
@@ -484,7 +482,7 @@ public class WebResource {
 		if (type.equalsIgnoreCase("POST")) {
 			connection.setDoOutput(true);
 			connection.getOutputStream().write(
-					json.toJSONString().getBytes(StandardCharsets.UTF_8));
+					jsonContent.getBytes(StandardCharsets.UTF_8));
 			connection.getOutputStream().flush();
 			connection.getOutputStream().close();
 		}
@@ -506,12 +504,14 @@ public class WebResource {
 			jsonanswer.put("errordetail", result);
 			return Response.status(200)
 					.header("Content-Type", "application/json; charset=utf-8")
+					.header("Access-Control-Allow-Origin", "*")
 					.entity(jsonanswer.toJSONString()).build();
 		} else {
 			jsonanswer.put("type", "success");
 			jsonanswer.put("result", result);
 			return Response.status(200)
 					.header("Content-Type", "application/json; charset=utf-8")
+					.header("Access-Control-Allow-Origin", "*")
 					.entity(jsonanswer.toJSONString()).build();
 		}
 

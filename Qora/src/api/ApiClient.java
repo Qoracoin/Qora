@@ -138,8 +138,18 @@ public class ApiClient {
 				""
 			},
 			{
+				"POST transactions/recipient {\"address\":\"<address>\", \"limit\":<limit>, \"offset\":<offset>, \"desc\":<true/false>, \"count\":<true/false>}",
+				"Returns an array of the <limit> transactions from given offset with a specific recipient. Set param \"count\" to true to find out the number of transactions.",
+				""
+			},
+			{
 				"GET transactions/sender/<address>/limit/<limit>",
-				"Returns an array of the last <limit> transactions with a specific sender.",
+				"Returns an array of the <limit> transactions with a specific sender.",
+				""
+			},
+			{
+				"POST transactions/sender {\"address\":\"<address>\", \"limit\":<limit>, \"offset\":<offset>, \"desc\":<true/false>, \"count\":<true/false>}",
+				"Returns an array of the <limit> transactions from given offset with a specific sender. Set param \"count\" to true to find out the number of transactions.",
 				""
 			},
 			{
@@ -283,6 +293,11 @@ public class ApiClient {
 				"Errors: 102 - Invalid address."
 			},
 			{
+				"GET addresses/lastreference/{address}", 
+				"Returns the 64-byte long base58-encoded signature of last transaction of the given address, where the address is delivered as creator. Or the first incoming transaction. Returns \"false\" if there is no transactions.",
+				"Errors: 102 - Invalid address."
+			},
+			{
 				"GET wallet", 
 				"Returns general information about the wallet.",
 				"{\"exists\":true,\"isunlocked\":false}" 
@@ -303,7 +318,7 @@ public class ApiClient {
 				"Errors: 201 - Wallet does not exist."
 			},
 			{
-				"POST wallet {\"seed\":\"/<seed>\", \"password\":\"<password>\", \"recover\":<false/true>,  \"amount\":<amount>} ", 
+				"POST wallet {\"seed\":\"<seed>\", \"password\":\"<password>\", \"recover\":<false/true>,  \"amount\":<amount>} ", 
 				"Creates a wallet using the given 32-byte long base58-encoded seed, password,recover flag and amount.",
 				"Errors: 1 - Json error. 103 - Invalid seed. 104 - Invalid amount. 204 - Wallet already exists."
 			},
