@@ -1843,24 +1843,10 @@ public class BlockExplorer
 			
 		}
 		
-		List<Transaction> transactions = new ArrayList<Transaction>();;
-		for (int type = 1; type <= 23; type++) {  // 17 - The number of transaction types. 23 - for the future
-			transactions.addAll(DBSet.getInstance().getTransactionFinalMap().getTransactionsByTypeAndAddress(address, type, 0));
-		}
-		
-		Map<String, Boolean> signatures = new LinkedHashMap<String, Boolean>();
-		
-		for (Transaction transaction : transactions){
-			byte[] signature = transaction.getSignature();
-			if(!signatures.containsKey( new String(signature) ))
-			{	
-				signatures.put(new String(signature), true);
-				all.add(transaction);
-			}
-		}
+		all.addAll(DBSet.getInstance().getTransactionFinalMap().getTransactionsByAddress(address));
 		
 		Map<Tuple2<BigInteger, BigInteger>, Trade> trades = new TreeMap<Tuple2<BigInteger, BigInteger>, Trade>();
-		List<Transaction> orders = DBSet.getInstance().getTransactionFinalMap().getTransactionsByTypeAndAddress(address, 13, 0);
+		List<Transaction> orders = DBSet.getInstance().getTransactionFinalMap().getTransactionsByTypeAndAddress(address, Transaction.CREATE_ORDER_TRANSACTION, 0);
 		for (Transaction transaction : orders)
 		{
 			Order order =  ((CreateOrderTransaction)transaction).getOrder();

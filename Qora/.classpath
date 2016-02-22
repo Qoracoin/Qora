@@ -25,11 +25,6 @@
 	<classpathentry kind="lib" path="libs/jersey/lib/jersey-container-servlet.jar"/>
 	<classpathentry kind="lib" path="libs/jersey/lib/jersey-media-jaxb.jar"/>
 	<classpathentry kind="lib" path="libs/jersey/lib/jersey-server.jar"/>
-	<classpathentry kind="lib" path="libs/guava-18.0.jar" sourcepath="libs/sourceandjavadoc/guava-18.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="jar:platform:/resource/Qora/libs/sourceandjavadoc/guava-18.0-javadoc.jar!/"/>
-		</attributes>
-	</classpathentry>
 	<classpathentry kind="lib" path="libs/jsoup-1.8.2.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="jar:platform:/resource/Qora/libs/sourceandjavadoc/jsoup-1.8.2-javadoc.jar!/"/>
@@ -101,5 +96,10 @@
 	<classpathentry kind="lib" path="libs/jetty/jetty-util-9.2.15.v20160210.jar"/>
 	<classpathentry kind="lib" path="libs/jetty/jetty-webapp-9.2.15.v20160210.jar"/>
 	<classpathentry kind="lib" path="libs/jetty/jetty-xml-9.2.15.v20160210.jar"/>
+	<classpathentry kind="lib" path="libs/guava-19.0.jar" sourcepath="libs/sourceandjavadoc/guava-19.0-sources.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="jar:platform:/resource/Qora/libs/sourceandjavadoc/guava-19.0-javadoc.jar!/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

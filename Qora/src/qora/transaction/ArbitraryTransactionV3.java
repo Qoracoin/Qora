@@ -40,7 +40,7 @@ public class ArbitraryTransactionV3 extends ArbitraryTransaction {
 		this.payments = payments;
 		if(payments == null)
 		{
-			this.payments = new ArrayList<>();
+			this.payments = new ArrayList<Payment>();
 		}
 		this.creator = creator;
 	}
@@ -323,6 +323,14 @@ public class ArbitraryTransactionV3 extends ArbitraryTransaction {
 	public static byte[] generateSignature(DBSet db, PrivateKeyAccount creator,
 			List<Payment> payments, int service, byte[] arbitraryData,
 			BigDecimal fee, long timestamp) {
+		
+		List<Payment> paymentsBuf = payments;
+		
+		if(paymentsBuf == null)
+		{
+			paymentsBuf = new ArrayList<Payment>();
+		}
+		
 		byte[] data = new byte[0];
 
 		// WRITE TYPE
@@ -343,12 +351,12 @@ public class ArbitraryTransactionV3 extends ArbitraryTransaction {
 		data = Bytes.concat(data, creator.getPublicKey());
 
 		// WRITE PAYMENTS SIZE
-		int paymentsLength = payments.size();
+		int paymentsLength = paymentsBuf.size();
 		byte[] paymentsLengthBytes = Ints.toByteArray(paymentsLength);
 		data = Bytes.concat(data, paymentsLengthBytes);
 
 		// WRITE PAYMENTS
-		for (Payment payment : payments) {
+		for (Payment payment : paymentsBuf) {
 			data = Bytes.concat(payment.toBytes());
 		}
 

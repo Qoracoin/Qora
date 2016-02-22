@@ -17,7 +17,6 @@ import api.BlogPostResource;
 import database.BalanceMap;
 import database.DBSet;
 import qora.account.Account;
-import qora.account.PrivateKeyAccount;
 import qora.account.PublicKeyAccount;
 import qora.crypto.Base58;
 import qora.naming.Name;
@@ -119,31 +118,6 @@ public abstract class ArbitraryTransaction extends Transaction {
 			return ArbitraryTransactionV3.Parse(data);
 		}
 	}
-	
-	public static byte[] generateSignature(DBSet db, PrivateKeyAccount creator,
-			int service, byte[] arbitraryData, BigDecimal fee, long timestamp) {
-
-		if(timestamp < Transaction.getPOWFIX_RELEASE()) {
-			return ArbitraryTransactionV1.generateSignature(db, creator, service, 
-					arbitraryData, fee, timestamp);	
-		} else {
-			return ArbitraryTransactionV3.generateSignature(db, creator, null, service, 
-					arbitraryData, fee, timestamp);	
-		}
-	}
-	
-	public static byte[] generateSignature(DBSet db, PrivateKeyAccount creator, List<Payment> payments,
-			int service, byte[] arbitraryData, BigDecimal fee, long timestamp) {
-
-		if(timestamp < Transaction.getPOWFIX_RELEASE()) {
-			return ArbitraryTransactionV1.generateSignature(db, creator, service, 
-					arbitraryData, fee, timestamp);	
-		} else {
-			return ArbitraryTransactionV3.generateSignature(db, creator, payments, service, 
-					arbitraryData, fee, timestamp);	
-		}
-	}
-	
 	
 	@Override
 	public PublicKeyAccount getCreator() {

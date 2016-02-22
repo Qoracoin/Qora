@@ -2640,7 +2640,7 @@ public class TransactionTests {
 		
 		//CREATE SIGNATURE
 		long timestamp = NTP.getTime();
-		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet, sender, 4889, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
+		byte[] signature = ArbitraryTransactionV1.generateSignature(databaseSet, sender, 4889, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
 		
 		//CREATE ARBITRARY TRANSACTION
 		Transaction arbitraryTransaction = new ArbitraryTransactionV1(sender, 4889, "test".getBytes(), BigDecimal.ONE.setScale(8), timestamp, sender.getLastReference(databaseSet), signature);
@@ -2674,7 +2674,7 @@ public class TransactionTests {
 		//CREATE SIGNATURE
 		long timestamp = NTP.getTime();
 		byte[] data = "test".getBytes();
-		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet, sender, 4776, data, BigDecimal.valueOf(1).setScale(8), timestamp);
+		byte[] signature = ArbitraryTransactionV1.generateSignature(databaseSet, sender, 4776, data, BigDecimal.valueOf(1).setScale(8), timestamp);
 				
 		//CREATE ARBITRARY TRANSACTION
 		Transaction arbitraryTransaction = new ArbitraryTransactionV1(sender, 4776, data, BigDecimal.ONE.setScale(8), timestamp, sender.getLastReference(databaseSet), signature);	
@@ -2731,7 +2731,7 @@ public class TransactionTests {
 		
 		//CREATE SIGNATURE
 		long timestamp = NTP.getTime();
-		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet, sender, 4776, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
+		byte[] signature = ArbitraryTransactionV1.generateSignature(databaseSet, sender, 4776, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
 				
 		//CREATE ARBITRARY TRANSACTION
 		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(sender, 4776, "test".getBytes(),BigDecimal.ONE.setScale(8), timestamp, sender.getLastReference(databaseSet), signature);	
@@ -2812,7 +2812,7 @@ public class TransactionTests {
 				
 		//CREATE SIGNATURE
 		long timestamp = NTP.getTime();
-		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet, sender, 4776, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
+		byte[] signature = ArbitraryTransactionV1.generateSignature(databaseSet, sender, 4776, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
 						
 		//CREATE ARBITRARY TRANSACTION
 		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(sender, 4776, "test".getBytes(),BigDecimal.ONE.setScale(8), timestamp, sender.getLastReference(databaseSet), signature);	
@@ -2843,7 +2843,7 @@ public class TransactionTests {
 				
 		//CREATE SIGNATURE
 		long timestamp = NTP.getTime();
-		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet, sender, 4776, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
+		byte[] signature = ArbitraryTransactionV1.generateSignature(databaseSet, sender, 4776, "test".getBytes(), BigDecimal.valueOf(1).setScale(8), timestamp);
 								
 		//CREATE ARBITRARY TRANSACTION
 		ArbitraryTransaction arbitraryTransaction = new ArbitraryTransactionV1(sender, 4776, "test".getBytes(),BigDecimal.ONE.setScale(8), timestamp, sender.getLastReference(databaseSet), signature);	
@@ -2914,7 +2914,7 @@ public class TransactionTests {
 		//CREATE SIGNATURE
 		long timestamp = NTP.getTime();
 		byte[] data = "test".getBytes();
-		byte[] signature = ArbitraryTransaction.generateSignature(databaseSet, sender, 4776, data, BigDecimal.valueOf(1).setScale(8), timestamp);
+		byte[] signature = ArbitraryTransactionV1.generateSignature(databaseSet, sender, 4776, data, BigDecimal.valueOf(1).setScale(8), timestamp);
 				
 		//CREATE ARBITRARY TRANSACTION
 		Transaction arbitraryTransaction = new ArbitraryTransactionV1(sender, 4776, data, BigDecimal.ONE.setScale(8), timestamp, sender.getLastReference(databaseSet), signature);	

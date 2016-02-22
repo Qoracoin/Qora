@@ -22,11 +22,11 @@ import database.DBSet;
 import gui.Gui;
 import gui.models.PollOptionsTableModel;
 import qora.assets.Asset;
-import qora.blockexplorer.BlockExplorer;
 import qora.transaction.CreatePollTransaction;
 import qora.transaction.Transaction;
 import qora.voting.Poll;
 import utils.BigDecimalStringComparator;
+import utils.DateTimeFormat;
 
 @SuppressWarnings("serial")
 public class PollDetailsPanel extends JPanel
@@ -93,13 +93,13 @@ public class PollDetailsPanel extends JPanel
 		this.add(dateLabel, labelGBC);
 		
 		String dateTime = "";
+		
 		List<Transaction> transactions = DBSet.getInstance().getTransactionFinalMap().getTransactionsByTypeAndAddress(poll.getCreator().getAddress(), Transaction.CREATE_POLL_TRANSACTION, 0);
 		for (Transaction transaction : transactions) {
 			CreatePollTransaction createPollTransaction = ((CreatePollTransaction)transaction);
 			if(createPollTransaction.getPoll().getName().equals(poll.getName()))
 			{
-				
-				dateTime = BlockExplorer.timestampToStr(createPollTransaction.getTimestamp());
+				dateTime = DateTimeFormat.timestamptoString(createPollTransaction.getTimestamp());
 				break;
 			}
 		}

@@ -138,24 +138,19 @@ public class ApiClient {
 				""
 			},
 			{
-				"POST transactions/recipient {\"address\":\"<address>\", \"limit\":<limit>, \"offset\":<offset>, \"desc\":<true/false>, \"count\":<true/false>}",
-				"Returns an array of the <limit> transactions from given offset with a specific recipient. Set param \"count\" to true to find out the number of transactions.",
-				""
-			},
-			{
 				"GET transactions/sender/<address>/limit/<limit>",
 				"Returns an array of the <limit> transactions with a specific sender.",
-				""
-			},
-			{
-				"POST transactions/sender {\"address\":\"<address>\", \"limit\":<limit>, \"offset\":<offset>, \"desc\":<true/false>, \"count\":<true/false>}",
-				"Returns an array of the <limit> transactions from given offset with a specific sender. Set param \"count\" to true to find out the number of transactions.",
 				""
 			},
 			{
 				"GET transactions/address/<address>/type/<type>/limit/<limit>",
 				"Returns an array of the last <limit> transactions of a specific address and type.",
 				""
+			},
+			{
+				"POST transactions/find {\"address\":\"<address>\", \"sender\":\"<sender>\", \"recipient\":\"<recipient>\", \"type\":<type>, \"service\":<service>, \"offset\":<offset>, \"limit\":<limit>, \"minHeight\":<minHeight>, \"maxHeight\":<maxHeight>, \"desc\":<true/false>, \"count\":<true/false>}",
+				"Returns an array of the <limit> transactions from given <offset> with a specific params. Set parameter \"count\" to true to find out the number of transactions. Set parameter \"desc\" to true for reverse order. Parameter \"service\" means service of ArbitraryTransaction. \"minHeight\" and \"maxHeight\" means height of blocks. All params are optional, but must be specified at least one address field.",
+				"Errors: 102 - Invalid address."
 			},
 			{
 				"GET blocks", 
