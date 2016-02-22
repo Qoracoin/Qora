@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.logging.Logger;
 
 import ntp.NTP;
 
@@ -24,6 +25,7 @@ import qora.transaction.DeployATTransaction;
 import qora.transaction.GenesisTransaction;
 import qora.transaction.Transaction;
 import qora.transaction.TransactionFactory;
+//import settings.Settings;
 import utils.Converter;
 import at.AT_API_Platform_Impl;
 import at.AT_Block;
@@ -571,34 +573,40 @@ public class Block {
 		//CHECK IF PARENT EXISTS
 		if(this.reference == null || this.getParent(db) == null)
 		{
+			Logger.getGlobal().info("CHECK IF PARENT EXISTS");
 			return false;
 		}
 
 		//CHECK IF TIMESTAMP IS VALID -500 MS ERROR MARGIN TIME
-		if(this.timestamp - 500 > NTP.getTime() || this.timestamp < this.getParent(db).timestamp)
+		if(this.timestamp - 500 > NTP.getTime() || this.timestamp <  + this.getParent(db).timestamp)
 		{
+			Logger.getGlobal().info("CHECK TIMESTAMP " + this.timestamp + " - ");
 			return false;
 		}
 
 		//CHECK IF TIMESTAMP REST SAME AS PARENT TIMESTAMP REST
 		if(this.timestamp % 1000 != this.getParent(db).timestamp % 1000)
 		{
+			Logger.getGlobal().info("TIMESTAMP REST SAME");
 			return false;
 		}
 
 		//CHECK IF GENERATING BALANCE IS CORRECT
 		if(this.generatingBalance != BlockGenerator.getNextBlockGeneratingBalance(db, this.getParent(db)))
 		{
+			Logger.getGlobal().info("GENERATING BALANCE ERROR");
 			return false;
 		}
 
 		//CHECK IF VERSION IS CORRECT
 		if(this.version != this.getParent(db).getNextBlockVersion(db))
 		{
+			Logger.getGlobal().info("VERSION IS NOT CORRECT");
 			return false;
 		}
 		if(this.version < 2 && (this.atBytes.length > 0 || this.atFees != 0))
 		{
+			Logger.getGlobal().info("VERSION IS NOT CORRECT AT");
 			return false;
 		}
 
@@ -625,12 +633,14 @@ public class Block {
 		//CHECK IF HASH LOWER THEN TARGET
 		if(hashValue.compareTo(target) >= 0)
 		{
+			Logger.getGlobal().info("HASH LOWER THEN TARGET");
 			return false;
 		}
 
 		//CHECK IF FIRST BLOCK OF USER	
 		if(hashValue.compareTo(lowerTarget) < 0)
 		{
+			Logger.getGlobal().info("FIRST BLOCK OF USER");
 			return false;
 		}
 
@@ -645,6 +655,7 @@ public class Block {
 			catch(NoSuchAlgorithmException | AT_Exception e)
 			{
 				e.printStackTrace();
+				Logger.getGlobal().info("AT ERROR");
 				return false;
 			}
 		}
@@ -656,6 +667,7 @@ public class Block {
 			//CHECK IF NOT GENESISTRANSACTION
 			if(transaction instanceof GenesisTransaction)
 			{
+				Logger.getGlobal().info("NOT GENESISTRANSACTION");
 				return false;
 			}
 
@@ -671,17 +683,20 @@ public class Block {
 				DeployATTransaction atTx = (DeployATTransaction)transaction;
 				if ( atTx.isValid(fork, min) != Transaction.VALIDATE_OK )
 				{
+					Logger.getGlobal().info("Deploy AT ERROR");
 					return false;
 				}
 			}
 			else if(transaction.isValid(fork) != Transaction.VALIDATE_OK)
 			{
+				Logger.getGlobal().info("NOT VALID FORK");
 				return false;
 			}
 
 			//CHECK TIMESTAMP AND DEADLINE
 			if(transaction.getTimestamp() > this.timestamp || transaction.getDeadline() <= this.timestamp)
 			{
+				Logger.getGlobal().info("TIMESTAMP AND DEADLINE ERROR");
 				return false;
 			}
 

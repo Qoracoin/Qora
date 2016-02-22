@@ -29,10 +29,11 @@ public class ConnectionAcceptor extends Thread{
 		{
 			try
 			{	
+				int port = Settings.getInstance().getNetPort();
 				if(socket == null)
 				{
 					//START LISTENING
-					socket = new ServerSocket(Controller.getInstance().getNetworkPort()); 
+					socket = new ServerSocket(port); 
 				}
 				
 				
@@ -52,7 +53,7 @@ public class ConnectionAcceptor extends Thread{
 					//REOPEN SOCKET
 					if(socket.isClosed())
 					{
-						socket = new ServerSocket(Controller.getInstance().getNetworkPort()); 
+						socket = new ServerSocket(port); 
 					}
 					
 					//ACCEPT CONNECTION

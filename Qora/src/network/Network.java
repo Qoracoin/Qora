@@ -16,12 +16,13 @@ import controller.Controller;
 import network.message.FindMyselfMessage;
 import network.message.Message;
 import network.message.MessageFactory;
+import settings.Settings;
 import utils.ObserverMessage;
 
 public class Network extends Observable implements ConnectionCallback {
 
-	public static final int MAINNET_PORT = 9084;
-	public static final int TESTNET_PORT = 4809;
+	//public static final int MAINNET_PORT = 9084;
+	//public static final int TESTNET_PORT = 4809;
 	
 	private static final int MAX_HANDLED_MESSAGES_SIZE = 10000;
 	
@@ -58,7 +59,7 @@ public class Network extends Observable implements ConnectionCallback {
 	@Override
 	public void onConnect(Peer peer) {
 		
-		Logger.getGlobal().info("Connection successfull : " + peer.getAddress());
+		Logger.getGlobal().info("Connection successfull : " + peer.getAddress() + ":"+ Settings.getInstance().getNetPort());
 		
 		//ADD TO CONNECTED PEERS
 		synchronized(this.connectedPeers)

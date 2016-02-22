@@ -21,8 +21,11 @@ public class GenesisBlock extends Block{
 	
 	private static int genesisVersion = 1;
 	private static byte[] genesisReference =  new byte[]{1,1,1,1,1,1,1,1};
-	//private static long genesisTimestamp = 1400247274336l;
+	/*
 	private static long genesisGeneratingBalance = 10000000L;
+	private static PublicKeyAccount genesisGenerator = new PublicKeyAccount(new byte[]{1,1,1,1,1,1,1,1});
+	*/
+	private static long genesisGeneratingBalance = 10000000000L;
 	private static PublicKeyAccount genesisGenerator = new PublicKeyAccount(new byte[]{1,1,1,1,1,1,1,1});
 	
 	private String testnetInfo; 
@@ -52,7 +55,7 @@ public class GenesisBlock extends Block{
 				byte[] publicKey = keyPair.getB();
 				String address = Crypto.getInstance().getAddress(publicKey);
 
-				this.addTransaction(new GenesisTransaction(new Account(address), new BigDecimal(10000000000L/10).setScale(8), genesisTimestamp));
+				this.addTransaction(new GenesisTransaction(new Account(address), new BigDecimal(genesisGeneratingBalance/10).setScale(8), genesisTimestamp));
 				
 				this.testnetInfo += "\ngenesisAccount(" + String.valueOf(nonce) + "): " + address +  " / POST addresses " + Base58.encode(accountSeed);
 		    }
@@ -65,7 +68,7 @@ public class GenesisBlock extends Block{
 		} else {
 			
 			//ADD MAINNET GENESIS TRANSACTIONS
-			
+			/*
 			this.addTransaction(new GenesisTransaction(new Account("QUD9y7NZqTtNwvSAUfewd7zKUGoVivVnTW"), new BigDecimal("7032468.191").setScale(8), genesisTimestamp));
 			this.addTransaction(new GenesisTransaction(new Account("QVafvKkE5bZTkq8PcXvdaxwuLNN2DGCwYk"), new BigDecimal("1716146.084").setScale(8), genesisTimestamp));
 			this.addTransaction(new GenesisTransaction(new Account("QV42QQP7frYWqsVq536g7zSk97fUpf2ZSN"), new BigDecimal("5241707.06").setScale(8), genesisTimestamp));
@@ -200,7 +203,19 @@ public class GenesisBlock extends Block{
 			this.addTransaction(new GenesisTransaction(new Account("QgcphUTiVHHfHg8e1LVgg5jujVES7ZDUTr"), new BigDecimal("115031531").setScale(8), genesisTimestamp));
 			this.addTransaction(new GenesisTransaction(new Account("QbQk9s4j4EAxAguBhmqA8mdtTct3qGnsrx"), new BigDecimal("138348733.2").setScale(8), genesisTimestamp));
 			this.addTransaction(new GenesisTransaction(new Account("QT79PhvBwE6vFzfZ4oh5wdKVsEazZuVJFy"), new BigDecimal("6360421.343").setScale(8), genesisTimestamp));
+			*/
+			this.addTransaction(new GenesisTransaction(new Account("QStUHLofuyCBy3UR2Rr8WRNnPc56WZYzWu"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+			this.addTransaction(new GenesisTransaction(new Account("QRqBjBJshFJig97ABKiPJ9ar86KbWEZ7Hc"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+			this.addTransaction(new GenesisTransaction(new Account("QYgYu43QEMv2cf1QC8nq5PwVRQrNVk81MM"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
 			
+			this.addTransaction(new GenesisTransaction(new Account("Qj1vEeuz7iJADzV2qrxguSFGzamZiYZVUP"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+			this.addTransaction(new GenesisTransaction(new Account("QiZSovPpdyAhLW66P2KkF5UynR9RtVsLPN"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+			this.addTransaction(new GenesisTransaction(new Account("QYMA8MopsHnWx4B28zUFArAsCmZoPx3ooG"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+			
+			this.addTransaction(new GenesisTransaction(new Account("QXuzwBv17fmDQD3y5Emhu7qiFoRYCDE8jS"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+			this.addTransaction(new GenesisTransaction(new Account("QVcP2HUjxrGrb6ARWmu6h6x1fCTxatFw2H"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+			this.addTransaction(new GenesisTransaction(new Account("QLdMWd4QAhLuAtq3G1WCrHd6WTJ7GV4jdk"), new BigDecimal("11111111111.").setScale(8), genesisTimestamp));
+
 			//GENERATE AND VALIDATE TRANSACTIONSSIGNATURE
 			this.setTransactionsSignature(generateHash());
 		}

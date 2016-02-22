@@ -1,7 +1,10 @@
 package gui.voting;
 
+import gui.AccountRenderer;
 import gui.PasswordPane;
+import gui.models.AssetsComboBoxModel;
 import gui.models.AccountsComboBoxModel;
+//import gui.models.AssetsAllComboBoxModel;
 import gui.models.CreateOptionsTableModel;
 
 import java.awt.Dimension;
@@ -12,6 +15,7 @@ import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+//import java.awt.event.ItemEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 
 import qora.account.Account;
 import qora.account.PrivateKeyAccount;
+import qora.assets.Asset;
 import qora.transaction.Transaction;
 import settings.Settings;
 import utils.DateTimeFormat;
@@ -40,6 +45,7 @@ import controller.Controller;
 @SuppressWarnings("serial")
 public class CreatePollFrame extends JFrame
 {
+	private static JComboBox<Asset> cbxFavorites;
 	private JComboBox<Account> cbxFrom;
 	private JTextField txtFee;
 	private JTextField txtName;
@@ -49,7 +55,7 @@ public class CreatePollFrame extends JFrame
 
 	public CreatePollFrame()
 	{
-		super("Qora - Create Poll");
+		super("Create Poll");
 		
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -67,7 +73,50 @@ public class CreatePollFrame extends JFrame
 		
 		//PADDING
 		((JComponent) this.getContentPane()).setBorder(new EmptyBorder(5, 5, 5, 5));
+
+		///////////////////////
+		//ASSET LABEL GBC
+		GridBagConstraints assetLabelGBC = new GridBagConstraints();
+		assetLabelGBC.insets = new Insets(5, 5, 5, 5);
+		assetLabelGBC.fill = GridBagConstraints.HORIZONTAL;   
+		assetLabelGBC.anchor = GridBagConstraints.CENTER;
+		assetLabelGBC.weightx = 0;	
+		assetLabelGBC.gridwidth = 0;
+		assetLabelGBC.gridx = 0;
+		assetLabelGBC.gridy = 0;
 		
+		//FAVORITES GBC
+		GridBagConstraints favoritesGBC = new GridBagConstraints();
+		favoritesGBC.insets = new Insets(5, 5, 5, 5);
+		//favoritesGBC.fill = GridBagConstraints.NONE;  
+		favoritesGBC.fill = GridBagConstraints.BOTH;  
+		favoritesGBC.anchor = GridBagConstraints.NORTHWEST;
+		favoritesGBC.weightx = 1;
+		favoritesGBC.gridx = 1;	
+		favoritesGBC.gridy = 0;
+		
+		this.add(new JLabel("Asset:"), assetLabelGBC);		
+		//ASSET FAVORITES
+		cbxFavorites = new JComboBox<Asset>(new AssetsComboBoxModel());
+		this.add(cbxFavorites, favoritesGBC);
+		//cbxAssets.setSelectedItem(asset);
+		//this.add(cbxAssets, assetsGBC);
+		
+		cbxFavorites.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+
+		    	Asset asset = ((Asset) cbxFavorites.getSelectedItem());
+
+		    	if(asset != null)
+		    	{
+		    		//((AccountRenderer)cbxAccount.getRenderer()).setAsset(asset.getKey());
+		    		//cbxAccount.repaint();
+		    		//cbxOptions.repaint();
+		    		
+		    	}
+		    }
+		});
+		///////////
 		//LABEL GBC
 		GridBagConstraints labelGBC = new GridBagConstraints();
 		labelGBC.insets = new Insets(5,5,5,5);
@@ -75,14 +124,17 @@ public class CreatePollFrame extends JFrame
 		labelGBC.anchor = GridBagConstraints.NORTHWEST;
 		labelGBC.weightx = 0;	
 		labelGBC.gridx = 0;
+		labelGBC.gridy = 1;	
 		
 		//COMBOBOX GBC
 		GridBagConstraints cbxGBC = new GridBagConstraints();
 		cbxGBC.insets = new Insets(5,5,5,5);
-		cbxGBC.fill = GridBagConstraints.NONE;  
+		//cbxGBC.fill = GridBagConstraints.NONE;  
+		cbxGBC.fill = GridBagConstraints.HORIZONTAL;   
 		cbxGBC.anchor = GridBagConstraints.NORTHWEST;
-		cbxGBC.weightx = 0;	
-		cbxGBC.gridx = 1;	
+		cbxGBC.weightx = 0;
+		cbxGBC.gridx = 1;
+		cbxGBC.gridy = 1;
 		
 		//TEXTFIELD GBC
 		GridBagConstraints txtGBC = new GridBagConstraints();
@@ -102,44 +154,58 @@ public class CreatePollFrame extends JFrame
 		buttonGBC.gridx = 0;		
 		
 		//LABEL FROM
-		labelGBC.gridy = 0;
+		labelGBC.gridy = 1;
 		JLabel fromLabel = new JLabel("Account:");
 		this.add(fromLabel, labelGBC);
 		
 		//COMBOBOX FROM
-		txtGBC.gridy = 0;
+		txtGBC.gridy = 1;
 		this.cbxFrom = new JComboBox<Account>(new AccountsComboBoxModel());
         this.add(this.cbxFrom, txtGBC);
-        
+
+		//ON FAVORITES CHANGE
+		cbxFavorites.addActionListener (new ActionListener () {
+		    public void actionPerformed(ActionEvent e) {
+		    	
+		    	Asset asset = ((Asset) cbxFavorites.getSelectedItem());
+		    	if(asset != null)
+		    	{
+		    		((AccountRenderer)cbxFrom.getRenderer()).setAsset(asset.getKey());
+		    		cbxFrom.repaint();
+		    		///refreshReceiverDetails();
+		    	}
+		    }
+		});
+
         //LABEL NAME
-      	labelGBC.gridy = 1;
+      	labelGBC.gridy = 2;
       	JLabel nameLabel = new JLabel("Name:");
       	this.add(nameLabel, labelGBC);
       		
       	//TXT NAME
-      	txtGBC.gridy = 1;
+      	txtGBC.gridy = 2;
       	this.txtName = new JTextField();
         this.add(this.txtName, txtGBC);
         
         //LABEL NAME
-      	labelGBC.gridy = 2;
+      	labelGBC.gridy = 3;
       	JLabel descriptionLabel = new JLabel("Description:");
       	this.add(descriptionLabel, labelGBC);
       		
       	//TXTAREA NAME
-      	txtGBC.gridy = 2;
+      	txtGBC.gridy = 3;
       	this.txtareaDescription = new JTextArea();
       	this.txtareaDescription.setRows(4);
       	this.txtareaDescription.setBorder(this.txtName.getBorder());
       	this.add(this.txtareaDescription, txtGBC);
         
       	//LABEL OPTIONS
-      	labelGBC.gridy = 3;
+      	labelGBC.gridy = 4;
       	JLabel optionsLabel = new JLabel("Options:");
       	this.add(optionsLabel, labelGBC);
       	
       	//TABLE OPTIONS
-      	txtGBC.gridy = 3;
+      	txtGBC.gridy = 4;
       	this.optionsTableModel = new CreateOptionsTableModel(new Object[] { "Name" }, 0);
       	final JTable table = new JTable(optionsTableModel);
       	
@@ -166,18 +232,18 @@ public class CreatePollFrame extends JFrame
         this.add(deleteButton, txtGBC);
       	
         //LABEL FEE
-      	labelGBC.gridy = 5;
+      	labelGBC.gridy = 6;
       	JLabel feeLabel = new JLabel("Fee:");
       	this.add(feeLabel, labelGBC);
       		
       	//TXT FEE
-      	txtGBC.gridy = 5;
+      	txtGBC.gridy = 6;
       	this.txtFee = new JTextField();
       	this.txtFee.setText("1");
         this.add(this.txtFee, txtGBC);
 		           
         //BUTTON Register
-        buttonGBC.gridy = 6;
+        buttonGBC.gridy = 7;
         createButton = new JButton("Create");
         createButton.setPreferredSize(new Dimension(80, 25));
         createButton.addActionListener(new ActionListener()
@@ -398,4 +464,5 @@ public class CreatePollFrame extends JFrame
 		//ENABLE
 		this.createButton.setEnabled(true);
 	}
+	
 }

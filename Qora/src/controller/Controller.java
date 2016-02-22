@@ -133,14 +133,6 @@ public class Controller extends Observable {
 	public String getVersion() {
 		return version;
 	}
-
-	public int getNetworkPort() {
-		if(Settings.getInstance().isTestnet()) {
-			return Network.TESTNET_PORT;
-		} else {
-			return Network.MAINNET_PORT;
-		}
-	}
 	
 	public String getBuildDateTimeString(){
 		return DateTimeFormat.timestamptoString(this.getBuildTimestamp(), "yyyy-MM-dd HH:mm:ss z", "UTC");
@@ -186,9 +178,9 @@ public class Controller extends Observable {
 	{
 		Logger.getGlobal().info(
 			"STATUS OK\n" 
-			+ "| Last Block Signature: " + Base58.encode(this.blockChain.getLastBlock().getSignature()) + "\n"
+			//+ "| Last Block Signature: " + Base58.encode(this.blockChain.getLastBlock().getSignature()) + "\n"
 			+ "| Last Block Height: " + this.blockChain.getLastBlock().getHeight() + "\n"
-			+ "| Last Block Time: " + DateTimeFormat.timestamptoString(this.blockChain.getLastBlock().getTimestamp()) + "\n"
+			+ "| Last Block Time: " + this.blockChain.getLastBlock().getTimestamp() + " " + DateTimeFormat.timestamptoString(this.blockChain.getLastBlock().getTimestamp()) + "\n"
 			+ "| Last Block Found " + DateTimeFormat.timeAgo(this.blockChain.getLastBlock().getTimestamp()) + " ago."
 			);
 	}
@@ -269,8 +261,9 @@ public class Controller extends Observable {
 		this.random.nextBytes(this.foundMyselfID);
 		
 		// CHECK NETWORK PORT AVAILABLE
-		if (!Network.isPortAvailable(Controller.getInstance().getNetworkPort())) {
-			throw new Exception("Network port " + Controller.getInstance().getNetworkPort()
+		int port = Settings.getInstance().getNetPort();
+		if (!Network.isPortAvailable(port)) {
+			throw new Exception("Network port " + port
 					+ " already in use!");
 		}
 

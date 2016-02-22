@@ -115,7 +115,7 @@ public class Peer extends Thread{
 		try
 		{
 			//OPEN SOCKET
-			this.socket = new Socket(address, Controller.getInstance().getNetworkPort());
+			this.socket = new Socket(address, Settings.getInstance().getNetPort());
 			
 			//ENABLE KEEPALIVE
 			//this.socket.setKeepAlive(true);

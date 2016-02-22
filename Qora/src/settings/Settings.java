@@ -29,6 +29,9 @@ import ntp.NTP;
 public class Settings {
 
 	//NETWORK
+	private static final int MAINNET_PORT = 9184;
+	private static final int TESTNET_PORT = 4909;
+
 	private static final int DEFAULT_MIN_CONNECTIONS = 10;
 	private static final int DEFAULT_MAX_CONNECTIONS = 50;
 	private static final int DEFAULT_MAX_RECEIVE_PEERS = 20;
@@ -38,12 +41,15 @@ public class Settings {
 	private static final boolean DEFAULT_TRYING_CONNECT_TO_BAD_PEERS = true;
 	private static final String[] DEFAULT_PEERS = { };
 
+	// public static final long DEFAULT_MAINNET_STAMP = 1400247274336L; // QORA RELEASE
+	// дата с сайта http://www.cy-pr.com/tools/time/#stop + "336l"  т.к на сайте без милисекунд
+	public static final long DEFAULT_MAINNET_STAMP = 1455087244336L;
+	
 	//TESTNET 
-	public static final long DEFAULT_MAINNET_STAMP = 1400247274336L; // QORA RELEASE
 	private long genesisStamp = -1;
 	
 	//RPC
-	private static final int DEFAULT_RPC_PORT = 9085;
+	private static final int DEFAULT_RPC_PORT = 9185;
 	private static final String DEFAULT_RPC_ALLOWED = "127.0.0.1";
 	private static final boolean DEFAULT_RPC_ENABLED = true;
 	
@@ -51,7 +57,7 @@ public class Settings {
 	private static final boolean DEFAULT_GUI_CONSOLE_ENABLED = true;
 	
 	//WEB
-	private static final int DEFAULT_WEB_PORT = 9090;
+	private static final int DEFAULT_WEB_PORT = 9180;
 	private static final String DEFAULT_WEB_ALLOWED = "127.0.0.1";
 	private static final boolean DEFAULT_WEB_ENABLED = true;
 	
@@ -435,6 +441,16 @@ public class Settings {
 		}
 		
 		return DEFAULT_MIN_CONNECTIONS;
+	}
+
+	public int getNetPort()
+	{
+		if(this.genesisStamp == -1)
+		{
+			return TESTNET_PORT;
+		}
+		
+		return MAINNET_PORT;
 	}
 	
 	public int getConnectionTimeout()

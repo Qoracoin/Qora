@@ -15,6 +15,7 @@ import network.message.TransactionMessage;
 import qora.block.Block;
 import qora.crypto.Base58;
 import qora.transaction.Transaction;
+//import settings.Settings;
 import at.AT;
 import at.AT_API_Platform_Impl;
 import at.AT_Constants;
@@ -167,7 +168,7 @@ public class Synchronizer
 	
 	public void synchronize(Peer peer) throws Exception
 	{
-		Logger.getGlobal().info("Synchronizing: " + peer.getAddress().getHostAddress() + " - " + peer.getPing());
+		//Logger.getGlobal().info("Synchronizing: " + peer.getAddress().getHostAddress() + ", ping: " + peer.getPing());
 		
 		//FIND LAST COMMON BLOCK
 		Block common =  this.findLastCommonBlock(peer);
@@ -187,7 +188,7 @@ public class Synchronizer
 			{
 				//GET BLOCK
 				Block block = blockBuffer.getBlock(signature);
-				
+
 				//PROCESS BLOCK
 				if(!this.process(block))
 				{
@@ -332,6 +333,8 @@ public class Synchronizer
 		//CHECK IF WE ARE STILL PROCESSING BLOCKS
 		if(this.run)
 		{
+			//Logger.getGlobal().info("process block : " + block.getTimestamp());
+
 			//SYNCHRONIZED MIGHT HAVE BEEN PROCESSING PREVIOUS BLOCK
 			if(block.isValid())
 			{
@@ -341,6 +344,8 @@ public class Synchronizer
 				DBSet.getInstance().getBlockMap().setProcessing(false);
 				
 				return true;
+			} else {
+				Logger.getGlobal().info("Synchronizer - block not valid");				
 			}
 		}
 		
