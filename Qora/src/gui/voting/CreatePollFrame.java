@@ -96,26 +96,24 @@ public class CreatePollFrame extends JFrame
 		favoritesGBC.gridy = 0;
 		
 		this.add(new JLabel("Asset:"), assetLabelGBC);		
+
 		//ASSET FAVORITES
 		cbxFavorites = new JComboBox<Asset>(new AssetsComboBoxModel());
 		this.add(cbxFavorites, favoritesGBC);
-		//cbxAssets.setSelectedItem(asset);
-		//this.add(cbxAssets, assetsGBC);
 		
+		//ON FAVORITES CHANGE
 		cbxFavorites.addActionListener (new ActionListener () {
 		    public void actionPerformed(ActionEvent e) {
-
+		    	
 		    	Asset asset = ((Asset) cbxFavorites.getSelectedItem());
-
 		    	if(asset != null)
 		    	{
-		    		//((AccountRenderer)cbxAccount.getRenderer()).setAsset(asset.getKey());
-		    		//cbxAccount.repaint();
-		    		//cbxOptions.repaint();
-		    		
+		    		((AccountRenderer)cbxFrom.getRenderer()).setAsset(asset.getKey());
+		    		cbxFrom.repaint();
 		    	}
 		    }
 		});
+		
 		///////////
 		//LABEL GBC
 		GridBagConstraints labelGBC = new GridBagConstraints();
@@ -162,20 +160,6 @@ public class CreatePollFrame extends JFrame
 		txtGBC.gridy = 1;
 		this.cbxFrom = new JComboBox<Account>(new AccountsComboBoxModel());
         this.add(this.cbxFrom, txtGBC);
-
-		//ON FAVORITES CHANGE
-		cbxFavorites.addActionListener (new ActionListener () {
-		    public void actionPerformed(ActionEvent e) {
-		    	
-		    	Asset asset = ((Asset) cbxFavorites.getSelectedItem());
-		    	if(asset != null)
-		    	{
-		    		((AccountRenderer)cbxFrom.getRenderer()).setAsset(asset.getKey());
-		    		cbxFrom.repaint();
-		    		///refreshReceiverDetails();
-		    	}
-		    }
-		});
 
         //LABEL NAME
       	labelGBC.gridy = 2;

@@ -42,8 +42,9 @@ public class Settings {
 	private static final String[] DEFAULT_PEERS = { };
 
 	// public static final long DEFAULT_MAINNET_STAMP = 1400247274336L; // QORA RELEASE
-	// дата с сайта http://www.cy-pr.com/tools/time/#stop + "336l"  т.к на сайте без милисекунд
-	public static final long DEFAULT_MAINNET_STAMP = 1455087244336L;
+	// 1456171884336
+	// пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅ http://www.cy-pr.com/tools/time/#stop + "336l"  пїЅ.пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
+	public static final long DEFAULT_MAINNET_STAMP = 1456171884336L; //1455087244336L;
 	
 	//TESTNET 
 	private long genesisStamp = -1;
