@@ -100,8 +100,8 @@ public abstract class Transaction {
 	//RELEASES
 	private static final long VOTING_RELEASE = 1403715600000l;
 	private static final long ARBITRARY_TRANSACTIONS_RELEASE = 1405702800000l;
-	private static final int AT_BLOCK_HEIGHT_RELEASE = 99000;
-	private static final int MESSAGE_BLOCK_HEIGHT_RELEASE = 99000;
+	private static final int AT_BLOCK_HEIGHT_RELEASE = 0; //99000;
+	private static final int MESSAGE_BLOCK_HEIGHT_RELEASE = 0; //99000;
 	//public static final long ASSETS_RELEASE = 1411308000000l;
 	private static final long ASSETS_RELEASE = 0l;
 	private static final long POWFIX_RELEASE = 1456426800000L; // Block Version 3 // 2016-02-25T19:00:00+00:00

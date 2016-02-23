@@ -45,8 +45,9 @@ import controller.Controller;
 @SuppressWarnings("serial")
 public class CreatePollFrame extends JFrame
 {
-	private static JComboBox<Asset> cbxFavorites;
 	private JComboBox<Account> cbxFrom;
+	private AccountsComboBoxModel accountsModel;
+	private JComboBox<Asset> cbxFavorites;
 	private JTextField txtFee;
 	private JTextField txtName;
 	private JTextArea txtareaDescription;
@@ -158,7 +159,10 @@ public class CreatePollFrame extends JFrame
 		
 		//COMBOBOX FROM
 		txtGBC.gridy = 1;
-		this.cbxFrom = new JComboBox<Account>(new AccountsComboBoxModel());
+		this.accountsModel = new AccountsComboBoxModel();
+		//this.cbxFrom = new JComboBox<Account>(new AccountsComboBoxModel());
+		this.cbxFrom = new JComboBox<Account>(accountsModel);
+		cbxFrom.setRenderer(new AccountRenderer(0));
         this.add(this.cbxFrom, txtGBC);
 
         //LABEL NAME
