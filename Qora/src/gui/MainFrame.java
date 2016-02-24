@@ -19,10 +19,10 @@ public class MainFrame extends JFrame{
 	public MainFrame()
 	{
 		//CREATE FRAME
-		super("Qora");
+		super("ERM");
 		
 		if(Settings.getInstance().isTestnet()) {
-			setTitle("Qora TestNet " + Settings.getInstance().getGenesisStamp());
+			setTitle(lang.lang.Translate("ERM TestNet ", lang.lang.NameLang) + Settings.getInstance().getGenesisStamp());
 		}
 		
 		//ICON

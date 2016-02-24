@@ -38,7 +38,7 @@ public class SellNameFrame extends JFrame
 	
 	public SellNameFrame(Name name)
 	{
-		super("Qora - Sell Name");
+		super("ERM - Sell Name");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

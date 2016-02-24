@@ -20,6 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 
 import controller.Controller;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class AboutFrame extends JFrame{
@@ -29,14 +30,15 @@ public class AboutFrame extends JFrame{
 	public AboutFrame() 
 	{
 		//CREATE FRAME
-		super("Qora - Debug");
+		//super("ERM - Debug");
+		super(lang.Translate("ERM - About",lang.NameLang));
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon16.png"));
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon32.png"));
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon64.png"));
-		icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon128.png"));
+	//	icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon16.png"));
+	//	icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon32.png"));
+	//	icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon64.png"));
+	//	icons.add(Toolkit.getDefaultToolkit().getImage("images/icons/icon128.png"));
 		this.setIconImages(icons);
 		
 		//DEBUG TABPANE
@@ -68,7 +70,7 @@ public class AboutFrame extends JFrame{
         gbl_aboutPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
         aboutPanel.setLayout(gbl_aboutPanel);
         
-        JLabel lblversionLabel = new JLabel("Version: " + Controller.getInstance().getVersion());
+        JLabel lblversionLabel = new JLabel(lang.Translate("Version",lang.NameLang)+": " + Controller.getInstance().getVersion());
         lblversionLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
         lblversionLabel.setForeground(Color.WHITE);
         lblversionLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -80,7 +82,7 @@ public class AboutFrame extends JFrame{
         gbc_lbllversionLabel.gridy = 1;
         aboutPanel.add(lblversionLabel, gbc_lbllversionLabel);
         
-        JLabel label = new JLabel("Build date: " + Controller.getInstance().getBuildDateString());
+        JLabel label = new JLabel(lang.Translate("Build date",lang.NameLang) +": " + Controller.getInstance().getBuildDateString());
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setForeground(Color.WHITE);
         label.setFont(new Font("Tahoma", Font.PLAIN, 13));

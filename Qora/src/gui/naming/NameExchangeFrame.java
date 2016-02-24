@@ -17,7 +17,7 @@ public class NameExchangeFrame extends JFrame{
 	public NameExchangeFrame() 
 	{
 		//CREATE FRAME
-		super("Qora - Name Exchange");
+		super("ERM - Name Exchange");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

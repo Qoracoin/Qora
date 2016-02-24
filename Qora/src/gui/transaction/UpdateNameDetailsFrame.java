@@ -29,7 +29,7 @@ public class UpdateNameDetailsFrame extends JFrame
 {
 	public UpdateNameDetailsFrame(UpdateNameTransaction nameUpdate)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

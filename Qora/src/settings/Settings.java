@@ -1,6 +1,7 @@
 package settings;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.net.Inet4Address;
@@ -25,6 +26,7 @@ import com.google.common.io.Files;
 import controller.Controller;
 import network.Peer;
 import ntp.NTP;
+import lang.lang;
 
 public class Settings {
 
@@ -122,11 +124,22 @@ public class Settings {
 		}
 	}
 	
-	private Settings()
+	private Settings() 
 	{
 		this.localAddress = this.getCurrentIp();
 		int alreadyPassed = 0;
 		String settingsFilePath = "settings.json";
+		
+		
+		
+		try {
+			lang.langObj = lang.OpenLangFile("rus.lng");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		
+		
 		
 		try
 		{

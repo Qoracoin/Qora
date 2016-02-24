@@ -59,7 +59,7 @@ public class ResponseAcctFrame extends JFrame {
 
 	public ResponseAcctFrame()
 	{
-		super("Qora - Response ACCT");
+		super("ERM - Response ACCT");
 
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -134,7 +134,7 @@ public class ResponseAcctFrame extends JFrame {
 		//LABEL NAME
 		labelGBC.gridy = 1;
 		labelGBC.gridx = 2;
-		JLabel qoraLabel = new JLabel("QORA for");
+		JLabel qoraLabel = new JLabel("ERM for");
 		this.add(qoraLabel, labelGBC);
 
 		//TXT AMOUNT

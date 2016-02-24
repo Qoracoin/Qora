@@ -28,7 +28,7 @@ public class ATDetailsFrame extends JFrame {
 
 	public ATDetailsFrame(AT at)
 	{	
-		super("Qora - AT Details");
+		super("ERM - AT Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

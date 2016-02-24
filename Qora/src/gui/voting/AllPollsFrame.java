@@ -44,7 +44,7 @@ public class AllPollsFrame extends JFrame{
 	public AllPollsFrame() 
 	{
 		//CREATE FRAME
-		super("Qora - All Polls");
+		super("ERM - All Polls");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

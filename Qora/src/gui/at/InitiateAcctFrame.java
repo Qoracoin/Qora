@@ -66,7 +66,7 @@ public class InitiateAcctFrame extends JFrame {
 
 	public InitiateAcctFrame()
 	{
-		super("Qora - Initiate ACCT");
+		super("ERM - Initiate ACCT");
 
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -141,7 +141,7 @@ public class InitiateAcctFrame extends JFrame {
 		//LABEL NAME
 		labelGBC.gridy = 1;
 		labelGBC.gridx = 2;
-		JLabel qoraLabel = new JLabel("QORA for");
+		JLabel qoraLabel = new JLabel("ERM for");
 		this.add(qoraLabel, labelGBC);
 		
 		//TXT AMOUNT
@@ -527,7 +527,7 @@ public class InitiateAcctFrame extends JFrame {
 			byte[] creationBytes = null;
 			creationBytes = creation.array();
 			
-			String name = "QORABURST @ " + quantity.divide(burstQuantity, 2, RoundingMode.HALF_UP);
+			String name = "ERMBURST @ " + quantity.divide(burstQuantity, 2, RoundingMode.HALF_UP);
 			String desc = "Initiators BURST address: " + this.txtBurstAddress.getText();
 			String type = "acct";
 			String tags = "acct,atomic cross chain tx,initiate,initiator";

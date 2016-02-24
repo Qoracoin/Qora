@@ -29,7 +29,7 @@ public class PollFrame extends JFrame{
 	public PollFrame(Poll poll, Asset asset) 
 	{
 		//CREATE FRAME
-		super("Qora - Poll Details");
+		super("ERM - Poll Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

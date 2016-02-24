@@ -17,7 +17,7 @@ public class DebugFrame extends JFrame{
 	public DebugFrame() 
 	{
 		//CREATE FRAME
-		super("Qora - Debug");
+		super(lang.lang.Translate("ERM - Debug",lang.lang.NameLang));
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

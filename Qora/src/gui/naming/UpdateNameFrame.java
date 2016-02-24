@@ -74,7 +74,7 @@ public class UpdateNameFrame extends JFrame
 
 	public UpdateNameFrame(Name name)
 	{
-		super("Qora - Update Name");
+		super("ERM - Update Name");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

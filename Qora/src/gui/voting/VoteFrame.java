@@ -53,7 +53,7 @@ public class VoteFrame extends JFrame
 	
 	public VoteFrame(Poll poll, int option, Asset asset)
 	{
-		super("Qora - Vote");
+		super("ERM - Vote");
 		
 		this.poll = poll;
 		

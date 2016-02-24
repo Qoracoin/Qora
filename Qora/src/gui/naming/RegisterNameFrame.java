@@ -69,7 +69,7 @@ public class RegisterNameFrame extends JFrame
 	
 	public RegisterNameFrame()
 	{
-		super("Qora - Register Name");
+		super("ERM - Register Name");
 		
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

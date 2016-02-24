@@ -24,7 +24,7 @@ public class GenesisDetailsFrame extends JFrame
 {
 	public GenesisDetailsFrame(GenesisTransaction genesis)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

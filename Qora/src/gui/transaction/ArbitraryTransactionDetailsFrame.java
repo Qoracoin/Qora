@@ -33,7 +33,7 @@ public class ArbitraryTransactionDetailsFrame extends JFrame
 {
 	public ArbitraryTransactionDetailsFrame(ArbitraryTransaction arbitraryTransaction)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

@@ -32,7 +32,7 @@ public class AssetPairSelect extends JFrame{
 
 	public AssetPairSelect(long key) {
 		
-		super("Qora - " + Controller.getInstance().getAsset(key).toString() + " - Select pair");
+		super("ERM - " + Controller.getInstance().getAsset(key).toString() + " - Select pair");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

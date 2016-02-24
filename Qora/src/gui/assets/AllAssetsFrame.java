@@ -40,7 +40,7 @@ public class AllAssetsFrame extends JFrame{
 
 	public AllAssetsFrame() {
 		
-		super("Qora - All Assets");
+		super("ERM - All Assets");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

@@ -34,7 +34,7 @@ public class CreatePollDetailsFrame extends JFrame
 	@SuppressWarnings("unchecked")
 	public CreatePollDetailsFrame(CreatePollTransaction pollCreation)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

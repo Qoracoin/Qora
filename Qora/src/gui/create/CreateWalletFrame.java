@@ -38,7 +38,7 @@ public class CreateWalletFrame extends JFrame {
 	
 	public CreateWalletFrame(NoWalletFrame parent)
 	{
-		super("Qora - Create Wallet");
+		super("ERM - Create Wallet");
 		
 		//RANDOM
 		this.random = new SecureRandom();

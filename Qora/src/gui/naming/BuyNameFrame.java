@@ -38,7 +38,7 @@ public class BuyNameFrame extends JFrame
 	
 	public BuyNameFrame(NameSale nameSale)
 	{
-		super("Qora - Buy Name");
+		super("ERM - Buy Name");
 		
 		this.nameSale = nameSale;
 		

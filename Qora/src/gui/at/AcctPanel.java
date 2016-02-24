@@ -4,6 +4,7 @@ package gui.at;
 import gui.Gui;
 import gui.models.ATTableModel;
 import gui.models.AcctTableModel;
+import lang.lang;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -170,7 +171,7 @@ public class AcctPanel extends JPanel
 		//MENU
 		JPopupMenu menu = new JPopupMenu();	
 
-		JMenuItem copyAddress = new JMenuItem("Copy Address");
+		JMenuItem copyAddress = new JMenuItem(lang.Translate("Copy Address",lang.NameLang));
 		copyAddress.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -187,7 +188,7 @@ public class AcctPanel extends JPanel
 		});
 		menu.add(copyAddress);
 		
-		JMenuItem copyHash = new JMenuItem("Copy Secret Hash");
+		JMenuItem copyHash = new JMenuItem(lang.Translate("Copy Secret Hash",lang.NameLang));
 		copyHash.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 

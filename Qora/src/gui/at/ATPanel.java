@@ -3,6 +3,7 @@ package gui.at;
 
 import gui.Gui;
 import gui.models.ATTableModel;
+import lang.lang;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -149,7 +150,7 @@ public class ATPanel extends JPanel
 		//MENU
 		JPopupMenu menu = new JPopupMenu();	
 
-		JMenuItem copyAddress = new JMenuItem("Copy Address");
+		JMenuItem copyAddress = new JMenuItem(lang.Translate("Copy Address",lang.NameLang));
 		copyAddress.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 

@@ -24,7 +24,7 @@ public class PaymentDetailsFrame extends JFrame
 {
 	public PaymentDetailsFrame(PaymentTransaction payment)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

@@ -20,7 +20,7 @@ public class NameDetailsFrame extends JFrame
 {
 	public NameDetailsFrame(Name name)
 	{
-		super("Qora - Name Details");
+		super("ERM - Name Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

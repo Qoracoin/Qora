@@ -23,7 +23,7 @@ public class WalletBlocksTableModel extends QoraTableModel<Tuple2<String, String
 	
 	private SortableList<Tuple2<String, String>, Block> blocks;
 	
-	private String[] columnNames = {"Height", "Timestamp", "Generator", "Generating Balance", "Transactions", "Fee"};
+	private String[] columnNames = {"Height", "Timestamp", "Generator", "Generating Balance", lang.lang.Translate("Transactions",lang.lang.NameLang), "Fee"};
 	
 	public WalletBlocksTableModel()
 	{

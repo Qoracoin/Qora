@@ -36,7 +36,7 @@ public class MyOrdersFrame extends JFrame{
 
 	public MyOrdersFrame() {
 		
-		super("Qora - My Orders");
+		super("ERM - My Orders");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

@@ -18,7 +18,7 @@ public class AssetFrame extends JFrame
 	
 	public AssetFrame(Asset asset)
 	{
-		super("Qora - Asset Details");
+		super("ERM - Asset Details");
 		
 		this.asset = asset;
 		

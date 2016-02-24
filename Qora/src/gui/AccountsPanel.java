@@ -38,7 +38,7 @@ import utils.BigDecimalStringComparator;
 import utils.NumberAsString;
 import utils.TableMenuPopupUtil;
 import controller.Controller;
-
+import lang.lang;
 @SuppressWarnings("serial")
 public class AccountsPanel extends JPanel implements ItemListener
 {
@@ -98,7 +98,7 @@ public class AccountsPanel extends JPanel implements ItemListener
 		//MENU
 		JPopupMenu menu = new JPopupMenu();	
 		
-		JMenuItem copyAddress = new JMenuItem("Copy Address");
+		JMenuItem copyAddress = new JMenuItem(lang.Translate("Copy Address",lang.NameLang));
 		copyAddress.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 

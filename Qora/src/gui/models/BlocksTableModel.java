@@ -22,7 +22,7 @@ public class BlocksTableModel extends QoraTableModel<byte[], Block> implements O
 	
 	private SortableList<byte[], Block> blocks;
 	
-	private String[] columnNames = {"Height", "Timestamp", "Generator", "Generating Balance", "Transactions", "Fee"};
+	private String[] columnNames = {"Height", "Timestamp", "Generator", "Generating Balance", lang.lang.Translate("Transactions",lang.lang.NameLang), "Fee"};
 	
 	public BlocksTableModel()
 	{

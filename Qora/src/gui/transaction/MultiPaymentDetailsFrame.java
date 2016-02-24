@@ -32,7 +32,7 @@ public class MultiPaymentDetailsFrame extends JFrame
 	@SuppressWarnings("unchecked")
 	public MultiPaymentDetailsFrame(MultiPaymentTransaction multiPayment)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

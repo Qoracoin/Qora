@@ -24,7 +24,7 @@ public class SellNameDetailsFrame extends JFrame
 {
 	public SellNameDetailsFrame(SellNameTransaction nameSale)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

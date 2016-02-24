@@ -63,7 +63,7 @@ public class DeployATFrame extends JFrame {
 
 	public DeployATFrame()
 	{
-		super("Qora - Deploy AT Program");
+		super("ERM - Deploy AT Program");
 
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

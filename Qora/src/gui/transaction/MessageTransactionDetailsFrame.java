@@ -41,7 +41,7 @@ public class MessageTransactionDetailsFrame extends JFrame
 	
 	public MessageTransactionDetailsFrame(final MessageTransaction messageTransaction)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

@@ -26,7 +26,7 @@ public class IssueAssetDetailsFrame extends JFrame
 {
 	public IssueAssetDetailsFrame(IssueAssetTransaction assetIssue)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

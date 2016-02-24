@@ -29,7 +29,7 @@ public class RegisterNameDetailsFrame extends JFrame
 {
 	public RegisterNameDetailsFrame(RegisterNameTransaction nameRegistration)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

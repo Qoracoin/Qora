@@ -34,7 +34,7 @@ public class NoWalletFrame extends JFrame {
 	
 	public NoWalletFrame(Gui parent) throws Exception
 	{
-		super("Qora - No Wallet");
+		super("ERM - No Wallet");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

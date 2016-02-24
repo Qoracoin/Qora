@@ -41,7 +41,7 @@ public class PayDividendFrame extends JFrame
 
 	public PayDividendFrame(Asset asset)
 	{
-		super("Qora - Pay Dividend");
+		super("ERM - Pay Dividend");
 		
 		this.asset = asset;
 		

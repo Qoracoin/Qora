@@ -49,7 +49,7 @@ public class IssueAssetFrame extends JFrame
 
 	public IssueAssetFrame()
 	{
-		super("Qora - Issue Asset");
+		super("ERM - Issue Asset");
 		
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);

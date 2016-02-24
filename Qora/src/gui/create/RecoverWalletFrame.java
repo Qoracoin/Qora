@@ -42,7 +42,7 @@ public class RecoverWalletFrame extends JFrame
 	
 	public RecoverWalletFrame(NoWalletFrame parent)
 	{
-		super("Qora - Recover Wallet");
+		super("ERM - Recover Wallet");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

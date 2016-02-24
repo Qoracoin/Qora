@@ -37,7 +37,7 @@ public class CancelSellNameFrame extends JFrame
 	
 	public CancelSellNameFrame(NameSale nameSale)
 	{
-		super("Qora - Cancel Sell Name");
+		super("ERM - Cancel Sell Name");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

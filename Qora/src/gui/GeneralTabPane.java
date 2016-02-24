@@ -35,13 +35,13 @@ public class GeneralTabPane extends JTabbedPane{
 		super();
 		
 		//ACCOUNTS
-		this.addTab("Accounts", new AccountsPanel());
+		this.addTab(lang.lang.Translate("Accounts",lang.lang.NameLang), new AccountsPanel());
         
 		//SEND
-		this.addTab("Send money", new SendMoneyPanel());
+		this.addTab(lang.lang.Translate("Send money",lang.lang.NameLang), new SendMoneyPanel());
 
 		//MESSAGE
-		this.addTab("Messages", new SendMessagePanel());
+		this.addTab(lang.lang.Translate("Messages",lang.lang.NameLang), new SendMessagePanel());
 		
 		//TRANSACTIONS
 		this.transactionsModel = new WalletTransactionsTableModel();
@@ -75,7 +75,7 @@ public class GeneralTabPane extends JTabbedPane{
 			    }
 			}
 		});			
-		this.addTab("Transactions", new JScrollPane(this.transactionsTable));       
+		this.addTab(lang.lang.Translate("Transactions",lang.lang.NameLang), new JScrollPane(this.transactionsTable));       
 		
 		//TRANSACTIONS
 		WalletBlocksTableModel blocksModel = new WalletBlocksTableModel();
@@ -92,16 +92,16 @@ public class GeneralTabPane extends JTabbedPane{
 		sorter = new QoraRowSorter(blocksModel, indexes);
 		blocksTable.setRowSorter(sorter);
 		
-        this.addTab("Generated Blocks", new JScrollPane(blocksTable));
+        this.addTab(lang.lang.Translate("Generated Blocks",lang.lang.NameLang), new JScrollPane(blocksTable));
         
         //NAMING
-        this.addTab("Naming service", new NamingServicePanel());      
+        this.addTab(lang.lang.Translate("Naming service",lang.lang.NameLang), new NamingServicePanel());      
         
         //VOTING
-        this.addTab("Voting", new VotingPanel());       
+        this.addTab(lang.lang.Translate("Voting",lang.lang.NameLang), new VotingPanel());       
         
         //ASSETS
-        this.addTab("Assets", new AssetsPanel());
+        this.addTab(lang.lang.Translate("Assets",lang.lang.NameLang), new AssetsPanel());
 
 		//ATs
 		this.addTab("AT", new ATPanel());

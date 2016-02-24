@@ -42,7 +42,7 @@ public class ConfirmSeedFrame extends JFrame {
 	
 	public ConfirmSeedFrame(CreateWalletFrame parent)
 	{
-		super("Qora - Create Wallet");
+		super("ERM - Create Wallet");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

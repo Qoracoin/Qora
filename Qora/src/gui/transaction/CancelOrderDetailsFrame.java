@@ -24,7 +24,7 @@ public class CancelOrderDetailsFrame extends JFrame
 {
 	public CancelOrderDetailsFrame(CancelOrderTransaction orderCreation)
 	{
-		super("Qora - Transaction Details");
+		super("ERM - Transaction Details");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

@@ -38,7 +38,7 @@ public class SettingsFrame extends JFrame{
 	{
 		
 		//CREATE FRAME
-		super("Qora - Settings");
+		super("ERM - Settings");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

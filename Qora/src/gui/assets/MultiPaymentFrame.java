@@ -40,7 +40,7 @@ public class MultiPaymentFrame extends JFrame
 	@SuppressWarnings("unchecked")
 	public MultiPaymentFrame(Asset asset, List<Payment> payments)
 	{
-		super("Qora - Pay Dividend");
+		super("ERM - Pay Dividend");
 		
 		this.asset = asset;
 		this.payments = payments;

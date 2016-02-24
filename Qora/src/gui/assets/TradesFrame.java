@@ -24,7 +24,7 @@ public class TradesFrame extends JFrame{
 
 	public TradesFrame(Order order) {
 		
-		super("Qora - Trades");
+		super("ERM - Trades");
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

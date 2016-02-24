@@ -41,12 +41,12 @@ public class ExchangeFrame extends JFrame
 	
 	public ExchangeFrame(Asset have, Asset want) 
 	{
-		super("Qora - Asset Exchange");
+		super("ERM - Asset Exchange");
 		
 		this.have = have;
 		this.want = want;
 		
-		this.setTitle("Qora - Asset Exchange - " + this.have.toString() + " / " + this.want.toString());
+		this.setTitle("ERM - Asset Exchange - " + this.have.toString() + " / " + this.want.toString());
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

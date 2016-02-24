@@ -38,7 +38,7 @@ public class CancelOrderFrame extends JFrame
 	
 	public CancelOrderFrame(Order order)
 	{
-		super("Qora - Cancel Order");
+		super("ERM - Cancel Order");
 		
 		this.order = order;
 		
