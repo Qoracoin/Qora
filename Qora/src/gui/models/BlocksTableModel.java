@@ -9,6 +9,7 @@ import utils.ObserverMessage;
 import controller.Controller;
 import database.BlockMap;
 import database.SortableList;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class BlocksTableModel extends QoraTableModel<byte[], Block> implements Observer{
@@ -22,7 +23,10 @@ public class BlocksTableModel extends QoraTableModel<byte[], Block> implements O
 	
 	private SortableList<byte[], Block> blocks;
 	
-	private String[] columnNames = {"Height", "Timestamp", "Generator", "Generating Balance", lang.lang.Translate("Transactions",lang.lang.NameLang), "Fee"};
+	private String[] columnNames = {
+			lang.Translate("Height"), lang.Translate("Timestamp"),
+			lang.Translate("Generator"), lang.Translate("Generating Balance"),
+			lang.Translate("Transactions"), lang.Translate("Fee")};
 	
 	public BlocksTableModel()
 	{

@@ -14,6 +14,7 @@ import controller.Controller;
 import gui.create.NoWalletFrame;
 import settings.Settings;
 import utils.SysTray;
+import lang.lang;
 
 public class Gui extends JFrame{
 
@@ -63,8 +64,8 @@ public class Gui extends JFrame{
 	public void onWalletCreated()
 	{
 
-		SysTray.getInstance().sendMessage(lang.lang.Translate("Wallet Initialized",lang.lang.NameLang),
-				lang.lang.Translate("Your wallet is initialized",lang.lang.NameLang), MessageType.INFO);
+		SysTray.getInstance().sendMessage(lang.Translate("Wallet Initialized"),
+				lang.Translate("Your wallet is initialized"), MessageType.INFO);
 		if (Settings.getInstance().isGuiEnabled())
 			mainframe = new MainFrame();
 	}

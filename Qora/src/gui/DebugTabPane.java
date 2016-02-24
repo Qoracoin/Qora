@@ -19,6 +19,7 @@ import gui.models.TransactionsTableModel;
 import gui.transaction.TransactionDetailsFactory;
 import qora.transaction.Transaction;
 import settings.Settings;
+import lang.lang;
 
 public class DebugTabPane extends JTabbedPane{
 
@@ -37,11 +38,11 @@ public class DebugTabPane extends JTabbedPane{
 		//ADD TABS
         if(Settings.getInstance().isGuiConsoleEnabled())
         {
-        	this.addTab(lang.lang.Translate("Console",lang.lang.NameLang), new ConsolePanel());
+        	this.addTab(lang.Translate("Console"), new ConsolePanel());
         }
         
         this.peersTableModel = new PeersTableModel();
-		this.addTab(lang.lang.Translate("Peers",lang.lang.NameLang), new JScrollPane(new JTable(this.peersTableModel)));
+		this.addTab(lang.Translate("Peers"), new JScrollPane(new JTable(this.peersTableModel)));
         
 		//TRANSACTIONS TABLE MODEL
 		this.transactionsTableModel = new TransactionsTableModel();
@@ -74,7 +75,7 @@ public class DebugTabPane extends JTabbedPane{
 		});
 		
 		//ADD TRANSACTIONS TABLE
-		this.addTab(lang.lang.Translate("Transactions",lang.lang.NameLang), new JScrollPane(this.transactionsTable)); 
+		this.addTab(lang.Translate("Transactions"), new JScrollPane(this.transactionsTable)); 
 	           
 		//BLOCKS TABLE MODEL
 		this.blocksTableModel = new BlocksTableModel();
@@ -87,13 +88,13 @@ public class DebugTabPane extends JTabbedPane{
 		blocksTable.setRowSorter(sorter);
 		
 		//ADD BLOCK TABLE
-		this.addTab(lang.lang.Translate("Blocks",lang.lang.NameLang), new JScrollPane(blocksTable));
+		this.addTab(lang.Translate("Blocks"), new JScrollPane(blocksTable));
 		
         this.loggerTextArea = new LoggerTextArea(Logger.getGlobal());
         JScrollPane scrollPane = new JScrollPane(this.loggerTextArea);
         JScrollBar vertical = scrollPane.getVerticalScrollBar();
         vertical.setValue(vertical.getMaximum());
-        this.addTab(lang.lang.Translate("Logger",lang.lang.NameLang), scrollPane);
+        this.addTab(lang.Translate("Logger"), scrollPane);
 	}
 
 	public void close() 

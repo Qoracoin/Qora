@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JFrame;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class DebugFrame extends JFrame{
@@ -17,7 +18,7 @@ public class DebugFrame extends JFrame{
 	public DebugFrame() 
 	{
 		//CREATE FRAME
-		super(lang.lang.Translate("ERM - Debug",lang.lang.NameLang));
+		super("ERM" + " - " + lang.Translate("Debug"));
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();

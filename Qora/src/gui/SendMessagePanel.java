@@ -50,6 +50,7 @@ import utils.NameUtils;
 import utils.NameUtils.NameResult;
 import utils.Pair;
 import controller.Controller;
+import lang.lang;
 
 @SuppressWarnings("serial")
 
@@ -148,7 +149,7 @@ public class SendMessagePanel extends JPanel
 		labelToGBC.anchor = GridBagConstraints.NORTHWEST;
 		labelToGBC.weightx = 0;	
 		labelToGBC.gridx = 0;
-		JLabel toLabel = new JLabel("To: (address or name)");
+		JLabel toLabel = new JLabel(lang.Translate("To: (address or name)"));
 		this.add(toLabel, labelToGBC);
       	
       	//TXT TO
@@ -188,7 +189,7 @@ public class SendMessagePanel extends JPanel
 		labelDetailsGBC.anchor = GridBagConstraints.NORTHWEST;
 		labelDetailsGBC.weightx = 0;	
 		labelDetailsGBC.gridx = 0;
-      	JLabel recDetailsLabel = new JLabel("Receiver details:");
+      	JLabel recDetailsLabel = new JLabel(lang.Translate("Receiver details:"));
       	this.add(recDetailsLabel, labelDetailsGBC);
         
       	//RECEIVER DETAILS 
@@ -214,7 +215,7 @@ public class SendMessagePanel extends JPanel
       	labelMessageGBC.gridx = 0;
       	labelMessageGBC.gridy = 4;
       	
-      	messageLabel = new JLabel("Message:");
+      	messageLabel = new JLabel(lang.Translate("Message:"));
       	
 		//TXT MESSAGE
 		GridBagConstraints txtMessageGBC = new GridBagConstraints();
@@ -248,7 +249,7 @@ public class SendMessagePanel extends JPanel
 		labelIsTextGBC.weightx = 0;	
 		labelIsTextGBC.gridx = 0;     
 
-		final JLabel isTextLabel = new JLabel("Text Message:");
+		final JLabel isTextLabel = new JLabel(lang.Translate("Text Message:"));
       	isTextLabel.setHorizontalAlignment(SwingConstants.RIGHT);
       	this.add(isTextLabel, labelIsTextGBC);
      	
@@ -275,7 +276,7 @@ public class SendMessagePanel extends JPanel
 		labelEncGBC.gridx = 2;
 		labelEncGBC.gridy = 5;
 		
-		JLabel encLabel = new JLabel("Encrypt Message:");
+		JLabel encLabel = new JLabel(lang.Translate("Encrypt Message") + ":");
 		encLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		this.add(encLabel, labelEncGBC);
 		
@@ -301,7 +302,7 @@ public class SendMessagePanel extends JPanel
 		amountlabelGBC.gridx = 0;
 		amountlabelGBC.gridy = 6;
 		
-		final JLabel amountLabel = new JLabel("Amount:");
+		final JLabel amountLabel = new JLabel(lang.Translate("Amount") + ":");
 		amountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		this.add(amountLabel, amountlabelGBC);
         
@@ -326,7 +327,7 @@ public class SendMessagePanel extends JPanel
 		buttonGBC.gridx = 0;
 		buttonGBC.gridy = 11;
         
-		sendButton = new JButton("Send");
+		sendButton = new JButton(lang.Translate("Send"));
         sendButton.setPreferredSize(new Dimension(80, 25));
     	sendButton.addActionListener(new ActionListener()
 		{
@@ -345,7 +346,7 @@ public class SendMessagePanel extends JPanel
 		feelabelGBC.fill = GridBagConstraints.BOTH;
 		feelabelGBC.weightx = 0;	
 		feelabelGBC.gridx = 2;
-		final JLabel feeLabel = new JLabel("Fee:");
+		final JLabel feeLabel = new JLabel(lang.Translate("Fee")+":");
 		feeLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		feeLabel.setVerticalAlignment(SwingConstants.TOP);
 		this.add(feeLabel, feelabelGBC);
@@ -371,7 +372,7 @@ public class SendMessagePanel extends JPanel
 		decryptAllGBC.gridwidth = 1;
 		decryptAllGBC.gridx = 3;
 		decryptAllGBC.gridy = 11;
-		JButton decryptButton = new JButton("Decrypt All");
+		JButton decryptButton = new JButton(lang.Translate("Decrypt All"));
     	this.add(decryptButton, decryptAllGBC);
 		
 		//MESSAGES HISTORY TABLE
@@ -439,7 +440,7 @@ public class SendMessagePanel extends JPanel
 		
 		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
-			txtRecDetails.setText("Status must be OK to show receiver details.");
+			txtRecDetails.setText(lang.Translate("Status must be OK to show receiver details") + ".");
 			return;
 		}
 		
@@ -467,7 +468,7 @@ public class SendMessagePanel extends JPanel
 			
 			if(account.toString(asset.getKey()).equals("0.00000000"))
 			{
-				txtRecDetails.setText(txtRecDetails.getText()+ " - Warning!");
+				txtRecDetails.setText(txtRecDetails.getText()+ " - " + lang.Translate("Warning") + "!");
 			}
 		}
 		
@@ -514,7 +515,8 @@ public class SendMessagePanel extends JPanel
 			if(!Controller.getInstance().unlockWallet(password))
 			{
 				//WRONG PASSWORD
-				JOptionPane.showMessageDialog(null, "Invalid password", "Unlock Wallet", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, lang.Translate("Invalid password"),
+						lang.Translate("Unlock Wallet"), JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.sendButton.setEnabled(true);
@@ -547,7 +549,8 @@ public class SendMessagePanel extends JPanel
 			}
 			else		
 			{
-				JOptionPane.showMessageDialog(null, result.getB().getShortStatusMessage() , "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null, result.getB().getShortStatusMessage(),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 		
 				//ENABLE
 				this.sendButton.setEnabled(true);
@@ -570,7 +573,9 @@ public class SendMessagePanel extends JPanel
 			//CHECK MIMIMUM FEE
 			if(fee.compareTo(Transaction.MINIMUM_FEE) == -1)
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Fee must be at least 1!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee must be at least") + " " + Transaction.MINIMUM_FEE + "!", 
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.sendButton.setEnabled(true);
@@ -583,7 +588,7 @@ public class SendMessagePanel extends JPanel
 			{
 				int n = JOptionPane.showConfirmDialog(
 						new JFrame(), Settings.getInstance().getBigFeeMessage(),
-		                "Confirmation",
+						lang.Translate("Confirmation"),
 		                JOptionPane.YES_NO_OPTION);
 				if (n == JOptionPane.YES_OPTION) {
 					
@@ -616,7 +621,9 @@ public class SendMessagePanel extends JPanel
 				}
 				catch (Exception e)
 				{
-					JOptionPane.showMessageDialog(new JFrame(), "Message format is not hex!", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(new JFrame(),
+							lang.Translate("Message format is not hex!"),
+							lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 					
 					//ENABLE
 					this.sendButton.setEnabled(true);
@@ -626,7 +633,9 @@ public class SendMessagePanel extends JPanel
 			}
 			if ( messageBytes.length < 1 || messageBytes.length > 4000 )
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Message size exceeded!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Message size exceeded!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.sendButton.setEnabled(true);
@@ -655,7 +664,9 @@ public class SendMessagePanel extends JPanel
 				byte[] publicKey = Controller.getInstance().getPublicKeyByAddress(recipient.getAddress());
 				if(publicKey == null)
 				{
-					JOptionPane.showMessageDialog(new JFrame(), "The recipient has not yet performed any action in the blockchain.\nYou can't send an encrypted message to him.", "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(new JFrame(),
+							lang.Translate("The recipient has not yet performed any action in the blockchain.\nYou can't send an encrypted message to him."),
+							lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 
 					//ENABLE
 					this.sendButton.setEnabled(true);
@@ -673,10 +684,12 @@ public class SendMessagePanel extends JPanel
 				if(Settings.getInstance().isAllowFeeLessRequired())
 				{
 					n = JOptionPane.showConfirmDialog(
-						new JFrame(), "Fee less than the recommended values!\nChange to recommended?\n"
-									+ "Press Yes to turn on recommended "+recommendedFee.toPlainString()
-									+ ",\nor No to leave, but then the transaction may be difficult to confirm.",
-		                "Confirmation",
+						new JFrame(), 
+						lang.Translate("Fee less than the recommended values!\nChange to recommended?\n")
+								+ lang.Translate("Press Yes to turn on recommended")
+								+ " "+recommendedFee.toPlainString()
+								+ ",\nor No to leave, but then the transaction may be difficult to confirm.",
+								lang.Translate("Confirmation"),
 		                JOptionPane.YES_NO_CANCEL_OPTION);
 				}
 				else
@@ -711,7 +724,9 @@ public class SendMessagePanel extends JPanel
 			
 			if(key != 0l && NTP.getTime() < Transaction.getPOWFIX_RELEASE())
 			{	
-				JOptionPane.showMessageDialog(new JFrame(), "Assets transactions will be enabled at " + DateTimeFormat.timestamptoString(Transaction.getPOWFIX_RELEASE()) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Assets transactions will be enabled at ") + DateTimeFormat.timestamptoString(Transaction.getPOWFIX_RELEASE())
+						+ "!", lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				return;
 			}
 			
@@ -739,38 +754,52 @@ public class SendMessagePanel extends JPanel
 				
 				if(this.txtTo.getText().startsWith("A"))
 				{
-					JOptionPane.showMessageDialog(new JFrame(), "Message with payment has been sent!", "Success", JOptionPane.INFORMATION_MESSAGE);
+					JOptionPane.showMessageDialog(new JFrame(),
+							lang.Translate("Message with payment has been sent!"), 
+							lang.Translate("Success"), JOptionPane.INFORMATION_MESSAGE);
 				}
 				break;	
 			
 			case Transaction.INVALID_ADDRESS:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid address!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid address!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.NEGATIVE_AMOUNT:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Amount must be positive!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Amount must be positive!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.NEGATIVE_FEE:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Fee must be at least 1!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee must be at least 1!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.FEE_LESS_REQUIRED:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Fee below the minimum for this size of a transaction!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee below the minimum for this size of a transaction!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.NO_BALANCE:
 			
-				JOptionPane.showMessageDialog(new JFrame(), "Not enough balance!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(), 
+						lang.Translate("Not enough balance!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			default:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Unknown error!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Unknown error!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;		
 				
 			}
@@ -782,12 +811,16 @@ public class SendMessagePanel extends JPanel
 			{
 			case 1:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid amount!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid amount!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case 2:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid fee!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid fee!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 			}
 		}

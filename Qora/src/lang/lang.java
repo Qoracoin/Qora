@@ -1,6 +1,7 @@
 package lang;
 
 import java.io.*;
+import java.util.HashMap;
 //import java.math.BigDecimal;
 import java.util.*;
 //import org.json.simple.JSONArray;
@@ -10,10 +11,15 @@ import org.json.simple.JSONValue;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
+
 public class lang {
 
 	public static JSONObject langObj;	
-	public static String NameLang = "rus";
+	//public static String NameLang = "rus";
+	public static String LANG = "rus";
+	//public static String[] toTranslate;
+	public static HashMap <String, String> toTranslate = new HashMap<String, String>(); 
+	
 	
 	public static void main(String[] args) 
 	{
@@ -62,42 +68,34 @@ public class lang {
 	
 		*/	
 			
+		Set("rus");
 			
 		try {
-			langObj = OpenLangFile("Lang.txt");
+			//langObj = OpenLangFile("Lang.txt");
+			langObj = OpenLangFile("rus.lng");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		String a =	Translate("Yes", "rus");
-		
-		int i = +1000;
-		
-		
-		
-		i = i+1000;
-		
-		a=a+"   ";
-		
-		
-		
-		
-		
-		
 		
 		
 	return;	
 	};
-	
-	public static String Translate(String Message, String lang) 
+
+	public static void Set(String lang)
 	{
+		LANG = lang;
+	}
+	public static String Translate(String Message) 
+	{
+		toTranslate.put(Message, ""); // запомним все строки что требуют перевода
 		if (langObj == null ) return (Message); // если файл не открыт то не переводим 
-		if (!langObj.containsValue(lang)) return (Message); // если в открытом файле нет ключа установленого языка то не переводим 
+		if (!langObj.containsValue(LANG)) return (Message); // если в открытом файле нет ключа установленого языка то не переводим 
 		if (!langObj.containsKey(Message))  return (Message); // если нет такого словосочетания не переводим
-		return(langObj.get(Message).toString());	//  если есть такое словосочетание то переводим.
 		
-		
-		
+		String res = langObj.get(Message).toString();
+		toTranslate.put(Message, res); // запомним все строки что требуют перевода
+		return(langObj.get(Message).toString());	//  если есть такое словосочетание то переводим.		
 	}
 	public static JSONObject OpenLangFile(String PathAndFilename) throws IOException
 	{
@@ -114,6 +112,5 @@ public class lang {
 		//CREATE JSON OBJECT
 		return ((JSONObject) JSONValue.parse(jsonString));
 	};
-	
-	
+
 }

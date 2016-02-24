@@ -12,6 +12,7 @@ import qora.assets.Asset;
 import utils.NumberAsString;
 import utils.ObserverMessage;
 import controller.Controller;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class AccountsTableModel extends AbstractTableModel implements Observer
@@ -21,7 +22,10 @@ public class AccountsTableModel extends AbstractTableModel implements Observer
 	public static final int COLUMN_CONFIRMED_BALANCE = 2;
 	public static final int COLUMN_GENERATING_BALANCE = 3;
 	
-	private String[] columnNames = {"Address", "Balance", "Confirmed Balance", "Generating Balance"};
+	private String[] columnNames = {
+			lang.Translate("Address"), lang.Translate("Balance"),
+			lang.Translate("Confirmed Balance"), lang.Translate("Generating Balance")
+			};
 	private List<Account> accounts;
 	private Asset asset = null;
 	

@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 
 import gui.status.StatusPanel;
 import settings.Settings;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class MainFrame extends JFrame{
@@ -22,7 +23,7 @@ public class MainFrame extends JFrame{
 		super("ERM");
 		
 		if(Settings.getInstance().isTestnet()) {
-			setTitle(lang.lang.Translate("ERM TestNet ", lang.lang.NameLang) + Settings.getInstance().getGenesisStamp());
+			setTitle("ERM" + " " + lang.Translate("TestNet") + Settings.getInstance().getGenesisStamp());
 		}
 		
 		//ICON

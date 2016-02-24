@@ -21,6 +21,7 @@ import javax.swing.border.EmptyBorder;
 
 import api.ApiClient;
 import utils.MenuPopupUtil;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class ConsolePanel extends JPanel 
@@ -122,7 +123,7 @@ public class ConsolePanel extends JPanel
 		
 		buttonGBC.fill = GridBagConstraints.HORIZONTAL;  
 		buttonGBC.anchor = GridBagConstraints.CENTER;
-		JButton sendButton = new JButton(lang.lang.Translate("Run",lang.lang.NameLang));
+		JButton sendButton = new JButton(lang.Translate("Run"));
         sendButton.setPreferredSize(new Dimension(80, 25));
     	sendButton.addActionListener(new ActionListener()
 		{

@@ -22,6 +22,7 @@ import javax.swing.JTable;
 import database.wallet.BlockMap;
 import database.wallet.TransactionMap;
 import qora.transaction.Transaction;
+import lang.lang;
 
 public class GeneralTabPane extends JTabbedPane{
 
@@ -35,13 +36,13 @@ public class GeneralTabPane extends JTabbedPane{
 		super();
 		
 		//ACCOUNTS
-		this.addTab(lang.lang.Translate("Accounts",lang.lang.NameLang), new AccountsPanel());
+		this.addTab(lang.Translate("Accounts"), new AccountsPanel());
         
 		//SEND
-		this.addTab(lang.lang.Translate("Send money",lang.lang.NameLang), new SendMoneyPanel());
+		this.addTab(lang.Translate("Send money"), new SendMoneyPanel());
 
 		//MESSAGE
-		this.addTab(lang.lang.Translate("Messages",lang.lang.NameLang), new SendMessagePanel());
+		this.addTab(lang.Translate("Messages"), new SendMessagePanel());
 		
 		//TRANSACTIONS
 		this.transactionsModel = new WalletTransactionsTableModel();
@@ -75,7 +76,7 @@ public class GeneralTabPane extends JTabbedPane{
 			    }
 			}
 		});			
-		this.addTab(lang.lang.Translate("Transactions",lang.lang.NameLang), new JScrollPane(this.transactionsTable));       
+		this.addTab(lang.Translate("Transactions"), new JScrollPane(this.transactionsTable));       
 		
 		//TRANSACTIONS
 		WalletBlocksTableModel blocksModel = new WalletBlocksTableModel();
@@ -92,16 +93,16 @@ public class GeneralTabPane extends JTabbedPane{
 		sorter = new QoraRowSorter(blocksModel, indexes);
 		blocksTable.setRowSorter(sorter);
 		
-        this.addTab(lang.lang.Translate("Generated Blocks",lang.lang.NameLang), new JScrollPane(blocksTable));
+        this.addTab(lang.Translate("Generated Blocks"), new JScrollPane(blocksTable));
         
         //NAMING
-        this.addTab(lang.lang.Translate("Naming service",lang.lang.NameLang), new NamingServicePanel());      
+        this.addTab(lang.Translate("Naming service"), new NamingServicePanel());      
         
         //VOTING
-        this.addTab(lang.lang.Translate("Voting",lang.lang.NameLang), new VotingPanel());       
+        this.addTab(lang.Translate("Voting"), new VotingPanel());       
         
         //ASSETS
-        this.addTab(lang.lang.Translate("Assets",lang.lang.NameLang), new AssetsPanel());
+        this.addTab(lang.Translate("Assets"), new AssetsPanel());
 
 		//ATs
 		this.addTab("AT", new ATPanel());

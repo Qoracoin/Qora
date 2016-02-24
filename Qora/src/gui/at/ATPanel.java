@@ -39,7 +39,7 @@ import utils.BigDecimalStringComparator;
 import utils.MenuPopupUtil;
 import utils.StringComparator;
 import utils.TableMenuPopupUtil;
-
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class ATPanel extends JPanel
@@ -150,7 +150,7 @@ public class ATPanel extends JPanel
 		//MENU
 		JPopupMenu menu = new JPopupMenu();	
 
-		JMenuItem copyAddress = new JMenuItem(lang.Translate("Copy Address",lang.NameLang));
+		JMenuItem copyAddress = new JMenuItem(lang.Translate("Copy Address"));
 		copyAddress.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -188,7 +188,7 @@ public class ATPanel extends JPanel
 		});
 
 
-		this.add(new JLabel("search:"), searchLabelGBC);
+		this.add(new JLabel(lang.Translate("search:")), searchLabelGBC);
 		this.add(txtSearch, searchGBC);
 		this.add(new JScrollPane(atsTable), tableGBC);
 

@@ -171,7 +171,7 @@ public class AcctPanel extends JPanel
 		//MENU
 		JPopupMenu menu = new JPopupMenu();	
 
-		JMenuItem copyAddress = new JMenuItem(lang.Translate("Copy Address",lang.NameLang));
+		JMenuItem copyAddress = new JMenuItem(lang.Translate("Copy Address"));
 		copyAddress.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -188,7 +188,7 @@ public class AcctPanel extends JPanel
 		});
 		menu.add(copyAddress);
 		
-		JMenuItem copyHash = new JMenuItem(lang.Translate("Copy Secret Hash",lang.NameLang));
+		JMenuItem copyHash = new JMenuItem(lang.Translate("Copy Secret Hash"));
 		copyHash.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 

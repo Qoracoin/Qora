@@ -7,7 +7,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Image;
 import java.awt.Insets;
-import java.awt.Toolkit;
+//import java.awt.Toolkit;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
@@ -31,7 +31,7 @@ public class AboutFrame extends JFrame{
 	{
 		//CREATE FRAME
 		//super("ERM - Debug");
-		super(lang.Translate("ERM - About",lang.NameLang));
+		super("ERM" + " - " + lang.Translate("About"));
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();
@@ -70,7 +70,7 @@ public class AboutFrame extends JFrame{
         gbl_aboutPanel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
         aboutPanel.setLayout(gbl_aboutPanel);
         
-        JLabel lblversionLabel = new JLabel(lang.Translate("Version",lang.NameLang)+": " + Controller.getInstance().getVersion());
+        JLabel lblversionLabel = new JLabel(lang.Translate("Version")+": " + Controller.getInstance().getVersion());
         lblversionLabel.setFont(new Font("Tahoma", Font.PLAIN, 17));
         lblversionLabel.setForeground(Color.WHITE);
         lblversionLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -82,7 +82,7 @@ public class AboutFrame extends JFrame{
         gbc_lbllversionLabel.gridy = 1;
         aboutPanel.add(lblversionLabel, gbc_lbllversionLabel);
         
-        JLabel label = new JLabel(lang.Translate("Build date",lang.NameLang) +": " + Controller.getInstance().getBuildDateString());
+        JLabel label = new JLabel(lang.Translate("Build date") +": " + Controller.getInstance().getBuildDateString());
         label.setHorizontalAlignment(SwingConstants.CENTER);
         label.setForeground(Color.WHITE);
         label.setFont(new Font("Tahoma", Font.PLAIN, 13));
