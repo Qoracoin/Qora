@@ -2,6 +2,7 @@ package gui.assets;
 
 import gui.PasswordPane;
 import gui.models.AccountsComboBoxModel;
+import lang.lang;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -49,7 +50,7 @@ public class IssueAssetFrame extends JFrame
 
 	public IssueAssetFrame()
 	{
-		super("ERM - Issue Asset");
+		super("ERM" + " - " + lang.Translate("Issue Asset"));
 		
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -103,7 +104,7 @@ public class IssueAssetFrame extends JFrame
 		
 		//LABEL FROM
 		labelGBC.gridy = 0;
-		JLabel fromLabel = new JLabel("Account:");
+		JLabel fromLabel = new JLabel(lang.Translate("Account")+":");
 		this.add(fromLabel, labelGBC);
 		
 		//COMBOBOX FROM
@@ -113,7 +114,7 @@ public class IssueAssetFrame extends JFrame
         
         //LABEL NAME
       	labelGBC.gridy = 1;
-      	JLabel nameLabel = new JLabel("Name:");
+      	JLabel nameLabel = new JLabel(lang.Translate("Name")+":");
       	this.add(nameLabel, labelGBC);
       		
       	//TXT NAME
@@ -123,7 +124,7 @@ public class IssueAssetFrame extends JFrame
         
         //LABEL DESCRIPTION
       	labelGBC.gridy = 2;
-      	JLabel descriptionLabel = new JLabel("Description:");
+      	JLabel descriptionLabel = new JLabel(lang.Translate("Description")+":");
       	this.add(descriptionLabel, labelGBC);
       		
       	//TXTAREA DESCRIPTION
@@ -142,7 +143,7 @@ public class IssueAssetFrame extends JFrame
       	
       	//LABEL QUANTITY
       	labelGBC.gridy = 3;
-      	JLabel quantityLabel = new JLabel("Quantity:");
+      	JLabel quantityLabel = new JLabel(lang.Translate("Quantity")+":");
       	this.add(quantityLabel, labelGBC);
       		
       	//TXT QUANTITY
@@ -153,7 +154,7 @@ public class IssueAssetFrame extends JFrame
         
       	//LABEL DIVISIBLE
       	labelGBC.gridy = 4;
-      	JLabel divisibleLabel = new JLabel("Divisible:");
+      	JLabel divisibleLabel = new JLabel(lang.Translate("Divisible")+":");
       	this.add(divisibleLabel, labelGBC);
       		
       	//CHECKBOX DIVISIBLE
@@ -164,7 +165,7 @@ public class IssueAssetFrame extends JFrame
       	
         //LABEL FEE
       	labelGBC.gridy = 5;
-      	JLabel feeLabel = new JLabel("Fee:");
+      	JLabel feeLabel = new JLabel(lang.Translate("Fee")+":");
       	this.add(feeLabel, labelGBC);
       		
       	//TXT FEE
@@ -175,7 +176,7 @@ public class IssueAssetFrame extends JFrame
 		           
         //BUTTON Register
         buttonGBC.gridy = 6;
-        this.issueButton = new JButton("Issue");
+        this.issueButton = new JButton(lang.Translate("Issue"));
         this.issueButton.setPreferredSize(new Dimension(80, 25));
         this.issueButton.addActionListener(new ActionListener()
 		{
@@ -202,7 +203,9 @@ public class IssueAssetFrame extends JFrame
 		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
 			//NETWORK NOT OK
-			JOptionPane.showMessageDialog(null, "You are unable to send a transaction while synchronizing or while having no connections!", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					lang.Translate("You are unable to send a transaction while synchronizing or while having no connections!"),
+					lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 			
 			//ENABLE
 			this.issueButton.setEnabled(true);
@@ -218,7 +221,9 @@ public class IssueAssetFrame extends JFrame
 			if(!Controller.getInstance().unlockWallet(password))
 			{
 				//WRONG PASSWORD
-				JOptionPane.showMessageDialog(null, "Invalid password", "Unlock Wallet", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						lang.Translate("Invalid password"),
+						lang.Translate("Unlock Wallet"), JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.issueButton.setEnabled(true);
@@ -243,7 +248,9 @@ public class IssueAssetFrame extends JFrame
 			//CHECK MIMIMUM FEE
 			if(fee.compareTo(Transaction.MINIMUM_FEE) == -1)
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Fee must be at least 1!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee must be at least 1!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.issueButton.setEnabled(true);
@@ -256,7 +263,7 @@ public class IssueAssetFrame extends JFrame
 			{
 				int n = JOptionPane.showConfirmDialog(
 						new JFrame(), Settings.getInstance().getBigFeeMessage(),
-		                "Confirmation",
+						lang.Translate("Confirmation"),
 		                JOptionPane.YES_NO_OPTION);
 				if (n == JOptionPane.YES_OPTION) {
 					
@@ -324,53 +331,73 @@ public class IssueAssetFrame extends JFrame
 			{
 			case Transaction.VALIDATE_OK:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Asset issue has been sent!", "Success", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Asset issue has been sent!"),
+						lang.Translate("Success"), JOptionPane.INFORMATION_MESSAGE);
 				this.dispose();
 				break;	
 				
 			case Transaction.NOT_YET_RELEASED:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Assets will be enabled at " + DateTimeFormat.timestamptoString(Transaction.getASSETS_RELEASE()) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Assets will be enabled at") + " " + DateTimeFormat.timestamptoString(Transaction.getASSETS_RELEASE()) + "!",
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.INVALID_QUANTITY:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid quantity!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid quantity!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.NEGATIVE_FEE:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Fee must be at least 1!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee must be at least 1!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.FEE_LESS_REQUIRED:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Fee below the minimum for this size of a transaction!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee below the minimum for this size of a transaction!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.NO_BALANCE:
 			
-				JOptionPane.showMessageDialog(new JFrame(), "Not enough balance!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Not enough balance!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.INVALID_NAME_LENGTH:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Name must be between 1 and 100 characters!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Name must be between 1 and 100 characters!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.INVALID_DESCRIPTION_LENGTH:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Description must be between 1 and 1000 characters!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Description must be between 1 and 1000 characters!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.INVALID_PAYMENTS_LENGTH:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid quantity!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid quantity!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			default:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Unknown error!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Unknown error!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;		
 				
 			}
@@ -379,11 +406,15 @@ public class IssueAssetFrame extends JFrame
 		{
 			if(parse == 0)
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid fee!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid fee!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 			}
 			else
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid quantity!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid quantity!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		

@@ -3,6 +3,7 @@ package gui.assets;
 import gui.AccountRenderer;
 import gui.PasswordPane;
 import gui.models.AccountsComboBoxModel;
+import lang.lang;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -91,7 +92,7 @@ public class OrderPanel extends JPanel
 		
 		//LABEL FROM
 		labelGBC.gridy = 0;
-		JLabel fromLabel = new JLabel("Account:");
+		JLabel fromLabel = new JLabel(lang.Translate("Account")+":");
 		this.add(fromLabel, labelGBC);
 		
 		//COMBOBOX FROM
@@ -107,7 +108,7 @@ public class OrderPanel extends JPanel
         
 		//LABEL PRICE
 		labelGBC.gridy++;
-		JLabel priceLabel = new JLabel("Price:");
+		JLabel priceLabel = new JLabel(lang.Translate("Price")+":");
 		this.add(priceLabel, labelGBC);
 		
 		//PRICE
@@ -124,7 +125,7 @@ public class OrderPanel extends JPanel
 		{
 			//LABEL BUYING PRICE
 			labelGBC.gridy++;
-			JLabel buyingPriceLabel = new JLabel("Buying price:");
+			JLabel buyingPriceLabel = new JLabel(lang.Translate("Buying price")+":");
 			this.add(buyingPriceLabel, labelGBC);
 			
 			//BUYING PRICE
@@ -181,7 +182,7 @@ public class OrderPanel extends JPanel
 		
 		//LABEL AMOUNT
 		labelGBC.gridy++;
-		JLabel amountLabel = new JLabel("Amount:");
+		JLabel amountLabel = new JLabel(lang.Translate("Amount")+":");
 		this.add(amountLabel, labelGBC);
 				
 		//AMOUNT
@@ -196,7 +197,7 @@ public class OrderPanel extends JPanel
 		
 		//LABEL AMOUNT
 		labelGBC.gridy++;
-		JLabel buyingAmountLabel = new JLabel("Buying amount:");
+		JLabel buyingAmountLabel = new JLabel(lang.Translate("Buying amount")+":");
 		this.add(buyingAmountLabel, labelGBC);
 					
 		//AMOUNT
@@ -231,7 +232,7 @@ public class OrderPanel extends JPanel
 		
 		//LABEL FEE
 		labelGBC.gridy++;
-		JLabel feeLabel = new JLabel("Fee:");
+		JLabel feeLabel = new JLabel(lang.Translate("Fee")+":");
 		this.add(feeLabel, labelGBC);
 		           
 		//FEE
@@ -267,9 +268,9 @@ public class OrderPanel extends JPanel
 		labelGBC.gridy++;
 		
 		if(buying)
-			this.sellButton = new JButton("Buy");	
+			this.sellButton = new JButton(lang.Translate("Buy"));	
 		else
-			this.sellButton = new JButton("Sell");	
+			this.sellButton = new JButton(lang.Translate("Sell"));	
 		
 		this.sellButton.setPreferredSize(new Dimension(125, 25));
 		this.sellButton.addActionListener(new ActionListener()
@@ -344,7 +345,9 @@ public class OrderPanel extends JPanel
 		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
 			//NETWORK NOT OK
-			JOptionPane.showMessageDialog(null, "You are unable to send a transaction while synchronizing or while having no connections!", "Error", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null,
+					lang.Translate("You are unable to send a transaction while synchronizing or while having no connections!"),
+					lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 			
 			//ENABLE
 			this.sellButton.setEnabled(true);
@@ -360,7 +363,9 @@ public class OrderPanel extends JPanel
 			if(!Controller.getInstance().unlockWallet(password))
 			{
 				//WRONG PASSWORD
-				JOptionPane.showMessageDialog(null, "Invalid password", "Unlock Wallet", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(null,
+						lang.Translate("Invalid password"),
+						lang.Translate("Unlock Wallet"), JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.sellButton.setEnabled(true);
@@ -389,7 +394,9 @@ public class OrderPanel extends JPanel
 			//CHECK MIMIMUM FEE
 			if(fee.compareTo(Transaction.MINIMUM_FEE) == -1)
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Fee must be at least 1!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee must be at least 1!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				
 				//ENABLE
 				this.sellButton.setEnabled(true);
@@ -402,7 +409,7 @@ public class OrderPanel extends JPanel
 			{
 				int n = JOptionPane.showConfirmDialog(
 						new JFrame(), Settings.getInstance().getBigFeeMessage(),
-		                "Confirmation",
+						lang.Translate("Confirmation"),
 		                JOptionPane.YES_NO_OPTION);
 				if (n == JOptionPane.YES_OPTION) {
 					
@@ -427,7 +434,9 @@ public class OrderPanel extends JPanel
 			{
 			case Transaction.VALIDATE_OK:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Order has been sent!", "Success", JOptionPane.INFORMATION_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Order has been sent!"),
+						lang.Translate("Success"), JOptionPane.INFORMATION_MESSAGE);
 				
 				this.txtFee.setText("1");
 				this.txtAmount.setText("");
@@ -437,58 +446,80 @@ public class OrderPanel extends JPanel
 				
 			case Transaction.NOT_YET_RELEASED:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Assets will be enabled at " + DateTimeFormat.timestamptoString(Transaction.getASSETS_RELEASE()) + "!",  "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Assets will be enabled at")+" " + DateTimeFormat.timestamptoString(Transaction.getASSETS_RELEASE()) + "!",
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.HAVE_EQUALS_WANT:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Have can not equal Want!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Have can not equal Want!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.ASSET_DOES_NOT_EXIST:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "The asset does not exist!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("The asset does not exist!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.NEGATIVE_AMOUNT:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Amount must be positive!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Amount must be positive!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;		
 				
 			case Transaction.NEGATIVE_PRICE:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Price must be positive!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Price must be positive!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;		
 				
 			case Transaction.INVALID_AMOUNT:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid amount!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid amount!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;		
 				
 			case Transaction.INVALID_RETURN:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid total price!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid total price!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;		
 				
 			case Transaction.NEGATIVE_FEE:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Fee must be at least 1!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee must be at least 1!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 				
 			case Transaction.FEE_LESS_REQUIRED:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Fee below the minimum for this size of a transaction!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Fee below the minimum for this size of a transaction!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case Transaction.NO_BALANCE:
 			
-				JOptionPane.showMessageDialog(new JFrame(), "Not enough balance!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Not enough balance!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;	
 
 				
 			default:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Unknown error!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Unknown error!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;		
 				
 			}
@@ -499,22 +530,25 @@ public class OrderPanel extends JPanel
 			
 			if(parse == 0)
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid fee!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid fee!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 			}
 			if(parse == 1)
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid amount!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid amount!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 			}
 			if(parse == 2)
 			{
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid price!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid price!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		
 		//ENABLE
 		this.sellButton.setEnabled(true);
 	}
-	
-	
-	
 }

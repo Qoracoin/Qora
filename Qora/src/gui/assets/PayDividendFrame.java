@@ -2,6 +2,7 @@ package gui.assets;
 
 import gui.BalanceRenderer;
 import gui.models.BalancesComboBoxModel;
+import lang.lang;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -41,7 +42,7 @@ public class PayDividendFrame extends JFrame
 
 	public PayDividendFrame(Asset asset)
 	{
-		super("ERM - Pay Dividend");
+		super("ERM" + " - " + lang.Translate("Pay Dividend"));
 		
 		this.asset = asset;
 		
@@ -97,7 +98,7 @@ public class PayDividendFrame extends JFrame
 		
 		//LABEL ASSET
 		labelGBC.gridy = 0;
-		JLabel assetLabel = new JLabel("Asset:");
+		JLabel assetLabel = new JLabel(lang.Translate("Asset")+":");
 		this.add(assetLabel, labelGBC);
 		
 		//TXT ASSET
@@ -108,7 +109,7 @@ public class PayDividendFrame extends JFrame
         
         //LABEL ACCOUNT
       	labelGBC.gridy = 1;
-      	JLabel accountLabel = new JLabel("Account:");
+      	JLabel accountLabel = new JLabel(lang.Translate("Account")+":");
       	this.add(accountLabel, labelGBC);
       		
       	//TXT ACCOUNT
@@ -119,7 +120,7 @@ public class PayDividendFrame extends JFrame
         
         //LABEL ASSET TO PAY
       	labelGBC.gridy = 2;
-      	JLabel AssetToPayLabel = new JLabel("Asset to pay:");
+      	JLabel AssetToPayLabel = new JLabel(lang.Translate("Asset to pay")+":");
       	this.add(AssetToPayLabel, labelGBC);
       		
       	//CBX ASSET TO PAY
@@ -130,7 +131,7 @@ public class PayDividendFrame extends JFrame
       	
       	//LABEL AMOUNT
       	labelGBC.gridy = 3;
-      	JLabel amountLabel = new JLabel("Amount to pay:");
+      	JLabel amountLabel = new JLabel(lang.Translate("Amount to pay")+":");
       	this.add(amountLabel, labelGBC);
       		
       	//TXT AMOUNT
@@ -141,7 +142,7 @@ public class PayDividendFrame extends JFrame
         
       	//LABEL HOLDERS TO PAY
       	labelGBC.gridy = 4;
-      	JLabel holdersToPayLabel = new JLabel("Holders to pay (1-400):");
+      	JLabel holdersToPayLabel = new JLabel(lang.Translate("Holders to pay (1-400)")+":");
       	this.add(holdersToPayLabel, labelGBC);
       		
       	//TXT QUANTITY
@@ -152,7 +153,7 @@ public class PayDividendFrame extends JFrame
 		           
         //BUTTON GENERATE
         buttonGBC.gridy = 5;
-        this.generateButton = new JButton("Generate Payment");
+        this.generateButton = new JButton(lang.Translate("Generate Payment"));
         this.generateButton.setPreferredSize(new Dimension(160, 25));
         this.generateButton.addActionListener(new ActionListener()
 		{
@@ -239,12 +240,16 @@ public class PayDividendFrame extends JFrame
 			{
 			case 1:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid holders to pay!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid holders to pay!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				
 			case 2:
 				
-				JOptionPane.showMessageDialog(new JFrame(), "Invalid amount to pay!", "Error", JOptionPane.ERROR_MESSAGE);
+				JOptionPane.showMessageDialog(new JFrame(),
+						lang.Translate("Invalid amount to pay!"),
+						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 			}
 		}
