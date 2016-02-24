@@ -56,7 +56,7 @@ public class CreatePollFrame extends JFrame
 
 	public CreatePollFrame()
 	{
-		super("ERM - Create Poll");
+		super("ERM - Create Poll ggg");
 		
 		//CLOSE
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
