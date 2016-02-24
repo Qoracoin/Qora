@@ -2,6 +2,7 @@ package gui.assets;
 
 import gui.QoraRowSorter;
 import gui.models.WalletAssetsTableModel;
+import lang.lang;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -73,7 +74,7 @@ public class AssetsPanel extends JPanel
 		
 		//MENU
 		JPopupMenu assetsMenu = new JPopupMenu();
-		JMenuItem details = new JMenuItem("Details");
+		JMenuItem details = new JMenuItem(lang.Translate("Details"));
 		details.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int row = table.getSelectedRow();
@@ -84,7 +85,7 @@ public class AssetsPanel extends JPanel
 			}
 		});
 		assetsMenu.add(details);
-		JMenuItem dividend = new JMenuItem("Pay dividend");
+		JMenuItem dividend = new JMenuItem(lang.Translate("Pay dividend"));
 		dividend.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int row = table.getSelectedRow();
@@ -131,7 +132,7 @@ public class AssetsPanel extends JPanel
 		this.add(new JScrollPane(table), tableGBC);
 		
 		//ADD REGISTER BUTTON
-		JButton issueButton = new JButton("Issue Asset");
+		JButton issueButton = new JButton(lang.Translate("Issue Asset"));
 		issueButton.setPreferredSize(new Dimension(100, 25));
 		issueButton.addActionListener(new ActionListener()
 		{
@@ -144,7 +145,7 @@ public class AssetsPanel extends JPanel
 		
 		//ADD ALL BUTTON
 		buttonGBC.gridx = 1;
-		JButton allButton = new JButton("All Assets");
+		JButton allButton = new JButton(lang.Translate("All Assets"));
 		allButton.setPreferredSize(new Dimension(100, 25));
 		allButton.addActionListener(new ActionListener()
 		{
@@ -157,7 +158,7 @@ public class AssetsPanel extends JPanel
 		
 		//ADD MY ORDERS BUTTON
 		buttonGBC.gridx = 2;
-		JButton myOrdersButton = new JButton("My Orders");
+		JButton myOrdersButton = new JButton(lang.Translate("My Orders"));
 		myOrdersButton.setPreferredSize(new Dimension(100, 25));
 		myOrdersButton.addActionListener(new ActionListener()
 		{

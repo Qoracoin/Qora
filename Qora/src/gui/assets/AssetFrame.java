@@ -1,6 +1,7 @@
 package gui.assets;
 
 import gui.models.BalancesTableModel;
+import lang.lang;
 
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -18,7 +19,7 @@ public class AssetFrame extends JFrame
 	
 	public AssetFrame(Asset asset)
 	{
-		super("ERM - Asset Details");
+		super("ERM" + " - " + lang.Translate("Asset Details"));
 		
 		this.asset = asset;
 		
@@ -40,12 +41,12 @@ public class AssetFrame extends JFrame
 		JTabbedPane tabPane = new JTabbedPane();
 		
 		//DETAILS
-		tabPane.add("Details", new AssetDetailsPanel(this.asset));
+		tabPane.add(lang.Translate("Details"), new AssetDetailsPanel(this.asset));
 		
 		//BALANCES
 		BalancesTableModel balancesTableModel = new BalancesTableModel(asset.getKey());
 		final JTable balancesTable = new JTable(balancesTableModel);
-		tabPane.add("Holders", new JScrollPane(balancesTable));
+		tabPane.add(lang.Translate("Holders"), new JScrollPane(balancesTable));
 		
 		//ADD TAB PANE
 		this.add(tabPane);

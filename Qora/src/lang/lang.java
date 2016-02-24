@@ -15,7 +15,6 @@ import com.google.common.io.Files;
 public class lang {
 
 	public static JSONObject langObj;	
-	//public static String NameLang = "rus";
 	public static String LANG = "rus";
 	//public static String[] toTranslate;
 	public static HashMap <String, String> toTranslate = new HashMap<String, String>(); 
@@ -71,7 +70,6 @@ public class lang {
 		Set("rus");
 			
 		try {
-			//langObj = OpenLangFile("Lang.txt");
 			langObj = OpenLangFile("rus.lng");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

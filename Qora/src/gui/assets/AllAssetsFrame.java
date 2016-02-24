@@ -17,6 +17,7 @@ import java.util.TreeMap;
 
 import gui.QoraRowSorter;
 import gui.models.AssetsTableModel;
+import lang.lang;
 
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -40,7 +41,7 @@ public class AllAssetsFrame extends JFrame{
 
 	public AllAssetsFrame() {
 		
-		super("ERM - All Assets");
+		super("ERM" + " = " + lang.Translate("All Assets"));
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();
@@ -133,7 +134,7 @@ public class AllAssetsFrame extends JFrame{
 
 		// MENU
 		JPopupMenu nameSalesMenu = new JPopupMenu();
-		JMenuItem details = new JMenuItem("Details");
+		JMenuItem details = new JMenuItem(lang.Translate("Details"));
 		details.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int row = assetsTable.getSelectedRow();
@@ -162,7 +163,7 @@ public class AllAssetsFrame extends JFrame{
 			}
 		});
 
-		this.add(new JLabel("search:"), searchLabelGBC);
+		this.add(new JLabel(lang.Translate("search")+":"), searchLabelGBC);
 		this.add(txtSearch, searchGBC);
 		this.add(new JScrollPane(assetsTable), tableGBC);
 		
