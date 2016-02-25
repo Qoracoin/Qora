@@ -97,7 +97,7 @@ public class SendMoneyPanel extends JPanel
 		
 		//LABEL FROM
 		labelGBC.gridy = 2;
-		JLabel fromLabel = new JLabel("From:");
+		JLabel fromLabel = new JLabel(lang.Translate("From:"));
 		this.add(fromLabel, labelGBC);
 		
 		//COMBOBOX FROM
@@ -148,7 +148,7 @@ public class SendMoneyPanel extends JPanel
         
         //LABEL RECEIVER DETAILS 
       	labelGBC.gridy = 4;
-      	JLabel recDetailsLabel = new JLabel(lang.Translate("Receiver details") + ":");
+      	JLabel recDetailsLabel = new JLabel(lang.Translate("Receiver details:") );
       	this.add(recDetailsLabel, labelGBC);
       		
       	//RECEIVER DETAILS 
@@ -180,7 +180,7 @@ public class SendMoneyPanel extends JPanel
         
         //BUTTON SEND
         buttonGBC.gridy = 7;
-        sendButton = new JButton(lang.Translate("Send"));
+        sendButton = new JButton(lang.Translate("Send money"));
         sendButton.setPreferredSize(new Dimension(80, 25));
     	sendButton.addActionListener(new ActionListener()
 		{
@@ -217,7 +217,7 @@ public class SendMoneyPanel extends JPanel
 		
 		if(Controller.getInstance().getStatus() != Controller.STATUS_OK)
 		{
-			txtRecDetails.setText(lang.Translate("Status must be OK to show receiver details."));
+			txtRecDetails.setText(lang.Translate("Status must be OK to show receiver details"));
 			return;
 		}
 		
@@ -390,7 +390,7 @@ public class SendMoneyPanel extends JPanel
 			case Transaction.INVALID_ADDRESS:
 				
 				JOptionPane.showMessageDialog(new JFrame(),
-						lang.Translate("Invalid address or name!"),
+						lang.Translate("Invalid address!"),
 						lang.Translate("Error"), JOptionPane.ERROR_MESSAGE);
 				break;
 				

@@ -9,6 +9,7 @@ import qora.assets.Asset;
 import utils.ObserverMessage;
 import controller.Controller;
 import database.SortableList;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class WalletAssetsTableModel extends QoraTableModel<Tuple2<String, String>, Asset> implements Observer
@@ -22,7 +23,7 @@ public class WalletAssetsTableModel extends QoraTableModel<Tuple2<String, String
 	
 	private SortableList<Tuple2<String, String>, Asset> assets;
 	
-	private String[] columnNames = {"Key", "Name", "Owner", "Quantity", "Divisible", "Confirmed"};
+	private String[] columnNames = {lang.Translate("Key"), lang.Translate("Name"), lang.Translate("Owner"), lang.Translate("Quantity"), lang.Translate("Divisible"), lang.Translate("Confirmed")};
 	
 	public WalletAssetsTableModel()
 	{

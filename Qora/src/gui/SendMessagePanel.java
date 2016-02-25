@@ -106,7 +106,7 @@ public class SendMessagePanel extends JPanel
 		labelFromGBC.weightx = 0;	
 		labelFromGBC.gridx = 0;
 		labelFromGBC.gridy = 1;
-		JLabel fromLabel = new JLabel("From:");
+		JLabel fromLabel = new JLabel(lang.Translate("From:"));
 		this.add(fromLabel, labelFromGBC);
 		//fontHeight = fromLabel.getFontMetrics(fromLabel.getFont()).getHeight();
 		
@@ -302,7 +302,7 @@ public class SendMessagePanel extends JPanel
 		amountlabelGBC.gridx = 0;
 		amountlabelGBC.gridy = 6;
 		
-		final JLabel amountLabel = new JLabel(lang.Translate("Amount") + ":");
+		final JLabel amountLabel = new JLabel(lang.Translate("Amount")+":");
 		amountLabel.setHorizontalAlignment(SwingConstants.RIGHT);
 		this.add(amountLabel, amountlabelGBC);
         
@@ -327,7 +327,7 @@ public class SendMessagePanel extends JPanel
 		buttonGBC.gridx = 0;
 		buttonGBC.gridy = 11;
         
-		sendButton = new JButton(lang.Translate("Send"));
+		sendButton = new JButton(lang.Translate("Send money"));
         sendButton.setPreferredSize(new Dimension(80, 25));
     	sendButton.addActionListener(new ActionListener()
 		{
@@ -422,7 +422,7 @@ public class SendMessagePanel extends JPanel
 		service.scheduleWithFixedDelay(	new Runnable() { 
 			public void run() {
 				
-				messageLabel.setText("<html>Message:<br>("+ txtMessage.getText().length()+"/4000)</html>");
+				messageLabel.setText("<html>"+lang.Translate("Message:")+"<br>("+ txtMessage.getText().length()+"/4000)</html>");
 				
 			}}, 0, 500, TimeUnit.MILLISECONDS);
 	}
@@ -688,16 +688,16 @@ public class SendMessagePanel extends JPanel
 						lang.Translate("Fee less than the recommended values!\nChange to recommended?\n")
 								+ lang.Translate("Press Yes to turn on recommended")
 								+ " "+recommendedFee.toPlainString()
-								+ ",\nor No to leave, but then the transaction may be difficult to confirm.",
+								+ ",\n"+lang.Translate("or No to leave, but then the transaction may be difficult to confirm."),
 								lang.Translate("Confirmation"),
 		                JOptionPane.YES_NO_CANCEL_OPTION);
 				}
 				else
 				{
 					n = JOptionPane.showConfirmDialog(
-							new JFrame(), "Fee less required!\n"
-										+ "Press OK to turn on required "+recommendedFee.toPlainString() + ".",
-			                "Confirmation",
+							new JFrame(), lang.Translate("Fee less required!")+"\n"
+										+ lang.Translate("Press OK to turn on required ")+recommendedFee.toPlainString() + ".",
+										lang.Translate("Confirmation"),
 			                JOptionPane.OK_CANCEL_OPTION);
 				}
 				if (n == JOptionPane.YES_OPTION || n == JOptionPane.OK_OPTION) {

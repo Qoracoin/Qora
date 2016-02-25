@@ -8,6 +8,7 @@ import qora.assets.Asset;
 import utils.NumberAsString;
 import utils.ObserverMessage;
 import database.SortableList;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class AssetsTableModel extends QoraTableModel<Long, Asset> implements Observer
@@ -20,7 +21,7 @@ public class AssetsTableModel extends QoraTableModel<Long, Asset> implements Obs
 
 	private SortableList<Long, Asset> assets;
 	
-	private String[] columnNames = {"Key", "Name", "Owner", "Quantity", "Divisible"};
+	private String[] columnNames = {lang.Translate("Key"), lang.Translate("Name"), lang.Translate("Owner"), lang.Translate("Quantity"), lang.Translate("Divisible")};
 	
 	public AssetsTableModel()
 	{

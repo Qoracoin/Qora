@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import lang.lang;
 import qora.crypto.Base58;
 import qora.transaction.CreateOrderTransaction;
 import utils.DateTimeFormat;
@@ -144,7 +145,7 @@ public class CreateOrderDetailsFrame extends JFrame
 		
 		//LABEL AMOUNT
 		labelGBC.gridy = 7;
-		JLabel amountLabel = new JLabel("Amount:");
+		JLabel amountLabel = new JLabel(lang.Translate("Amount")+":");
 		this.add(amountLabel, labelGBC);
 				
 		//AMOUNT

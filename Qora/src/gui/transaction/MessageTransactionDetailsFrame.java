@@ -1,6 +1,7 @@
 package gui.transaction;
 
 import gui.PasswordPane;
+import lang.lang;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -256,7 +257,7 @@ public class MessageTransactionDetailsFrame extends JFrame
 		//LABEL AMOUNT
 		componentLevel ++;
 		labelGBC.gridy = componentLevel;
-		JLabel amountLabel = new JLabel("Amount:");
+		JLabel amountLabel = new JLabel(lang.Translate("Amount")+":");
 		this.add(amountLabel, labelGBC);
 				
 		//AMOUNT

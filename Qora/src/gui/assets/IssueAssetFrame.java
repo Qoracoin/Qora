@@ -286,18 +286,18 @@ public class IssueAssetFrame extends JFrame
 				if(Settings.getInstance().isAllowFeeLessRequired())
 				{
 					n = JOptionPane.showConfirmDialog(
-						new JFrame(), "Fee less than the recommended values!\nChange to recommended?\n"
-									+ "Press Yes to turn on recommended "+recommendedFee.toPlainString()
-									+ ",\nor No to leave, but then the transaction may be difficult to confirm.",
-		                "Confirmation",
+						new JFrame(), lang.Translate("Fee less than the recommended values!\nChange to recommended?")+"\n"
+									+ lang.Translate("Press Yes to turn on recommended")+" "+recommendedFee.toPlainString()
+									+ ",\n"+lang.Translate("or No to leave, but then the transaction may be difficult to confirm."),
+									lang.Translate( "Confirmation"),
 		                JOptionPane.YES_NO_CANCEL_OPTION);
 				}
 				else
 				{
 					n = JOptionPane.showConfirmDialog(
-							new JFrame(), "Fee less required!\n"
-										+ "Press OK to turn on required "+recommendedFee.toPlainString() + ".",
-			                "Confirmation",
+							new JFrame(), lang.Translate("Fee less required!")+"\n"
+										+ lang.Translate("Press OK to turn on required ")+recommendedFee.toPlainString() + ".",
+										lang.Translate( "Confirmation"),
 			                JOptionPane.OK_CANCEL_OPTION);
 				}
 				if (n == JOptionPane.YES_OPTION || n == JOptionPane.OK_OPTION) {
