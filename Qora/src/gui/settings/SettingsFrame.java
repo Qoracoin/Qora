@@ -168,6 +168,7 @@ public class SettingsFrame extends JFrame{
 		boolean changeWallet = false;
 		boolean changeDataDir = false;
 		boolean limitConnections = false;
+		boolean changeLangFileName =false;
 
 		if(Settings.getInstance().isGeneratorKeyCachingEnabled() != settingsTabPane.settingsParametersPanel.chckbxKeyCaching.isSelected())
 		{
@@ -278,6 +279,14 @@ public class SettingsFrame extends JFrame{
 			settingsJSONbuf.put("datadir", settingsTabPane.settingsParametersPanel.textDataFolder.getText());
 			changeDataDir = true;
 		}
+		
+		
+		if(!Settings.getInstance().getLangFileName().equals(settingsTabPane.settingsLangPanel.LangFileName.toString()))
+		{
+			settingsJSONbuf.put("LangFileName", settingsTabPane.settingsLangPanel.LangFileName.toString());
+			changeLangFileName = true;
+		}
+		
 		
 		List<String> peersToSave = settingsTabPane.settingsKnownPeersPanel.knownPeersTableModel.getPeers();
 		

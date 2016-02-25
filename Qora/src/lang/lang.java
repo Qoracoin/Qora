@@ -88,12 +88,14 @@ public class lang {
 	{
 		toTranslate.put(Message, ""); // запомним все строки что требуют перевода
 		if (langObj == null ) return (Message); // если файл не открыт то не переводим 
-		if (!langObj.containsValue(LANG)) return (Message); // если в открытом файле нет ключа установленого языка то не переводим 
+//		if (!langObj.containsValue(LANG)) return (Message); // если в открытом файле нет ключа установленого языка то не переводим 
 		if (!langObj.containsKey(Message))  return (Message); // если нет такого словосочетания не переводим
 		
 		String res = langObj.get(Message).toString();
 		toTranslate.put(Message, res); // запомним все строки что требуют перевода
-		return(langObj.get(Message).toString());	//  если есть такое словосочетание то переводим.		
+		
+		if (res.isEmpty())return (Message); //усли пустое то не переводим
+		return(res);	//  если есть такое словосочетание то переводим.		
 	}
 	public static JSONObject OpenLangFile(String PathAndFilename) throws IOException
 	{

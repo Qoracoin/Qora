@@ -100,6 +100,8 @@ public class Settings {
 
 	private String currentSettingsPath;
 	private String currentPeersPath;
+	private String DEFAULT_LANG_PATH ="lang";
+	private String DEFAULT_LANG_FILE_NAME="eng.lng";
 	
 	private InetAddress localAddress;
 	
@@ -132,12 +134,7 @@ public class Settings {
 		
 		
 		
-		try {
-			lang.langObj = lang.OpenLangFile("rus.lng");
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} 
+		
 		
 		
 		
@@ -184,6 +181,18 @@ public class Settings {
 			System.out.println("ERROR reading settings.json. closing");
 			System.exit(0);
 		}
+		
+		
+		// open lang file
+		
+		try {
+			lang.langObj = lang.OpenLangFile(this.getLangPath()+"\\"+ this.getLangFileName());
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} 
+		
+		
 		
 		//TRY READ PEERS.JSON
 		try
@@ -426,6 +435,29 @@ public class Settings {
 		
 		return DEFAULT_MAX_CONNECTIONS;
 	}
+	
+	public String getLangPath()
+	{
+		if(this.settingsJSON.containsKey("LangPath"))
+		{
+			return ((String) this.settingsJSON.get("LangPath").toString());
+		}
+		
+		return DEFAULT_LANG_PATH;
+	}
+	
+	
+	
+	public String getLangFileName()
+	{
+		if(this.settingsJSON.containsKey("LangFileName"))
+		{
+			return ((String) this.settingsJSON.get("LangFileName").toString());
+		}
+		
+		return DEFAULT_LANG_FILE_NAME;
+	}
+	
 	
 	public int getMaxReceivePeers()
 	{

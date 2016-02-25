@@ -1,19 +1,24 @@
 {
+	"checkpoint":true,
+	"soundreceivepayment":true,
 	"rpcallowed":[
 		"127.0.0.1"
 	],
+	"generatorkeycaching":true,
+	"LangFileName":"rus.lng",
+	"webenabled":true,
+	"soundreceivemessage":true,
+	"soundnewtransaction":true,
+	"minconnections":10,
+	"LangPath":"lang",
 	"weballowed":[
 		"127.0.0.1"
 	],
-	"guienabled":true,
-	"rpcenabled":true,
-	"webenabled":true,
 	"systray":true,
+	"rpcenabled":true,
 	"maxconnections":100,
-	"minconnections":10,
-	"generatorkeycaching":true,
-	"checkpoint":true,
-	"soundreceivepayment":true,
-	"soundnewtransaction":true,
-	"soundreceivemessage":true
+	"guienabled":true,
+	"knownpeers":[
+		
+	]
 }
