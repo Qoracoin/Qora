@@ -24,8 +24,8 @@ public class lang {
 	{
 		
 	//	private JSONObject peersJSON1;	
-		
-		
+	
+	//33333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333	
 /*	File myFile = new File("Lang.txt"); //Create a file object and hold the name of our file.
 	Scanner readThis = new Scanner(myFile); //Scanner object to read from the file
 	ArrayList<String> temp = new ArrayList<String>(); //arraylist for the purpose of resizing array
