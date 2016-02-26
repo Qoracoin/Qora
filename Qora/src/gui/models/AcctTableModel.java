@@ -13,6 +13,7 @@ import utils.Converter;
 import utils.NumberAsString;
 import utils.ObserverMessage;
 import database.SortableList;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class AcctTableModel extends QoraTableModel<String, AT> implements Observer
@@ -31,7 +32,7 @@ public class AcctTableModel extends QoraTableModel<String, AT> implements Observ
 	private String type;
 	private boolean initiators;
 	
-	private String[] columnNames = {"Name", "Description", "Address", "Creator", "Amount", "Lock", "Recipient", "Expiration Block"};
+	private String[] columnNames = {lang.Translate("Name"), lang.Translate("Description"), lang.Translate("Address"), lang.Translate("Creator"), lang.Translate("Amount"), lang.Translate("Lock"), lang.Translate("Recipient"), lang.Translate("Expiration Block")};
 	
 	public AcctTableModel(String type, boolean initiators)
 	{

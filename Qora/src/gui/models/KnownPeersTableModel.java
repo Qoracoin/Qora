@@ -14,6 +14,7 @@ import javax.swing.table.AbstractTableModel;
 import settings.Settings;
 import utils.ObserverMessage;
 import controller.Controller;
+import lang.lang;
 import network.Peer;
 
 @SuppressWarnings("serial")
@@ -25,7 +26,7 @@ public class KnownPeersTableModel extends AbstractTableModel implements Observer
 	private List<Peer> peers;
 	private ArrayList<Boolean> peersStatus = new ArrayList<Boolean>();
 	
-	private String[] columnNames = {"IP", "Connected now"};
+	private String[] columnNames = {lang.Translate("IP"), lang.Translate("Connected now")};
 	
 	public List<String> getPeers()
 	{
@@ -57,8 +58,8 @@ public class KnownPeersTableModel extends AbstractTableModel implements Observer
 	{
 		String address = this.getValueAt(row, 0).toString();
 		int n = JOptionPane.showConfirmDialog(
-				new JFrame(), "Do you want to remove address "+ address +"?",
-                "Confirmation",
+				new JFrame(), lang.Translate("Do you want to remove address ")+ address +"?",
+						lang.Translate("Confirmation"),
                 JOptionPane.YES_NO_OPTION);
 		if (n == JOptionPane.YES_OPTION) {
 			peers.remove(row);

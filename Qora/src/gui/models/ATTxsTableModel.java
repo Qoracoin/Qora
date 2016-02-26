@@ -10,6 +10,7 @@ import utils.ObserverMessage;
 import at.AT_Transaction;
 import controller.Controller;
 import database.SortableList;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class ATTxsTableModel extends QoraTableModel<Tuple2<Integer, Integer>, AT_Transaction> implements Observer
@@ -23,7 +24,7 @@ public class ATTxsTableModel extends QoraTableModel<Tuple2<Integer, Integer>, AT
 
 	private SortableList<Tuple2<Integer, Integer>, AT_Transaction > ats;
 	
-	private String[] columnNames = {"Height", "Sender", "Recipient", "Amount", "Message","Seq"};
+	private String[] columnNames = {lang.Translate("Height"), lang.Translate("Sender"), lang.Translate("Recipient"), lang.Translate("Amount"), lang.Translate("Message"),lang.Translate("Seq")};
 	
 	public ATTxsTableModel()
 	{

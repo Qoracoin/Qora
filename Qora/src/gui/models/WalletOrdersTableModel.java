@@ -11,6 +11,7 @@ import utils.DateTimeFormat;
 import utils.ObserverMessage;
 import controller.Controller;
 import database.SortableList;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class WalletOrdersTableModel extends QoraTableModel<Tuple2<String, BigInteger>, Order> implements Observer
@@ -26,7 +27,7 @@ public class WalletOrdersTableModel extends QoraTableModel<Tuple2<String, BigInt
 	
 	private SortableList<Tuple2<String, BigInteger>, Order> orders;
 	
-	private String[] columnNames = {"Timestamp", "Have", "Want", "Amount", "Price", "Fulfilled", "Creator", "Confirmed"};
+	private String[] columnNames = {lang.Translate("Timestamp"), lang.Translate("Have"), lang.Translate("Want"), lang.Translate("Amount"), lang.Translate("Price"), lang.Translate("Fulfilled"), lang.Translate("Creator"), lang.Translate("Confirmed")};
 	
 	public WalletOrdersTableModel()
 	{

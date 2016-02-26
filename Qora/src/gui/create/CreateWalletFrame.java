@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import controller.Controller;
+import lang.lang;
 import qora.crypto.Base58;
 
 @SuppressWarnings("serial")
@@ -38,7 +39,7 @@ public class CreateWalletFrame extends JFrame {
 	
 	public CreateWalletFrame(NoWalletFrame parent)
 	{
-		super("ERM - Create Wallet");
+		super("ERM" + " = " + lang.Translate("Create Wallet"));
 		
 		//RANDOM
 		this.random = new SecureRandom();
@@ -79,7 +80,7 @@ public class CreateWalletFrame extends JFrame {
 		
 		//LABEL
 		labelGBC.gridy = 0;
-		JLabel label1 = new JLabel("Your wallet generation seed:");	
+		JLabel label1 = new JLabel(lang.Translate("Your wallet generation seed:"));	
 		this.add(label1, labelGBC);
 		
 		//ADD TEXTBOX
@@ -93,7 +94,7 @@ public class CreateWalletFrame extends JFrame {
 		
 		// MENU
 		JPopupMenu menu = new JPopupMenu();
-		JMenuItem copySeed = new JMenuItem("Copy Seed");
+		JMenuItem copySeed = new JMenuItem(lang.Translate("Copy Seed"));
 		copySeed.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -109,27 +110,27 @@ public class CreateWalletFrame extends JFrame {
 		
 		//LABEL
       	labelGBC.gridy = 2;
-      	JLabel label2 = new JLabel("This seed is the result of a Base58 encoded 256bit random key.");
+      	JLabel label2 = new JLabel(lang.Translate("This seed is the result of a Base58 encoded 256bit random key."));
       	this.add(label2, labelGBC);
       	
       	//LABEL
       	labelGBC.gridy = 3;
-      	JLabel label3 = new JLabel("This seed will allow you to recover your wallet if you would accidently delete the wallet file.");
+      	JLabel label3 = new JLabel(lang.Translate("This seed will allow you to recover your wallet if you would accidently delete the wallet file."));
       	this.add(label3, labelGBC);
       	
       	//LABEL
       	labelGBC.gridy = 4;
-      	JLabel label4 = new JLabel("<html><b>KEEP THIS SEED PRIVATE AND SECURE!</b></html>");
+      	JLabel label4 = new JLabel("<html><b>"+ lang.Translate("KEEP THIS SEED PRIVATE AND SECURE!")+"</b></html>");
       	this.add(label4, labelGBC);
       	
      	//LABEL
       	labelGBC.gridy = 5;
-      	JLabel label5 = new JLabel("Anyone who has access to your seed will have access to your wallet.");
+      	JLabel label5 = new JLabel(lang.Translate("Anyone who has access to your seed will have access to your wallet."));
       	this.add(label5, labelGBC);
       		
       	 //BUTTON NEXT
         buttonGBC.gridy = 6;
-        JButton nextButton = new JButton("Next");
+        JButton nextButton = new JButton(lang.Translate("Next"));
         nextButton.addActionListener(new ActionListener()
 		{
 		    public void actionPerformed(ActionEvent e)
@@ -144,7 +145,7 @@ public class CreateWalletFrame extends JFrame {
     	
     	//BUTTON BACK
     	buttonGBC.gridx = 1;
-        JButton backButton = new JButton("Back");
+        JButton backButton = new JButton(lang.Translate("Back"));
         backButton.addActionListener(new ActionListener()
 		{
 		    public void actionPerformed(ActionEvent e)

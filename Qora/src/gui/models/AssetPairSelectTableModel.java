@@ -18,6 +18,7 @@ import utils.NumberAsString;
 import utils.ObserverMessage;
 import controller.Controller;
 import database.DBSet;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class AssetPairSelectTableModel extends AbstractTableModel implements Observer
@@ -30,7 +31,7 @@ public class AssetPairSelectTableModel extends AbstractTableModel implements Obs
 	private static final int COLUMN_TRADES_VOLUME = 5;
 	
 	public long key;
-	private String[] columnNames = {"Key", "Name", "<html>Orders<br>Count</html>", "Orders Volume", "<html>Trades<br>Count</html>", "Trades Volume"};
+	private String[] columnNames = {lang.Translate("Key"), lang.Translate("Name"), "<html>"+lang.Translate("Orders")+"<br>"+lang.Translate("Count")+"</html>", lang.Translate("Orders Volume"), "<html>"+lang.Translate("Trades")+"<br>"+lang.Translate("Count")+"</html>", lang.Translate("Trades Volume")};
 	public List<Asset> assets;
 	Map<Long, Tuple6<Integer, Integer, BigDecimal, BigDecimal, BigDecimal, BigDecimal>> all; 
 	

@@ -9,6 +9,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.json.simple.JSONObject;
 
+import lang.lang;
 import utils.Pair;
 
 
@@ -18,7 +19,7 @@ public class KeyValueTableModel extends AbstractTableModel implements Observer{
 	public static final int COLUMN_KEY = 0;
 	public static final int COLUMN_VALUE = 1;
 	
-	private String[] columnNames = {"Key", "Value"};
+	private String[] columnNames = {lang.Translate("Key"), lang.Translate("Value")};
 	
 	private List<Pair<String, String>> keyvaluepairs = new ArrayList<Pair<String,String>>();
 	
@@ -100,7 +101,7 @@ public class KeyValueTableModel extends AbstractTableModel implements Observer{
 	{
 		if(keyvaluepairs.size() == 0)
 		{
-			return new Pair<Boolean, String>(false, "You need to add atleast one key/value pair to properly update the name.");
+			return new Pair<Boolean, String>(false, lang.Translate("You need to add atleast one key/value pair to properly update the name."));
 		}
 		
 		List<String> keys = new ArrayList<String>();
@@ -109,12 +110,12 @@ public class KeyValueTableModel extends AbstractTableModel implements Observer{
 			String key = pair.getA();
 			if(key == null || "".equalsIgnoreCase(key))
 			{
-				return new Pair<Boolean, String>(false, "The entry at position " + keyvaluepairs.indexOf(pair) + " is missing a key!");
+				return new Pair<Boolean, String>(false, lang.Translate("The entry at position ") + keyvaluepairs.indexOf(pair) + lang.Translate(" is missing a key!"));
 			}
 			
 			if(keys.contains(key))
 			{
-				return new Pair<Boolean, String>(false, "There are atleast two entries with duplicate keys " + ("Bad key: " + key));
+				return new Pair<Boolean, String>(false, lang.Translate("There are atleast two entries with duplicate keys ") + (lang.Translate("Bad key: ") + key));
 			}
 				keys.add(key);
 		}

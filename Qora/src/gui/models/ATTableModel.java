@@ -10,6 +10,7 @@ import qora.crypto.Base58;
 import utils.NumberAsString;
 import utils.ObserverMessage;
 import database.SortableList;
+import lang.lang;
 
 @SuppressWarnings("serial")
 public class ATTableModel extends QoraTableModel<Long, AT> implements Observer
@@ -23,7 +24,7 @@ public class ATTableModel extends QoraTableModel<Long, AT> implements Observer
 	
 	private SortableList<Long, AT> ats;
 	
-	private String[] columnNames = {"Type/Domain", "Address", "Name", "Description", "Quantity", "Creator"};
+	private String[] columnNames = {lang.Translate("Type/Domain"), lang.Translate("Address"), lang.Translate("Name"), lang.Translate("Description"), lang.Translate("Quantity"), lang.Translate("Creator")};
 	
 	public ATTableModel()
 	{

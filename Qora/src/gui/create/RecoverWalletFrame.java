@@ -29,6 +29,7 @@ import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
 import controller.Controller;
+import lang.lang;
 import qora.crypto.Base58;
 
 @SuppressWarnings("serial")
@@ -42,7 +43,7 @@ public class RecoverWalletFrame extends JFrame
 	
 	public RecoverWalletFrame(NoWalletFrame parent)
 	{
-		super("ERM - Recover Wallet");
+		super("ERM" + " = " + lang.Translate("Recover Wallet"));
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();
@@ -80,7 +81,7 @@ public class RecoverWalletFrame extends JFrame
 		
 		//LABEL
 		labelGBC.gridy = 0;
-		JLabel label1 = new JLabel("Please enter your wallet seed:");	
+		JLabel label1 = new JLabel(lang.Translate("Please enter your wallet seed:"));	
 		this.add(label1, labelGBC);
 		
 		//ADD TEXTBOX
@@ -90,7 +91,7 @@ public class RecoverWalletFrame extends JFrame
 		
 		// MENU
 		JPopupMenu menu = new JPopupMenu();
-		JMenuItem pasteSeed = new JMenuItem("Paste");
+		JMenuItem pasteSeed = new JMenuItem(lang.Translate("Paste"));
 		pasteSeed.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent e) 
@@ -110,13 +111,13 @@ public class RecoverWalletFrame extends JFrame
 		//LABEL
       	labelGBC.gridy = 2;
       	labelGBC.insets.top = 00;
-      	JLabel label2 = new JLabel("Make sure your seed is in base58 format.");
+      	JLabel label2 = new JLabel(lang.Translate("Make sure your seed is in base58 format."));
       	this.add(label2, labelGBC);
       	
       	//LABEL
       	labelGBC.gridy = 3;
       	labelGBC.insets.top = 10;
-		JLabel label3 = new JLabel("Please enter your wallet password:");	
+		JLabel label3 = new JLabel(lang.Translate("Please enter your wallet password:"));	
 		this.add(label3, labelGBC);
 		
 		//ADD TEXTBOX
@@ -128,7 +129,7 @@ public class RecoverWalletFrame extends JFrame
 		//LABEL
       	labelGBC.gridy = 5;
       	labelGBC.insets.top = 10;
-		JLabel label4 = new JLabel("Please confirm your password:");	
+		JLabel label4 = new JLabel(lang.Translate("Please confirm your password:"));	
 		this.add(label4, labelGBC);
 		
 		//ADD TEXTBOX
@@ -140,7 +141,7 @@ public class RecoverWalletFrame extends JFrame
 		//LABEL
       	labelGBC.gridy = 7;
       	labelGBC.insets.top = 10;
-		JLabel label5 = new JLabel("Amount of accounts to recover:");	
+		JLabel label5 = new JLabel(lang.Translate("Amount of accounts to recover:"));	
 		this.add(label5, labelGBC);
 		
 		//ADD TEXTBOX
@@ -153,7 +154,7 @@ public class RecoverWalletFrame extends JFrame
 		
 		//BUTTON confirm
         buttonGBC.gridy = 9;
-        JButton confirmButton = new JButton("Confirm");
+        JButton confirmButton = new JButton(lang.Translate("Confirm"));
         confirmButton.addActionListener(new ActionListener()
 		{
 		    public void actionPerformed(ActionEvent e)
@@ -166,7 +167,7 @@ public class RecoverWalletFrame extends JFrame
     	
     	//BUTTON BACK
     	buttonGBC.gridx = 1;
-        JButton backButton = new JButton("Back");
+        JButton backButton = new JButton(lang.Translate("Back"));
         backButton.addActionListener(new ActionListener()
 		{
 		    public void actionPerformed(ActionEvent e)
@@ -210,8 +211,8 @@ public class RecoverWalletFrame extends JFrame
 		if(seed == null || seed.length != 32)
 		{
 			//INVALID SEED
-			String message = "Invalid or incorrect seed!";
-			JOptionPane.showMessageDialog(new JFrame(), message, "Invalid seed", JOptionPane.ERROR_MESSAGE);
+			String message = lang.Translate("Invalid or incorrect seed!");
+			JOptionPane.showMessageDialog(new JFrame(), message, lang.Translate("Invalid seed"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
@@ -219,16 +220,16 @@ public class RecoverWalletFrame extends JFrame
 		if(password.length() == 0)
 		{
 			//PASSWORD CANNOT BE EMPTY
-			String message = "Password cannot be empty!";
-			JOptionPane.showMessageDialog(new JFrame(), message, "Invalid password", JOptionPane.ERROR_MESSAGE);
+			String message = lang.Translate("Password cannot be empty!");
+			JOptionPane.showMessageDialog(new JFrame(), message, lang.Translate("Invalid password"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
 		if(!password.equals(this.confirmPasswordTxt.getText()))
 		{
 			//PASSWORDS DO NOT MATCH
-			String message = "Password do not match!";
-			JOptionPane.showMessageDialog(new JFrame(), message, "Invalid password", JOptionPane.ERROR_MESSAGE);
+			String message = lang.Translate("Password do not match!");
+			JOptionPane.showMessageDialog(new JFrame(), message, lang.Translate("Invalid password"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
@@ -242,16 +243,16 @@ public class RecoverWalletFrame extends JFrame
 		catch(Exception e)
 		{
 			//INVALID AMOUNT
-			String message = "Invalid amount!";
-			JOptionPane.showMessageDialog(new JFrame(), message, "Invalid amount", JOptionPane.ERROR_MESSAGE);
+			String message = lang.Translate("Invalid amount!");
+			JOptionPane.showMessageDialog(new JFrame(), message, lang.Translate("Invalid amount"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		
 		if(amount < 1 /*|| amount > 100*/)
 		{
 			//INVALID AMOUNT
-			String message = "Amount must be between 1-100!";
-			JOptionPane.showMessageDialog(new JFrame(), message, "Invalid amount", JOptionPane.ERROR_MESSAGE);
+			String message = lang.Translate("Amount must be between 1-100!");
+			JOptionPane.showMessageDialog(new JFrame(), message, lang.Translate("Invalid amount"), JOptionPane.ERROR_MESSAGE);
 			return;
 		}
 		

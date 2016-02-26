@@ -1,6 +1,7 @@
 package gui.create;
 
 import gui.Gui;
+import lang.lang;
 
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
@@ -34,7 +35,7 @@ public class NoWalletFrame extends JFrame {
 	
 	public NoWalletFrame(Gui parent) throws Exception
 	{
-		super("ERM - No Wallet");
+		super("ERM" + " = " + lang.Translate("No Wallet"));
 		
 		//ICON
 		List<Image> icons = new ArrayList<Image>();
@@ -82,20 +83,20 @@ public class NoWalletFrame extends JFrame {
 		
 		//LABEL
 		labelGBC.gridy = 0;
-		JLabel label1 = new JLabel("No existing wallet was found.");
+		JLabel label1 = new JLabel(lang.Translate("No existing wallet was found."));
 		this.add(label1, labelGBC);
 		
 		//LABEL
       	labelGBC.gridy = 1;
-      	JLabel label2 = new JLabel("What would you like to do?");
+      	JLabel label2 = new JLabel(lang.Translate("What would you like to do?"));
       	this.add(label2, labelGBC);
         
       	//ADD OPTIONS
-      	this.createButton = new JRadioButton("Create a new wallet.");
+      	this.createButton = new JRadioButton(lang.Translate("Create a new wallet."));
       	this.add(this.createButton, optionsGBC);
       		
       	optionsGBC.gridy = 3;
-      	this.recoverButton = new JRadioButton("Recover a wallet using an existing seed");
+      	this.recoverButton = new JRadioButton(lang.Translate("Recover a wallet using an existing seed"));
       	this.add(this.recoverButton, optionsGBC);
       		
       	ButtonGroup group = new ButtonGroup();
@@ -104,7 +105,7 @@ public class NoWalletFrame extends JFrame {
       		
       	 //BUTTON NEXT
         buttonGBC.gridy = 4;
-        JButton nextButton = new JButton("Next");
+        JButton nextButton = new JButton(lang.Translate("Next"));
         nextButton.addActionListener(new ActionListener()
 		{
 		    public void actionPerformed(ActionEvent e)
@@ -118,7 +119,7 @@ public class NoWalletFrame extends JFrame {
     	//BUTTON CANCEL
     	buttonGBC.gridx = 1;
     	buttonGBC.gridy = 4;
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton(lang.Translate("Cancel"));
         cancelButton.addActionListener(new ActionListener()
 		{
 		    public void actionPerformed(ActionEvent e)

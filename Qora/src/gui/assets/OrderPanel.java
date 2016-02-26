@@ -286,9 +286,9 @@ public class OrderPanel extends JPanel
 	public void calculateHint() 
 	{
 		if(!isDigit(this.txtPrice.getText()))
-			superHintText.setText( "<html><body style='font-size: 100%'>&nbsp;<br>Enter correct price.</body></html>" );
+			superHintText.setText( "<html><body style='font-size: 100%'>&nbsp;<br>"+ lang.Translate("Enter correct price.")+"</body></html>" );
 		else if(!isDigit(this.txtAmount.getText()))
-			superHintText.setText( "<html><body style='font-size: 100%'>&nbsp;<br>Enter correct amount.</body></html>" );
+			superHintText.setText( "<html><body style='font-size: 100%'>&nbsp;<br>"+ lang.Translate("Enter correct amount.")+"</body></html>" );
 		else
 			superHintText.setText( "<html><body style='font-size: 100%'>Give <b>" + this.txtAmount.getText()+ "&nbsp;"+ have.getShort() + "</b>" + 
 					" at the price of <b>" + this.txtPrice.getText() + "&nbsp;" + want.getShort() + "</b>" +
