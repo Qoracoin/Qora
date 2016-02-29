@@ -252,7 +252,7 @@ function secToFine(time) {
 	ret = "";
 
 	if (hrs > 0)
-		ret += "" + hrs + (hrs > 1 ? " hours " : " hour ");
+		ret += "" + hrs + (hrs > 1 ? "hours " : " hour ");
 
 	ret += "" + mins + (mins > 1 ? " mins " : " min ");
 	ret += "" + secs + ' secs';
@@ -372,10 +372,10 @@ function blocks(data)
 
 	output += '<table id=blocks BORDER=0 cellpadding=15 cellspacing=0 width="">';
 	output += '<tr><td align=left>';
-	output += '<a href=?unconfirmed>Unconfirmed transactions: '+data.unconfirmedTxs+'</a>.';
+	output += '<a href=?unconfirmed>' + data.Label_Unconfirmed_transactions+': '+data.unconfirmedTxs+'</a>.';
 	
 	output += '<table id=blocks BORDER=0 cellpadding=15 cellspacing=0 width="1180"  class="table table-striped" style="border: 1px solid #ddd;">';
-	output += '<tr><td><b>Height<td><b>Time<td><b>Generator<td><b>Gen.balance<td><b>TXs<td><b>Fee<td><b>AT Amount<td><b>Amount'; 
+	output += '<tr><td><b>'+ data.Label_Height +' <td><b>'+data.Label_Time+'<td><b>'+ data.Label_Generator +'<td><b>'+data.Label_Gen_balance+'<td><b>'+data.Label_TXs+'<td><b>'+data.Label_Fee+'<td><b>'+data.Label_AT_Amount+'<td><b>'+data.Label_Amount; 
 
 	minHeight = (data.maxHeight <= 20) ? 1 : data.maxHeight - 20;
 	for(var i = data.maxHeight; i >= minHeight; i--)
@@ -391,17 +391,17 @@ function blocks(data)
 	{
 		if(data.lastBlock.height < data.maxHeight + 21)
 		{
-			output += '<a href=?startBlock='+(data.lastBlock.height)+'>Later';
+			output += '<a href=?startBlock='+(data.lastBlock.height)+'>'+data.Label_Later;
 		}
 		else
 		{
-			output += '<a href=?startBlock='+(data.maxHeight+21)+'>Later';
+			output += '<a href=?startBlock='+(data.maxHeight+21)+'>'+data.Label_Later;
 		}
 	}
 	
 	output += '<td colspan=4 align=right>';
 	if(minHeight > 1) {
-		output += '<a href=?startBlock='+(data.maxHeight-21)+'>Previous'
+		output += '<a href=?startBlock='+(data.maxHeight-21)+'>'+data.Label_Previous;
 	}
 	
 	return output;
@@ -3034,7 +3034,7 @@ function lastBlock(lastBlock)
 		return "";
 	
 	var output = '';
-	output += 'Last processed block: <a href=?block='+lastBlock.height+'>' + lastBlock.height + '</a>';
+	output += lastBlock.Label_Last_processed_block+': <a href=?block='+lastBlock.height+'>' + lastBlock.height + '</a>';
 	output += ' (' + lastBlock.dateTime +', ' + secToFine(new Date().getTime() - lastBlock.timestamp) + ' ago'+ ') ';
 	output += '<br><br>';
 	
