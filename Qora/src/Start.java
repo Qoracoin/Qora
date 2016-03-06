@@ -6,6 +6,7 @@ import javax.swing.UIManager;
 import api.ApiClient;
 import controller.Controller;
 import gui.Gui;
+import gui.create.SettingLangFrame;
 import lang.Lang;
 import settings.Settings;
 import utils.SysTray;
@@ -37,6 +38,15 @@ public class Start {
 		{			
 			try
 			{
+				
+				// CHECK IF SETTING LANG
+		        
+		        
+		        	
+		        	new SettingLangFrame(null);
+		        
+		        
+				
 				//ONE MUST BE ENABLED
 				if(!Settings.getInstance().isGuiEnabled() && !Settings.getInstance().isRpcEnabled())
 				{
@@ -54,7 +64,11 @@ public class Start {
 				
 				try
 				{
-						//START GUI
+					
+			        	
+			       
+					
+					//START GUI
 						if(Gui.getInstance() != null && Settings.getInstance().isSysTrayEnabled())
 						{					
 							SysTray.getInstance().createTrayIcon();
