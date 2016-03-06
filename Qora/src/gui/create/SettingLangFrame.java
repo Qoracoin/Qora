@@ -240,8 +240,12 @@ public class SettingLangFrame extends JDialog {
 					{
 		   				String url = Lang.translationsUrl + Controller.getInstance().getVersion().replace(" ", "%20") + "/languages/" + langFileName;
 		   				FileUtils.copyURLToFile(new URL(url), new File(Settings.getInstance().getUserPath() + "languages/" + langFileName));
+					
+		   				
+					
 					}
 		   			
+		   	
 		   			
 		   		} catch (IOException e) {
 		   			e.printStackTrace();
@@ -253,6 +257,7 @@ public class SettingLangFrame extends JDialog {
 		   			
 		    	   
 		       }
+		    	   
 		}
 					
 		}
